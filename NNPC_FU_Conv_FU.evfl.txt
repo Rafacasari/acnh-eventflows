@@ -1,0 +1,86 @@
+flow Root():
+    if (MainNpc.EventFlags['cNpcSave:PlayerNamePhrase']) and (not SubNpc.EventFlags['cNpcSave:PlayerNamePhrase']) and (not MainNpc.IsSamePhrase()):
+        MainNpc.NpcCopyPhrase()
+        fork:
+            branch:
+                MainNpc.CharacterEmoticonAction('Nodding', true, '', 0, false)
+            branch:
+                SubNpc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:201', false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:202', false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:203', false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:204', false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:205', false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:206', false)
+        fork:
+            branch:
+                MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:207', false)
+            branch:
+                SubNpc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, false) == 0:
+        fork:
+            branch:
+                MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:001', false)
+            branch:
+                SubNpc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:002', false)
+        MainNpc.TurnBody(1, 0.0)
+        MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:003', false)
+        switch EventFlowSystemActor.GeneralTalkChoice5():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:007', false)
+                SubNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:008', false)
+                MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:009', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:010', false)
+                SubNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:011', false)
+                MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:012', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:013', false)
+                SubNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:014', false)
+                MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:015', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:016', false)
+                SubNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:017', false)
+                MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:018', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:019', false)
+                SubNpc.TurnBody(0, 0.0)
+                SubNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:020', false)
+                MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:021', false)
+        fork:
+            branch:
+                MainNpc.TurnBody(10, 0.0)
+            branch:
+                SubNpc.TurnBody(10, 0.0)
+                SubNpc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:022', false)
+    else:
+        fork:
+            branch:
+                MainNpc.CharacterEmoticonAction('AbsentMindedness', true, '', 0, false)
+            branch:
+                SubNpc.CharacterEmoticonAction('Nodding', true, '', 0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:101', false)
+        fork:
+            branch:
+                MainNpc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+            branch:
+                SubNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:102', false)
+        fork:
+            branch:
+                MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:103', false)
+            branch:
+                SubNpc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+        fork:
+            branch:
+                MainNpc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+            branch:
+                SubNpc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:104', false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:105', false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:106', false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:107', false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:108', false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G1_Fu/Conv/FU_Conv_FU:109', false)
+

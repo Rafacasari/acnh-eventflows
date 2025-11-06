@@ -1,0 +1,42 @@
+flow AmiiboDeviceCamera():
+    MainNpc.NpcAISetting(4, false)
+    EventFlowSystemActor.CameraSetDemoParam('AmiiboDevice', 'cDefault', 'CameraTag:AmiiboDevice', false, false, false, 0)
+
+flow AmiiboDeviceCamera_Direct():
+    MainNpc.NpcAISetting(4, false)
+    EventFlowSystemActor.CameraSetDemoParam('AmiiboDevice_Direct', 'cDefault', 'CameraTag:AmiiboDevice', false, false, false, 0)
+
+flow Root():
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:281', false)
+    EventFlowSystemActor.SetLookAtTargetObject('cWherearenAmiiboDevice')
+    MainNpc.TurnNeck(13, false)
+    run AmiiboDeviceCamera()
+    EventFlowSystemActor.WaitFrame(20)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:281_01', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(13, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:283', false)
+    MainNpc.TurnNeck(10, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:284', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(0, false)
+entrypoint Event12:
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:285', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:286', true)
+    System.EventFlags['cWherearenPlayer:SeqAvailableAmiiboDone'] = true
+    System.EventFlags['cWherearenPlayer:Unlock_Amiibo'] = true
+
+flow Root_AmiiboDevice():
+    run AmiiboDeviceCamera_Direct()
+    EventFlowSystemActor.WaitFrame(20)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:282', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:283', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:284', false)
+    run Event12()
+

@@ -1,0 +1,131 @@
+flow ReturnSel():
+    MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:003', false)
+    run Event3()
+
+flow ReturnSel0():
+    MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:1014', false)
+    run Event28()
+
+flow Root():
+    run Ttl_First()
+    if EventFlowSystemActor.EnvWeatherArea() == `cWeatherArea_North`:
+        if EventFlowSystemActor.EnvCheckBetweenDate(9, 1, 12, 10, 'cLastGrowUpTime'):
+            run Sub_Event51()
+        else:
+            run Sub_grp_Event16()
+    else:
+        if EventFlowSystemActor.EnvCheckBetweenDate(3, 1, 6, 10, 'cLastGrowUpTime'):
+            run Sub_Event51()
+        else:
+            run Sub_grp_Event16()
+
+local flow Sub_Event48():
+    MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:1012', false)
+    run Sub_grp_Event52()
+
+local flow Sub_Event51():
+    if System.EventFlags['cPlayer:TtlTodayFirstTalkFlag']:
+        run Sub_grp_Event16()
+    else:
+        run TtlB()
+
+local flow Sub_grp_Event16():
+    if EventFlowSystemActor.EnvHourCompare(23, -1, true, true) in (0, 1):
+        if System.EventFlags['cPlayer:TtlTodayTalkFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:002', false)
+        else:
+            System.EventFlags['cPlayer:TtlTodayTalkFlag'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:001', false)
+entrypoint Event3:
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                EventFlowSystemActor.UIItemSelectWindowHandling('cMoveToChest', 65534, '', '', 'cPutInStorage', false)
+                EventFlowSystemActor.UISelectedItemMoveChest()
+                run ReturnSel()
+            case 1:
+                EventFlowSystemActor.UIStorageHandling()
+                run ReturnSel()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:004', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:1001', false)
+
+local flow Sub_grp_Event26():
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.DecideEventReward('cDonguri')
+        MainNpc.SetDeliveryItem(1, true)
+        MainNpc.NpcDelivery(1, 'Default')
+        System.EventFlags['cPlayer:TtlB_Acorn_Today'] = true
+        run Sub_Event48()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:1006', false)
+        run Event28()
+
+local flow Sub_grp_Event38():
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:1017', false)
+        run Sub_Event48()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:1016', false)
+        run Sub_grp_Event26()
+
+local flow Sub_grp_Event52():
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            EventFlowSystemActor.UIItemSelectWindowHandling('cMoveToChest', 65534, '', '', 'cPutInStorage', false)
+            EventFlowSystemActor.UISelectedItemMoveChest()
+            run ReturnSel0()
+        case 1:
+            EventFlowSystemActor.UIStorageHandling()
+            run ReturnSel0()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:004', false)
+
+flow TtlB():
+    if EventFlowSystemActor.EnvHourCompare(22, -1, true, true) not in (0, 1):
+        MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:1001', false)
+    elif not System.EventFlags['cPlayer:TtlBFirstTalkFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:1003', false)
+        System.EventFlags['cPlayer:TtlBFirstTalkFlag'] = true
+        if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:1012', false)
+entrypoint Event28:
+            switch EventFlowSystemActor.GeneralTalkChoice3():
+                case 0:
+                    EventFlowSystemActor.UIItemSelectWindowHandling('cMoveToChest', 65534, '', '', 'cPutInStorage', false)
+                    EventFlowSystemActor.UISelectedItemMoveChest()
+                    run ReturnSel0()
+                case 1:
+                    EventFlowSystemActor.UIStorageHandling()
+                    run ReturnSel0()
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:004', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:1004', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:1005', false)
+            run Sub_grp_Event26()
+    elif System.EventFlags['cPlayer:TtlTodayTalkFlag']:
+        if System.EventFlags['cPlayer:TtlB_Acorn_Today']:
+            MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:1013', false)
+            run Sub_grp_Event52()
+        else:
+            run Sub_grp_Event38()
+    else:
+        System.EventFlags['cPlayer:TtlTodayTalkFlag'] = true
+        if System.EventFlags['cPlayer:TtlB_Acorn_Today']:
+            run Sub_Event48()
+        else:
+            run Sub_grp_Event38()
+
+flow Ttl_First():
+    if not System.EventFlags['cPlayer:Ttl1stmet']:
+        if System.EventFlags['cPlayer:TalkTtlCommuneOpenEvent']:
+            MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:102', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:101', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/ttl/SP_ttl_02_Commune:103', false)
+        System.EventFlags['cPlayer:TtlTodayTalkFlag'] = true
+        System.EventFlags['cPlayer:Ttl1stmet'] = true
+        System.EventFlags['cPlayer:TtlTodayFirstTalkFlag'] = true
+        EventFlowSystemActor.ExitFlowchart()
+

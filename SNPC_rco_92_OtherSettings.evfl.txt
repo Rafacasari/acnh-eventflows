@@ -1,0 +1,231 @@
+flow AfterMainPcDeleteExplain_Pl():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:112', false)
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            run Sel_CurrentP()
+        case 1:
+            run Cel_OtherP()
+        case 2:
+            run ExplainDeleteManPc()
+            run AfterMainPcDeleteExplain_Pl()
+        case 3:
+            run Delete_Cancel()
+
+flow AfterMainPcDeleteExplain_Sg():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:111', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run Sel_CurrentP()
+        case 1:
+            run ExplainDeleteManPc()
+            run AfterMainPcDeleteExplain_Sg()
+        case 2:
+            run Delete_Cancel()
+
+flow Cel_OtherP():
+    if EventFlowSystemActor.IsUnconnectedVillageLeader():
+        if EventFlowSystemActor.IsUnconnectedPlayerVillagerGreaterThan(3):
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:105_04', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:105_03', false)
+    else:
+        if EventFlowSystemActor.IsUnconnectedPlayerVillagerGreaterThan(2):
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:105_02', true)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:105_01', true)
+    EventFlowSystemActor.UIMsgCardAdrHandling('cPlayerRemove')
+    if EventFlowSystemActor.UIResultMenuDecide():
+        EventFlowSystemActor.SetTagFromUIResult('cSelectPlayerName', 0)
+        EventFlowSystemActor.SetTagFromUIResult('cVillagerPlayerNameD', 1)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:106', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:063_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:113', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:062_05', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:114', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Delete_Cancel()
+        else:
+            EventFlowSystemActor.MessageSuspend()
+            EventFlowSystemActor.WaitFrame(10)
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:0012', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                SubflowResults[0] = 1
+                run Process_Delete()
+            else:
+                run Delete_Cancel()
+    else:
+        run Delete_Cancel()
+
+flow Cmn_MainP_Sel():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:202_01', false)
+entrypoint Event42:
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:055', false)
+        run Seq_Close()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:071_01', false)
+        run Explain_DeleteMainP()
+
+flow Cmn_NormalSel():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:104', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run Sel_CurrentP()
+        case 1:
+            run Cel_OtherP()
+        case 2:
+            run Delete_Cancel()
+
+flow Delete_Cancel():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:052', false)
+    run Seq_Close()
+
+flow Explain():
+    run Explain_DeleteP_General()
+
+flow ExplainDeleteManPc():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:071_02', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:010_02', false)
+
+flow Explain_DeleteMainP():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:202_02', false)
+    run Event42()
+
+flow Explain_DeleteP_General():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:061', false)
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:064_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:064_02', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:062_06', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:064_03', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:071_01', false)
+        run Rco_MainSelect_MainP()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:062_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:062_02', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:062_04', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:062_03', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:010_02', false)
+        run Rco_MainSelect_OtherP()
+
+flow Process_Delete():
+    run System_Cmn_UserSaveDataAccess::Cmn_User_Delete()
+    if SubflowResults@2[0] == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:053', false)
+        if EventFlowSystemActor.IsWaitingMovedIn():
+            EventFlowSystemActor.BeginAsMovedOne(false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:054', false)
+    MainNpc.MessageSuspend()
+    EventFlowSystemActor.WaitFrame(30)
+    run Seq_Close()
+
+flow Rco_MainSelect_MainP():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:012', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run Root_Delete_MainP()
+        case 1:
+            run Explain()
+        case 2:
+            run Sel_EndMenu()
+
+flow Rco_MainSelect_OtherP():
+    run Event33()
+
+flow Root():
+    EventFlowSystemActor.SystemFaderRelease()
+    EventFlowSystemActor.CameraSetDemoParam('CutSpotlight', '', 'CameraTag:Root', false, false, false, 0)
+    EventFlowSystemActor.WaitFrame(30)
+    if EventFlowSystemActor.SaveIsExist():
+        run SNPC_rco_95_SavedataRecovering::SavedataRestoring()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:002', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:023', false)
+        switch EventFlowSystemActor.GeneralTalkChoice5():
+            case 0:
+                run SNPC_rco_96_PlayerMoving::Root()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:021', false)
+                run SaveSetting_Main()
+            case 2:
+                run SNPC_rco_93_BlancoSettings::WebSetting_Main()
+            case 3:
+                run SNPC_rco_94_SavedataRecoveringSettings::Root()
+            case 4:
+                run Sel_EndMenu()
+
+flow Root_Delete_MainP():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:201', false)
+    if not EventFlowSystemActor.PlayerVillagerCount(2):
+        run Cmn_MainP_Sel()
+    elif EventFlowSystemActor.IsUnconnectedPlayerVillagerGreaterThan(1):
+        if EventFlowSystemActor.IsUnconnectedPlayerVillagerGreaterThan(2):
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:204_02', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:204_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:205', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Cel_OtherP()
+        else:
+            run Delete_Cancel()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:203', false)
+        run Cmn_MainP_Sel()
+
+flow Root_Delete_OtherP():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:101', false)
+    if not EventFlowSystemActor.IsUnconnectedPlayerVillagerGreaterThan(1):
+        run Sel_CurrentP()
+    elif EventFlowSystemActor.IsUnconnectedPlayerVillagerGreaterThan(2):
+        if EventFlowSystemActor.IsUnconnectedVillageLeader():
+            run AfterMainPcDeleteExplain_Pl()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:103_02', false)
+            run Cmn_NormalSel()
+    elif EventFlowSystemActor.IsUnconnectedVillageLeader():
+        run AfterMainPcDeleteExplain_Sg()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:103_01', false)
+        run Cmn_NormalSel()
+
+flow SaveSetting_Main():
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        run Rco_MainSelect_MainP()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:010_01', false)
+entrypoint Event33:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:011', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                run Root_Delete_OtherP()
+            case 1:
+                run Explain()
+            case 2:
+                run Sel_EndMenu()
+
+flow Sel_CurrentP():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:062_02', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:062_04', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:102', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run Delete_Cancel()
+    else:
+        EventFlowSystemActor.MessageSuspend()
+        EventFlowSystemActor.WaitFrame(10)
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:0011', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            SubflowResults[0] = 0
+            run Process_Delete()
+        else:
+            run Delete_Cancel()
+
+flow Sel_EndMenu():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:051', false)
+    run Seq_Close()
+
+flow Seq_Close():
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.WaitFrame(15)
+    EventFlowSystemActor.SystemRequestChangeStage('cGrowUp', 'cNormalFader', 'cCircle', 'cBlack', 0.5, 0.5)
+

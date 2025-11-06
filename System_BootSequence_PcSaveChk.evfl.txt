@@ -1,0 +1,133 @@
+flow ExtendSaveDataSize():
+    if EventFlowSystemActor.SaveExtensionCheck('cVillager'):
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:9121', false)
+        EventFlowSystemActor.WaitFrame(30)
+        EventFlowSystemActor.SaveExtend('cVillager')
+        EventFlowSystemActor.MessageSuspend()
+        if not EventFlowSystemActor.SaveExtensionIsSuccess():
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:9122', false)
+            EventFlowSystemActor.WaitFrame(-1)
+
+flow NACheckAgain():
+    if EventFlowSystemActor.NetIsAvailableNA():
+        if not EventFlowSystemActor.NetIsRegisteredSameNA():
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8016', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Sub_Event67()
+            else:
+                run Sub_Event64()
+    elif SubflowResults@2[0] == 0:
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8018', false)
+        run Sub_grp_Event70()
+    else:
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8020', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8017', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Sub_Event67()
+            else:
+                run Sub_Event64()
+        else:
+            run Sub_grp_Event70()
+
+flow ReSelect():
+    if EventFlowSystemActor.IsFullPlayerVillager():
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8009', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Sel_ExistP()
+        elif not EventFlowSystemActor.IsUnconnectedVillageLeader():
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8011', false)
+            run Sel_Delete_User()
+        elif EventFlowSystemActor.IsUnconnectedPlayerVillagerGreaterThan(2):
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8010', false)
+            run Sel_Delete_User()
+        else:
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8012', false)
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8013', false)
+            EventFlowSystemActor.WaitFrame(-1)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8001', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Sel_ExistP()
+        else:
+            run ExtendSaveDataSize()
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8002', false)
+
+flow Root():
+    if not EventFlowSystemActor.PlayAccountIsPlayerVillager():
+        EventFlowSystemActor.ConfirmMovedOneSaveDataExistence()
+        if not EventFlowSystemActor.HasMovedOneSaveData():
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8021', false)
+        elif EventFlowSystemActor.IsUnconnectedPlayerVillagerGreaterThan(1):
+            EventFlowSystemActor.WaitFrame(30)
+            EventFlowSystemActor.UIBootBGChangeDialog()
+            run ReSelect()
+        else:
+            run ExtendSaveDataSize()
+    elif EventFlowSystemActor.NetHasPOPID(false):
+        run NACheckAgain()
+
+flow Sel_Delete_User():
+    EventFlowSystemActor.UIMsgCardAdrHandling('cPlayerRemove')
+    if EventFlowSystemActor.UIResultMenuDecide():
+        EventFlowSystemActor.SetTagFromUIResult('cVillagerPlayerNameD', 1)
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:0012', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            SubflowResults[0] = 1
+            EventFlowSystemActor.MessageSuspend()
+            run System_Cmn_UserSaveDataAccess::Cmn_User_Delete()
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8002', false)
+        else:
+            run Sel_Rethink()
+    else:
+        run Sel_Rethink()
+
+flow Sel_ExistP():
+    if EventFlowSystemActor.IsUnconnectedPlayerVillagerGreaterThan(2):
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8004', false)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8003', false)
+    EventFlowSystemActor.UIMsgCardAdrHandling('cAccountChange')
+    if EventFlowSystemActor.UIResultMenuDecide():
+        EventFlowSystemActor.SetTagFromUIResult('cVillagerPlayerNameD', 0)
+        if EventFlowSystemActor.NetIsAvailableNA():
+            if EventFlowSystemActor.NetIsRegisteredSameNA():
+                EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8007', false)
+                SubflowResults[1] = 0
+            else:
+                EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8014', false)
+                SubflowResults[1] = 1
+        else:
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8015', false)
+            SubflowResults[1] = 1
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Sel_Rethink()
+        else:
+            run System_Cmn_UserSaveDataAccess::Cmn_UserAcc_Connect()
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8008', false)
+    else:
+        run Sel_Rethink()
+
+flow Sel_Rethink():
+    EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8005', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8006', false)
+        EventFlowSystemActor.WaitFrame(-1)
+    else:
+        run ReSelect()
+
+local flow Sub_Event64():
+    run System_Cmn_UserSaveDataAccess::Cmn_UserAcc_ResetOnline()
+    EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8019', false)
+
+local flow Sub_Event67():
+    EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:8013', false)
+    EventFlowSystemActor.WaitFrame(-1)
+
+local flow Sub_grp_Event70():
+    if EventFlowSystemActor.NetMode() not in (0, 2):
+        EventFlowSystemActor.NetShutdown('cNetShutdown', false)
+    EventFlowSystemActor.NetEnsureNSA()
+    SubflowResults[0] = 1
+    run NACheckAgain()
+

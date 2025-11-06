@@ -1,0 +1,42 @@
+flow Root():
+    MainNpc.SetApproachTalkItem(0)
+    MainNpc.SetItemName(6, 0, 0)
+    MainNpc.SetDeliveryItem(6, true)
+    if MainNpc.CheckNpcApproachType():
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:001', false)
+            MainNpc.NpcDelivery(1, '"Default"')
+            if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:100', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:101', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:002', false)
+            MainNpc.NpcDelivery(1, '"Default"')
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:200', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:201', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:202', false)
+        MainNpc.RegistToReleaseItemList(0)
+        MainNpc.AddMemoryEventPlayerForNpc('Present_FromNNPC')
+    else:
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:003', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:300', false)
+                MainNpc.NpcDelivery(1, '"Default"')
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:302', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:301', false)
+                MainNpc.NpcDelivery(1, '"Default"')
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:303', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:004', false)
+            MainNpc.NpcDelivery(1, '"Default"')
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachC_Present:400', false)
+        MainNpc.RegistToReleaseItemList(0)
+        MainNpc.AddMemoryEventPlayerForNpc('Present_FromNNPC')
+

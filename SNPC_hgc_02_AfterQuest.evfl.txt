@@ -1,0 +1,78 @@
+flow Hgc_Chat1():
+    if System.EventFlags['cPlayer:KotonoQuestCount'] < 9:
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:100', true)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:101', true)
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious4(4, true):
+            case 0:
+                if MainNpc.NpcIsEquipedHandTool(0):
+                    run Hgc_Chat1()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:106', true)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:105', true)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:100', true)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:101', true)
+
+flow Hgc_Chat2():
+    if System.EventFlags['cPlayer:KotonoQuestCount'] < 35:
+        run Sub_grp_Event21()
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:115', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:116', true)
+            case 2, 3, 4:
+                run Sub_grp_Event21()
+
+flow Hgc_Chat3():
+    if System.EventFlags['cPlayer:KotonoQuestCount'] < 70:
+        run Sub_grp_Event5()
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious7(7, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:125', true)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:126', true)
+            case 2:
+                if MainNpc.NpcIsEquipedHandTool(0):
+                    run Hgc_Chat3()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:127', true)
+            case 3, 4, 5, 6:
+                run Sub_grp_Event5()
+
+flow Root():
+    switch SubflowResults@3[0]:
+        case 0:
+            run Hgc_Chat1()
+        case 1:
+            run Hgc_Chat2()
+        case 2:
+            run Hgc_Chat3()
+
+local flow Sub_grp_Event21():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:110', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:111', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:130', true)
+
+local flow Sub_grp_Event5():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious4(4, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:120', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:121', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:122', true)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:131', true)
+

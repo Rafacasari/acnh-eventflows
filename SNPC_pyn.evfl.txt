@@ -1,0 +1,33 @@
+flow Pyn_TalkFromBack():
+    run Event1()
+
+flow Root():
+    if not MainNpc.NpcIsTalkedFromBehind():
+        if System.EventFlags['cLand:PynVisitToday']:
+            run SNPC_pyn_01_EasterPreVisit::Root()
+        else:
+            run SNPC_pyn_02_EasterDay::Root()
+    elif EventFlowSystemActor.IsMyVillage():
+entrypoint Event1:
+        if System.EventFlags['cPlayer:PynTalkBackTodayFlag']:
+            run Sub_grp_Event2()
+        else:
+            System.EventFlags['cPlayer:PynTalkBackTodayFlag'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/pyn/SP_pyn:001', false)
+    else:
+        if System.EventFlags['cPlayerVisit:DC_PynTalkBackTodayFlag']:
+            run Sub_grp_Event2()
+        else:
+            System.EventFlags['cPlayerVisit:DC_PynTalkBackTodayFlag'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/pyn/SP_pyn:001', false)
+
+local flow Sub_grp_Event2():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/pyn/SP_pyn:002', false)
+        case 1:
+            EventFlowSystemActor.WaitFrame(10)
+            MainNpc.OpenMessageWindow('TalkSNpc/pyn/SP_pyn:003', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/pyn/SP_pyn:004', false)
+

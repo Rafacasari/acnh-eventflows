@@ -1,0 +1,89 @@
+flow EndTalk():
+    if System.EventFlags['cWherearenPlayer:SeqMncTalkDIYCatalog']:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:111', false)
+        switch EventFlowSystemActor.GeneralTalkChoice2():
+            case 0, 1:
+                EventFlowSystemActor.WaitFrame(30)
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:111_01', true)
+                MainNpc.CharacterEmoticonAction('IdeaBulb', true, '', 0, false)
+                EventFlowSystemActor.WaitFrame(30)
+                MainNpc.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+                MainNpc.TurnNeck(1, false)
+                run Demo_Common_Wherearen::Demo_OfficeOverlookRightCamera()
+                EventFlowSystemActor.WaitFrame(20)
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:112', true)
+                Player.TurnNeck(1, false)
+                SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:113', true)
+                Player.TurnNeck(0, false)
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:114', false)
+                MainNpc.TurnNeck(10, false)
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:115', true)
+                System.EventFlags['cWherearenPlayer:SeqMncRecipeDone'] = true
+                System.EventFlags['cWherearenPlayer:Unlock_MessageBottle'] = true
+                System.EventFlags['cWherearenPlayer:SeqMncDIYRecipeOngoing'] = false
+                System.EventFlags['cWherearenPlayer:SeqMncTalkDIYCatalog'] = false
+                System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = false
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:105', true)
+
+flow EndTalk_Catalog():
+    if System.EventFlags['cWherearenPlayer:SeqMncTalkDIYCatalog']:
+entrypoint Event30:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:151', false)
+        switch EventFlowSystemActor.GeneralTalkChoice2():
+            case 0, 1:
+                EventFlowSystemActor.WaitFrame(30)
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:152', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:153', true)
+                System.EventFlags['cWherearenPlayer:Unlock_MargeCatalog_DIY'] = true
+                System.EventFlags['cWherearenPlayer:SeqDIYCatalogOngoing'] = false
+                System.EventFlags['cWherearenPlayer:SeqMncTalkDIYCatalog'] = false
+                System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = false
+                System.EventFlags['cPlayer:OtgTipsUnlockDIYFtrCatalog'] = true
+                run `00_Demo_Fade`::FadeOut_Cmn(FadeColor='cBlack', SoundDucking='cWorldDucking', FadeType='cCircle', FadeSpeed='cNormal')
+                run Demo_Common_Wherearen::Demo_OfficeOverlookCamera()
+                EventFlowSystemActor.SetupActorPosition(17)
+                Player.TurnBody(12, 0.0)
+                EventFlowSystemActor.WaitFrame(20)
+                run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+                EventFlowSystemActor.ReservePlayerMutterDemo('SNPC_otg_17_WherearenEvent_DIYCatalog', 'MutterDemo', 'cNowDemoEnd', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:145', true)
+
+flow FromAmiiboReader():
+    if System.EventFlags['cWherearenPlayer:SeqMncTalkDIYCatalog']:
+        run Event30()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:146', true)
+
+flow MutterDemo():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1305_01', true)
+
+flow Root():
+    run SNPC_otg_01_WherearenOffice::HouseCompleteActing()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:101', false)
+    run SNPC_otg_01_WherearenOffice::SetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:102', true)
+    run SNPC_otg_01_WherearenOffice::GetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:103', true)
+    System.EventFlags['cWherearenPlayer:SeqMncDIYRecipeOngoing'] = true
+    System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = true
+    SubflowResults[3] = 0
+    run SNPC_otg_01_WherearenOffice::OrderClose_Complete()
+    run SNPC_otg_01_WherearenOffice::Otg_ReturnHomePos()
+
+flow Root_DIYCatalogMerge():
+    run SNPC_otg_01_WherearenOffice::HouseCompleteActing()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:141', false)
+    run SNPC_otg_01_WherearenOffice::SetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:142', true)
+    run SNPC_otg_01_WherearenOffice::GetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:143', true)
+    SubflowResults[3] = 0
+    run SNPC_otg_01_WherearenOffice::OrderClose_Complete()
+    Player.TurnBody(0, 0.0)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:144', true)
+    System.EventFlags['cWherearenPlayer:SeqDIYCatalogOngoing'] = true
+    System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = true
+    run SNPC_otg_01_WherearenOffice::Otg_ReturnHomePos()
+

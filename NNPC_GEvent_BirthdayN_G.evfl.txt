@@ -1,0 +1,76 @@
+flow Root():
+    MainNpc.SetNpcName(11, 0)
+    if not MainNpc.EventFlags['cNpcMemory:FirstMeetGreetAtThisVillage']:
+        if EventFlowSystemActor.IsMyVillage():
+            if MainNpc.EventFlags['cNpcMemory:HasAcquaintanceship']:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:014', true)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:004', true)
+        else:
+            if MainNpc.EventFlags['cNpcMemory:HasAcquaintanceship']:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:015', true)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:016', true)
+        MainNpc.EventFlags['cNpcMemory:BirhdayNTalkFlag'] = true
+        run NNPC_Reaction_First_Root::FirstMeeting_FlagProcess()
+    elif not MainNpc.EventFlags['cNpcMemory:BirhdayNTalkFlag']:
+        MainNpc.EventFlags['cNpcMemory:BirhdayNTalkFlag'] = true
+        switch EventFlowSystemActor.RandomChoice3(3):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:001', true)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:002', true)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:003', true)
+    elif EventFlowSystemActor.IsMyVillage():
+        if System.EventFlags['cPlayer:BirthdayNGavePresentFlag']:
+            run Sub_Event36()
+        else:
+            run Sub_grp_Event8()
+    else:
+        if System.EventFlags['cPlayerVisit:BirthdayNGavePresent_DC']:
+            run Sub_Event36()
+        else:
+            run Sub_grp_Event8()
+
+local flow Sub_Event36():
+    run ValentineChk()
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:005', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:006', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:007', true)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:008', true)
+        case 4:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:009', true)
+
+local flow Sub_grp_Event8():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:010', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:011', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:012', true)
+
+flow ValentineChk():
+    if (EventFlowSystemActor.TermEventNow('Valentine', false)) and (EventFlowSystemActor.HaveValentineItem()) and (not MainNpc.EventFlags['cNpcMemory:ValentinePresentFlag']):
+        run NNPC_Talk_General::PresentAvailable_Chk()
+        if (MainNpc.EventFlags['cNpcMemory:ReceivedFirstPresent']) and (MainNpc.EventFlags['cNpcMemory:FriendshipBecomeAcqH']):
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:020', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:021', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_BirthdayN_G:022', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run NNPC_Select_Present::Valentine()
+                EventFlowSystemActor.ExitFlowchart()
+            else:
+                EventFlowSystemActor.WaitFrame(1)
+                EventFlowSystemActor.ExitFlowchart()
+

@@ -1,0 +1,34 @@
+flow HedgePresent():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_61_Event_EarthDay:0004', false)
+    MainNpc.SmartPhone(0)
+    run Demo_Common_PhoneCall::SendingDataWithP()
+    MainNpc.SmartPhone(1)
+    Player.SmartPhone(1)
+    EventFlowSystemActor.PlayerSetCraftRecipe('Slo001', 12758)
+    System.EventFlags['cPlayer:RcoEarthDayGetHedge'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_61_Event_EarthDay:0005', false)
+    EventFlowSystemActor.ExitFlowchart()
+
+flow Root():
+    if System.EventFlags['cPlayer:RcoEarthDayAnnouncement']:
+        if (not System.EventFlags['cPlayer:RcoEarthDayGetHedge']) and (System.EventFlags['cPlayer:EarthdayDailyAllClear']) and (System.EventFlags['cPlayer:MainmenuRecipe']) and (not EventFlowSystemActor.PlayerHasCraftRecipe('Slo001', 12758)):
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_61_Event_EarthDay:0006', false)
+            System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+            run HedgePresent()
+    elif System.EventFlags['cPlayer:MainmenuRndDailyQuest']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_61_Event_EarthDay:0002', false)
+        System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+        System.EventFlags['cPlayer:RcoEarthDayAnnouncement'] = true
+        if System.EventFlags['cPlayer:RcoEarthDayGetHedge']:
+            EventFlowSystemActor.ExitFlowchart()
+        elif not System.EventFlags['cPlayer:EarthdayDailyAllClear']:
+            EventFlowSystemActor.ExitFlowchart()
+        elif (System.EventFlags['cPlayer:MainmenuRecipe']) and (not EventFlowSystemActor.PlayerHasCraftRecipe('Slo001', 12758)):
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_61_Event_EarthDay:0003', false)
+            run HedgePresent()
+    elif not System.EventFlags['cPlayer:RcoEarthDayAnnouncementPre']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_61_Event_EarthDay:0001', false)
+        System.EventFlags['cPlayer:RcoEarthDayAnnouncementPre'] = true
+        System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+        EventFlowSystemActor.ExitFlowchart()
+

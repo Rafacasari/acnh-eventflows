@@ -1,0 +1,198 @@
+flow AlreadyFenceUnlock():
+    if System.EventFlags['cLand:RcmImmQuestRunning']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:162', false)
+    elif System.EventFlags['cPlayer:PlayerProducedByPlayerMoving']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:182', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:160', false)
+
+flow Connect_DayOnce():
+    if (not System.EventFlags['cPlayerTemp:RcoTentAskedHintTmp']) and (not ((System.EventFlags['cPlayer:MakeVillagePlayerFlag']) and (System.EventFlags['cLand:RcmImmQuestRunning']))):
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:101', false)
+        System.EventFlags['cPlayerTemp:RcoTentAskedHintTmp'] = true
+
+flow PlayerMovingJump_MainP():
+    if not System.EventFlags['cLand:RcmImmQuestComplete']:
+        if System.EventFlags['cLand:RcmImmQuestRunning']:
+            run SNPC_rco_53_MigrantsQuest::Root()
+        elif not System.EventFlags['cPlayer:MainmenuRecipe']:
+            run Rco_Hint_AboutDIYWS()
+        elif EventFlowSystemActor.MuseumLevel() == `BlathersNotMovedIn`:
+            run Rco_Hint_AboutSetMuseumTent()
+        elif EventFlowSystemActor.PlayerHouseLevel() in (`Homeless`, `PlacedTent`):
+            run Rco_Hint_AboutSetMuseumTent()
+        else:
+            run Rco_Hint_AfterBuildHouse()
+    elif System.EventFlags['cLand:Plorogue4BuiltMuseum']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:151', false)
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:152_01', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:152_02', false)
+            case 1:
+                if System.EventFlags['cPlayer:ImmQGetQuestPrize']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:153_01', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:153_02', false)
+            case 2:
+                if SubflowResults@2[15] == 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:154_02', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:154_01', false)
+    else:
+        run Rco_Hint_AboutSetMuseumTent()
+
+flow PlayerMovingJump_SubP():
+    if not System.EventFlags['cLand:RcmImmQuestComplete']:
+        run AlreadyFenceUnlock()
+    elif System.EventFlags['cPlayer:ObjRcoMachineHeardFenceRecipe']:
+        run AlreadyFenceUnlock()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:163', false)
+        System.EventFlags['cPlayer:ObjRcoMachineHeardFenceRecipe'] = true
+
+flow Rco_Hint_AboutDIYWS():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:102', false)
+    System.EventFlags['cPlayer:RcoTentEnableDIYtrial'] = true
+
+flow Rco_Hint_AboutLoan():
+    if System.EventFlags['cPlayer:RcoPaid1stCharge']:
+        switch EventFlowSystemActor.PlayerHouseLevel():
+            case `PlacedTent`:
+                if System.EventFlags['cHouse:HouseOrder1']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:109', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:108', false)
+            case `BaseHouse`, `HouseExpansion1`, `BackRoom`, `LeftRoom`, `RightRoom`, `SecondFloor`, `Basement`:
+                if not System.EventFlags['cPlayer:PlayerProducedByPlayerMoving']:
+                    run Rco_Hint_AfterBuildHouse()
+                elif System.EventFlags['cLand:PlayerMovingEnableShopMaterialCollect']:
+                    run Rco_Hint_AfterBuildHouse()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:183', false)
+            default:
+                return
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:106', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:107', false)
+
+flow Rco_Hint_AboutRemakeWS():
+    if System.EventFlags['cPlayer:RcoRemakeTrialOngoing']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:902', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:901', false)
+
+flow Rco_Hint_AboutSetMuseumTent():
+    if not EventFlowSystemActor.MuseumDonationNumCheck(5):
+        if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:103', false)
+        else:
+            run Rco_Hint_AboutLoan()
+    elif not System.EventFlags['cLand:Plorogue4BuiltMuseum']:
+        if EventFlowSystemActor.HasTargetItem(2755, 1):
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:104', false)
+        else:
+            run Rco_Hint_AboutLoan()
+    elif System.EventFlags['cPlayer:RcoHeardThanksForBuiltOwlTent']:
+        run Rco_Hint_AboutLoan()
+    else:
+        System.EventFlags['cPlayer:RcoHeardThanksForBuiltOwlTent'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:105', false)
+        run Rco_Hint_AboutLoan()
+
+flow Rco_Hint_AfterBuildHouse():
+    if not System.EventFlags['cPlayer:RcmTookQuestReq']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:130', false)
+    elif System.EventFlags['cPlayer:Prologue4RcmGetTent']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:150', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:140', false)
+        if (not EventFlowSystemActor.HasKindItem('cKind', 'Axe', '')) and (not EventFlowSystemActor.HasTargetItem(2502, 1)):
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:140_01', false)
+            if EventFlowSystemActor.ShoppingCapacity('cItemName', 2502):
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:140_02', false)
+                MainNpc.SetDeliveryItemAtRandom(2502, true, 'cVillageRemakePattern', 0)
+                MainNpc.NpcDelivery(1, 'Default')
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:140_03', false)
+
+flow Rco_Hint_Complete():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:900', false)
+
+flow Rco_Hint_WaitingInvite1stCamper():
+    switch System.EventFlags['cPlayer:IslandDevQuestTalkAboutFirstCamper']:
+        case 0, 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_07_IslandDevelopment:351', false)
+
+flow Rco_Hint_WaitingOpenCampSite():
+    if (not System.EventFlags['cPlayer:EnableDiyRemake']) and (EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) != 0):
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:901', false)
+    elif System.EventFlags['cPlayer:IslandDevQuestTalkAfterBuildCamp']:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                if System.EventFlags['cLand:CampSiteBuiltToday']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_07_IslandDevelopment:163_01_02', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_07_IslandDevelopment:163_02', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_07_IslandDevelopment:164', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_07_IslandDevelopment:164', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_07_IslandDevelopment:162_01_02', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_07_IslandDevelopment:162_02', false)
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_07_IslandDevelopment:163_01_01', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_07_IslandDevelopment:163_02', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_07_IslandDevelopment:162_01_01', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_07_IslandDevelopment:162_02', false)
+            case 2:
+                if System.EventFlags['cPlayer:IslandDevQuestCampSetMySelf']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_07_IslandDevelopment:161_01', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_07_IslandDevelopment:161_02', false)
+
+flow Root():
+    if not System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        run Root_SubPlayer()
+    elif System.EventFlags['cLand:IslandDevQuestRunning']:
+        run SNPC_rco_54_IslandDevelopment::Root()
+    else:
+        run Connect_DayOnce()
+        if not System.EventFlags['cLand:ImmQClearNextDay']:
+            run PlayerMovingJump_MainP()
+        elif System.EventFlags['cPlayer:EnableDiyRemake']:
+            if System.EventFlags['cLand:Plorogue4BuiltMuseum']:
+                run Rco_Hint_Complete()
+            else:
+                run Rco_Hint_AboutSetMuseumTent()
+        elif System.EventFlags['cPlayer:RcoEnableRemakeTrial']:
+            run Rco_Hint_AboutRemakeWS()
+        else:
+            run PlayerMovingJump_MainP()
+
+flow Root_SubPlayer():
+    run Connect_DayOnce()
+    switch EventFlowSystemActor.PlayerHouseLevel():
+        case `Homeless`:
+            if System.EventFlags['cPlayer:NotBuilt2PMyHomeAfterMoving']:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:181', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:110', false)
+        case `PlacedTent`:
+            if System.EventFlags['cPlayer:MainmenuRecipe']:
+                run Rco_Hint_AboutLoan()
+            else:
+                run Rco_Hint_AboutDIYWS()
+        case `BaseHouse`, `HouseExpansion1`, `BackRoom`, `LeftRoom`, `RightRoom`, `SecondFloor`, `Basement`:
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                run Rco_Hint_AboutDIYWS()
+            elif not System.EventFlags['cLand:ImmQClearNextDay']:
+                run PlayerMovingJump_SubP()
+            elif System.EventFlags['cPlayer:EnableDiyRemake']:
+                run Rco_Hint_Complete()
+            elif System.EventFlags['cPlayer:RcoEnableRemakeTrial']:
+                run Rco_Hint_AboutRemakeWS()
+            else:
+                run PlayerMovingJump_SubP()
+

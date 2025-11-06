@@ -1,0 +1,80 @@
+flow Root():
+    if (MainNpc.EventFlags['cNpcSave:PlayerNamePhrase']) and (not SubNpc.EventFlags['cNpcSave:PlayerNamePhrase']) and (not MainNpc.IsSamePhrase()):
+        MainNpc.NpcCopyPhrase()
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:201', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:202', false)
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:203', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:204', false)
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:205', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:206', false)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, false) == 0:
+        fork:
+            branch:
+                MainNpc.TurnBody(10, 0.0)
+            branch:
+                SubNpc.TurnNeck(10, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:001', false)
+        fork:
+            branch:
+                Player.TurnNeck(1, false)
+            branch:
+                MainNpc.TurnNeck(1, false)
+            branch:
+                SubNpc.TurnNeck(0, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:002', false)
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:003', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:004', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                MainNpc.TurnNeck(1, false)
+                SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:005', false)
+            case 1:
+                MainNpc.TurnNeck(1, false)
+                SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:006', false)
+            case 2:
+                MainNpc.TurnNeck(1, false)
+                SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:007', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:101', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:102', false)
+        fork:
+            branch:
+                Player.TurnNeck(0, false)
+            branch:
+                MainNpc.TurnNeck(10, false)
+            branch:
+                SubNpc.TurnNeck(10, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:103', false)
+        fork:
+            branch:
+                Player.TurnNeck(1, false)
+            branch:
+                MainNpc.TurnNeck(1, false)
+            branch:
+                SubNpc.TurnBody(10, 0.0)
+        SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:104', false)
+        fork:
+            branch:
+                Player.TurnNeck(0, false)
+            branch:
+                MainNpc.TurnNeck(1, false)
+            branch:
+                SubNpc.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:105', false)
+        fork:
+            branch:
+                Player.TurnNeck(1, false)
+            branch:
+                SubNpc.TurnBody(0, 0.0)
+        SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:106', false)
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Conv/BO_Conv_KO:107', false)
+

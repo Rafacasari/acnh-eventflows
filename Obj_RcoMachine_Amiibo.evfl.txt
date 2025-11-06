@@ -1,0 +1,98 @@
+flow AmiiboInviting_OutOfService():
+    Player.OpenMessageWindow('TalkObj/OBJ_RcoMachine:526', false)
+    run Obj_Common_AmiiboProcess::NFC_AskUsingOtherAmiibo()
+
+flow AmiiboInviting_VoiceMail():
+    Player.OpenMessageWindow('TalkObj/OBJ_RcoMachine:524', false)
+    EventFlowSystemActor.SwapSpeaker('cAmiiboPhone', true)
+    EventFlowSystemActor.AmiiboNpcOpenMessage('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Amiibo:001')
+    EventFlowSystemActor.SwapSpeaker('cNone', true)
+    run Obj_Common_AmiiboProcess::NFC_AskUsingOtherAmiibo()
+
+flow AmiiboPhone_Camp(NpadId: int = 0, ReadPadId: int = 0):
+    SubflowResults[19] = 1
+    run AmiiboPhone_Camp_PreCheck()
+    if EventFlowSystemActor.IsCampSiteOccupied():
+        Player.OpenMessageWindow('TalkObj/OBJ_RcoMachine:514', false)
+    Player.OpenMessageWindow('TalkObj/OBJ_RcoMachine:512', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run AmiiboPhone_RetryFromUI(NpadId=NpadId, ReadPadId=ReadPadId)
+    else:
+        run AmiiboPhone_Exit_SeeYouNext()
+
+flow AmiiboPhone_Camp_PreCheck():
+    if System.EventFlags['cLand:AmiiboCampSiteCall']:
+        Player.OpenMessageWindow('TalkObj/OBJ_RcoMachine:541', false)
+        EventFlowSystemActor.ExitFlowchart()
+    elif EventFlowSystemActor.NetHasVisitor():
+        Player.OpenMessageWindow('TalkObj/OBJ_RcoMachine:542', false)
+        run AmiiboPhone_Exit_SeeYouNext()
+    elif EventFlowSystemActor.NetIsConnected():
+        if EventFlowSystemActor.IsVillageGateOpened():
+            Player.OpenMessageWindow('TalkObj/OBJ_RcoMachine:543', false)
+            run AmiiboPhone_Exit_SeeYouNext()
+        else:
+            Player.OpenMessageWindow('TalkObj/OBJ_RcoMachine:543_01', false)
+            run AmiiboPhone_Exit_SeeYouNext()
+
+flow AmiiboPhone_Exit_SeeYouNext():
+    Player.OpenMessageWindow('TalkObj/OBJ_RcoMachine:515', false)
+    EventFlowSystemActor.ExitFlowchart()
+
+flow AmiiboPhone_RetryFromUI(NpadId: int = 0, ReadPadId: int = 0):
+    run Obj_Common_AmiiboProcess::NFC_SettingChk()
+    Player.OpenMessageWindow('TalkObj/OBJ_RcoMachine:521', false)
+    run Obj_Common_AmiiboProcess::NFC_ReadProcess()
+    run Flow_NNPC()
+
+flow Flow_NNPC():
+    EventFlowSystemActor.SetTagFromSystem('cAmiiboCallNpcName', 'cDegit', 0, 0, '')
+    EventFlowSystemActor.SetUnlockFlagCollaboAmiiboNPC()
+    if EventFlowSystemActor.IsAlreadyCalledAmiiboNpc('cCamp'):
+        Player.OpenMessageWindow('TalkObj/OBJ_RcoMachine:525', false)
+        run Obj_Common_AmiiboProcess::NFC_AskUsingOtherAmiibo()
+    else:
+        Player.OpenMessageWindow('TalkObj/OBJ_RcoMachine:522', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+            run Obj_Common_AmiiboProcess::NFC_AskUsingOtherAmiibo()
+        elif not EventFlowSystemActor.IsCallableAmiiboNpc('cCamp'):
+            run AmiiboInviting_OutOfService()
+        elif EventFlowSystemActor.IsAmiiboNpcMigrated():
+            if EventFlowSystemActor.IsAmiiboNpcLiving():
+                run Sub_grp_Event21()
+            else:
+                run AmiiboInviting_VoiceMail()
+        else:
+            if EventFlowSystemActor.IsAmiiboNpcLiving():
+                run Sub_grp_Event21()
+            else:
+                run Sub_Event19()
+
+flow Root():
+    run Obj_RcoMachine::ChkRcoMachineSel()
+    if SubflowResults@8[0] in (2, 3):
+        if not System.EventFlags['cPlayer:AmiiboPhoneTalkFirst']:
+            System.EventFlags['cPlayer:AmiiboPhoneTalkFirst'] = true
+            Player.OpenMessageWindow('TalkObj/OBJ_RcoMachine:501', false)
+        run AmiiboPhone_Camp()
+
+local flow Sub_Event19():
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.SoundTriggerEmit('GotoAmiiboPhone', -1)
+    EventFlowSystemActor.StartAmiiboPhone('cNormalFader', 'cNormalFader', 'cWhite', 0.5, 0.5, 'Obj_RcoMachine_AmiiboCall')
+
+local flow Sub_grp_Event21():
+    switch EventFlowSystemActor.IsAmiiboNpcMoveOut():
+        case 0:
+            if EventFlowSystemActor.IsAcquaintanceAmiiboNPC():
+                if EventFlowSystemActor.IsAmiiboNpcSick():
+                    run AmiiboInviting_OutOfService()
+                else:
+                    run Sub_Event19()
+            else:
+                run AmiiboInviting_OutOfService()
+        case 1:
+            run AmiiboInviting_VoiceMail()
+        case 2:
+            run AmiiboInviting_OutOfService()
+

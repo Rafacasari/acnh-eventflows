@@ -1,0 +1,21 @@
+flow Root():
+    MainNpc.NpcSetReactionType('cPoison')
+    if MainNpc.EventFlags['cNpcTemp:ContinuousReactionTalkCount'] <= 1:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.EventFlags['cNpcTemp:ReactionTalkLabel'] = 0
+            case 1:
+                MainNpc.EventFlags['cNpcTemp:ReactionTalkLabel'] = 1
+            case 2:
+                MainNpc.EventFlags['cNpcTemp:ReactionTalkLabel'] = 2
+    MainNpc.SetItemName(15, 2, 0)
+    if MainNpc.EventFlags['cNpcTemp:ReactionTalkLabel'] != 0:
+        if MainNpc.EventFlags['cNpcTemp:ReactionTalkLabel'] != 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Poison:003', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Poison:002', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Poison:001', false)
+    MainNpc.EventFlags['cNpcMemory:AcquaintanceshipFlagOff'] = true
+    EventFlowSystemActor.ExitFlowchart()
+

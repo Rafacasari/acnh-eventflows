@@ -1,0 +1,68 @@
+flow AfterTalk():
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:191', true)
+
+flow ReceiveRecipe():
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:131', false)
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:133', true)
+    else:
+        MainNpc.SetDeliveryItemAtRandom(5794, false, 'cVillageRemakePattern', 0)
+        MainNpc.NpcDelivery(1, 'Default')
+        EventFlowSystemActor.MncEventSetRecipeItem()
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:132', true)
+        System.EventFlags['cWherearenPlayer:MncCannotGetRecipe'] = false
+
+flow Root():
+    if System.EventFlags['cWherearenPlayer:SeqMncTalkDIYCatalog']:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:134', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:121', true)
+        MainNpc.SetDeliveryItemAtRandom(5793, false, 'cVillageRemakePattern', 0)
+        MainNpc.NpcDelivery(17, 'Keep')
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:122', false)
+        MainNpc.NpcDelivery(3, 'Default')
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:123', true)
+        MainNpc.SetDeliveryItemAtRandom(5794, false, 'cVillageRemakePattern', 0)
+        MainNpc.NpcDelivery(17, 'Keep')
+        EventFlowSystemActor.WaitFrame(15)
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:123_01', false)
+        switch EventFlowSystemActor.GeneralTalkChoice2():
+            case 0, 1:
+                EventFlowSystemActor.WaitFrame(15)
+                MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:124', true)
+                if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:125', false)
+                    System.EventFlags['cWherearenPlayer:MncCannotGetRecipe'] = true
+                    MainNpc.NpcDelivery(3, 'Default')
+                else:
+                    MainNpc.NpcDelivery(18, 'Default')
+                    EventFlowSystemActor.MncEventSetRecipeItem()
+                MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:126', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:127', true)
+                System.EventFlags['cWherearenPlayer:SeqMncTalkDIYCatalog'] = true
+
+flow Root_DIYCatalogMerge():
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:181', true)
+    MainNpc.TurnBody(10, 0.0)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:182', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:183', false)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            EventFlowSystemActor.WaitFrame(20)
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:184', true)
+            Player.CharacterEmoticonAction('Explain', true, '', 0, false)
+            run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cNormalFader', FadeColor='cBlack', SoundDucking='cWorldDucking', FadeSpeed='cSlow')
+            EventFlowSystemActor.WaitFrame(30)
+            run `00_Demo_Fade`::FadeIn_Cmn(IsWait=false)
+            MainNpc.CharacterEmoticonAction('Nodding', true, '', 0, false)
+            EventFlowSystemActor.WaitFrame(30)
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:185', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:186', true)
+            System.EventFlags['cWherearenPlayer:SeqMncTalkDIYCatalog'] = true
+            run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+            MainNpc.NpcSetVisibleAction(false)
+            EventFlowSystemActor.StoreNormalCamera(true, '')
+            Player.TurnBody(12, 0.0)
+            EventFlowSystemActor.WaitFrame(20)
+            run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+

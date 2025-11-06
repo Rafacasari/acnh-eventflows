@@ -1,0 +1,221 @@
+flow ChkGetHousing():
+    if EventFlowSystemActor.NpcHouseNum('cExist') < 7:
+        if System.EventFlags['cLand:HaveHousingKitCount'] < 4:
+            SubflowResults[0] = 0
+        else:
+            SubflowResults[0] = 1
+    elif EventFlowSystemActor.NpcHouseNum('cExist') < 8:
+        if System.EventFlags['cLand:HaveHousingKitCount'] < 3:
+            SubflowResults[0] = 0
+        else:
+            SubflowResults[0] = 1
+    elif EventFlowSystemActor.NpcHouseNum('cExist') < 9:
+        if System.EventFlags['cLand:HaveHousingKitCount'] < 2:
+            SubflowResults[0] = 0
+        else:
+            SubflowResults[0] = 1
+    elif EventFlowSystemActor.NpcHouseNum('cExist') >= 10:
+        SubflowResults[0] = 1
+    elif System.EventFlags['cLand:HaveHousingKitCount'] < 1:
+        SubflowResults[0] = 0
+    else:
+        SubflowResults[0] = 1
+
+flow IslandDevelopmentIntro():
+    System.EventFlags['cPlayer:RcoTalkAboutOfficeWork'] = true
+    if System.EventFlags['cPlayerTemp:RcoOfficeFirstTalkNow']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:011_02', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:011_01', false)
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:012_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:013_01', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:014_01', false)
+                run SNPC_rco_00_Common::Root()
+            case 1:
+                run SNPC_rco_54_IslandDevelopment::Root()
+            case 2:
+                run SNPC_rco_00_Common_Entries::Rco_CmnSel_Cancel()
+    else:
+        if System.EventFlags['cPlayer:ThisPCcreatedbeforeOfficeUpgrading']:
+            if EventFlowSystemActor.PlayerHouseLevel() in (`Homeless`, `PlacedTent`):
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:012_02_01', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:012_02', false)
+                System.EventFlags['cPlayer:RcoTalkAboutMoveMyHome'] = true
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:012_03', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:013_02', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:014_02', false)
+            run SNPC_rco_00_Common::Root()
+        else:
+            run SNPC_rco_00_Common_Entries::Rco_CmnSel_Cancel()
+
+flow NpcHouseCoordeOpen():
+    SubflowResults[0] = 0
+    run Event124()
+
+flow NpcHouseCoordeOpen_Force():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_PlayerPos()
+    SubflowResults[0] = 1
+entrypoint Event124:
+    if not System.EventFlags['cPlayer:RcoCoordinateUnlockWithPhoneCall']:
+entrypoint Event109:
+        if not System.EventFlags['cPlayerTemp:RcoTalkSceneFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:000', false)
+            System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:1001', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:1002', false)
+        run Sub_Event114()
+    elif System.EventFlags['cPlayer:RcoPMovingUnlockNpcEditWithPhoneCall']:
+        run withNoPhoneCall()
+    else:
+        if System.EventFlags['cPlayerTemp:RcoTalkSceneFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:992', false)
+        else:
+            System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:991', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:993', false)
+        run Sub_Event114()
+
+flow NpcHouseCoordeRestartPMoving():
+    SubflowResults[0] = 0
+    run Event143()
+
+flow NpcHouseCoordeRestartPMoving_Force():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_PlayerPos()
+    SubflowResults[0] = 1
+entrypoint Event143:
+    if not System.EventFlags['cPlayerTemp:RcoTalkSceneFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:000', false)
+        System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:1011', false)
+    System.EventFlags['cPlayer:RcoTalkAboutNpcHouseEditOfficeBuild'] = false
+    if SubflowResults@2[0] == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:1007', false)
+        run SNPC_rco_00_Common::Root()
+
+flow OfficeOpening_Force():
+    System.EventFlags['cPlayer:OfficeSzaIntroduction'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:000', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:001', false)
+    if System.EventFlags['cPlayer:TownNewsHeardTownHallOpenFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:002', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:002_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:003', false)
+    SubNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:004', false)
+    if System.EventFlags['cLand:BuiltTownOfficeToday']:
+        SubNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:005_01', false)
+    else:
+        if EventFlowSystemActor.FacilityOpenPastDays('cOffice', 7):
+            SubNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:005_02', false)
+        else:
+            SubNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:005_03', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:006', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:007', false)
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:008_01', false)
+entrypoint Event3:
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:009', false)
+    System.EventFlags['cPlayerTemp:RcoOfficeFirstTalkNow'] = true
+    System.EventFlags['cPlayer:RcoFirstTalkNewOffice'] = true
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        System.EventFlags['cLand:IslandDevQuestRunning'] = true
+
+flow OfficeOpening_Force_Init():
+    MainNpc.NpcAITalkSubCastEntry('sza', 1)
+
+flow OfficeOpening_NormalTalk():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:000', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:001', false)
+    if System.EventFlags['cPlayer:TownNewsHeardTownHallOpenFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:006_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:006_02', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:007', false)
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:008_02', false)
+        run Event3()
+    else:
+        run Event3()
+
+flow Rco_CmnSel_GetHousing():
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 0, 10000, '')
+    if EventFlowSystemActor.HasTargetItem(3349, 1):
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:208', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:201', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:202', false)
+        elif not EventFlowSystemActor.HasBellCount(10000):
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:203', false)
+        elif EventFlowSystemActor.ShoppingCapacity('cItemName', 3349):
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:205_01', false)
+            EventFlowSystemActor.BellCountDown(-10000, false)
+            EventFlowSystemActor.WaitFrame(30)
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:205_02', false)
+            EventFlowSystemActor.SetItemToPocket(3349, 1)
+            System.EventFlags['cLand:HaveHousingKitCount'] += 1
+            run ChkGetHousing()
+            if SubflowResults@2[0] == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:206', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:207', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:204', false)
+
+flow Rco_Office_Infra():
+    EventFlowSystemActor.UIMoneyAppear()
+    if System.EventFlags['cLand:RcoEnableBuyHousingKit']:
+        run ChkGetHousing()
+        if SubflowResults@2[0] == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:075_01', false)
+            switch EventFlowSystemActor.GeneralTalkChoice4():
+                case 0:
+                    run Rco_CmnSel_GetHousing()
+                case 1:
+                    run SNPC_rco_10_Common_BuildBridgeSlope::Root()
+                case 2:
+                    run SNPC_rco_10_Common_MoveNpcFacility::Root()
+                case 3:
+                    run Rco_SelInfra_Cancel()
+            EventFlowSystemActor.UIMoneyDisappear()
+            run SNPC_rco_00_Common::Rco_Office_CmnSelAgain()
+        else:
+            run Sub_Event93()
+    else:
+        run Sub_Event93()
+
+flow Rco_SelInfra_Cancel():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_06_Office:100', false)
+
+local flow Sub_Event114():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:1003', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:1004', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:1005', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:1006', false)
+    System.EventFlags['cPlayer:RcoCordinateNpcHouseSelEnable'] = true
+    System.EventFlags['cLand:UnlockSzaResetHouse'] = true
+    if SubflowResults@2[0] == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:1007', false)
+        run SNPC_rco_00_Common::Root()
+
+local flow Sub_Event93():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:075_02', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run SNPC_rco_10_Common_BuildBridgeSlope::Root()
+        case 1:
+            run SNPC_rco_10_Common_MoveNpcFacility::Root()
+        case 2:
+            run Rco_SelInfra_Cancel()
+    EventFlowSystemActor.UIMoneyDisappear()
+    run SNPC_rco_00_Common::Rco_Office_CmnSelAgain()
+
+flow withNoPhoneCall():
+    run Event109()
+

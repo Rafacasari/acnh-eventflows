@@ -1,0 +1,577 @@
+flow Get_HedgeFence():
+    if not System.EventFlags['cPlayer:SloTalkAboutHedge']:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:050', false)
+        System.EventFlags['cPlayer:SloTalkAboutHedge'] = true
+        if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:053', false)
+        else:
+            run HedgePresentSlo()
+    elif System.EventFlags['cPlayer:SloGetHedge']:
+        run slo_Select()
+    elif EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        run slo_Select()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:052', false)
+        run HedgePresentSlo()
+
+flow HedgePresentSlo():
+    MainNpc.NpcSetRewardRecipe(12758, false)
+    MainNpc.SetDeliveryItem(1, true)
+    MainNpc.NpcDelivery(1, 'Default')
+    System.EventFlags['cPlayer:SloGetHedge'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:051', false)
+    System.EventFlags['cPlayer:RcoEarthDayGetHedge'] = true
+
+flow Root():
+    System.EventFlags['cPlayerTemp:ReijiTalkSceneFlag'] = true
+    if EventFlowSystemActor.EnvHourCompare(22, -1, true, true) != 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:054', false)
+    elif EventFlowSystemActor.IsMyVillage():
+        run `slo_Root_MyIsland2.0.0`()
+    else:
+        run slo_Select()
+
+flow Slo_Chk_PumpkinSeeding():
+    if not EventFlowSystemActor.EnvCheckBetweenDate(10, 1, 10, 31, 'cLastGrowUpTime'):
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:038', false)
+    elif System.EventFlags['cPlayer:SloExplainPumpkinSeedingFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:038', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:104', false)
+        System.EventFlags['cPlayer:SloExplainPumpkinSeedingFlag'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:106', false)
+
+flow Slo_PumpkinSeeding():
+    if System.EventFlags['cPlayer:ExplainPumpkinColorFlag']:
+        System.EventFlags['cPlayer:SloExplainPumpkinColorFlag'] = true
+        System.EventFlags['cPlayer:SloExplainAddPumpkinFlag'] = true
+    if not System.EventFlags['cPlayer:SloExplainAddPumpkinFlag']:
+        System.EventFlags['cPlayer:SloExplainAddPumpkinFlag'] = true
+        if SubflowResults@2[0] == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:108', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:108_01', false)
+        if EventFlowSystemActor.EnvCheckBetweenDate(10, 1, 10, 31, 'cLastGrowUpTime'):
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:109', false)
+            run Sub_grp_Event182()
+        else:
+            run Sub_grp_Event182()
+    elif (EventFlowSystemActor.EnvCheckBetweenDate(10, 1, 10, 31, 'cLastGrowUpTime')) and (not System.EventFlags['cPlayer:SloExplainAddVegetable']):
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:107', false)
+        System.EventFlags['cPlayer:SloExplainAddVegetable'] = true
+        run Sub_grp_Event182()
+
+flow Slo_Purchase_Processing():
+    EventFlowSystemActor.SetTagFromUIResult('cItemName', 0)
+    EventFlowSystemActor.SetTagFromUIResult('cSloItemPrice', 0)
+    EventFlowSystemActor.SetTagFromUIResult('cSloItem5Price', 1)
+    run `slo_Purchase2.0.0`()
+
+local flow Sub_Event134(EachWeedPrice: int, TotalWeedPrice: int, WeedNum: int, SellTotal: int):
+    EventFlowSystemActor.UIMoneyDisappear()
+    run slo_Again()
+
+local flow Sub_Event196():
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:195', false)
+    System.EventFlags['cLand:SloWeedingFlag'] = true
+    MainNpc.SloDecideReward(0)
+    EventFlowSystemActor.SystemMailSend('cSlo', 'MAIL_SNpc_slo', 1, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+
+local flow Sub_Event200():
+    EventFlowSystemActor.UIMoneyAppear()
+    if System.EventFlags['cPlayer:SloTalkCommuneBeforeFlag']:
+        if EventFlowSystemActor.SloMainFieldWeedNum(800):
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:172', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:023', false)
+            elif EventFlowSystemActor.HasBellCount(150000):
+                EventFlowSystemActor.BellCountDown(-150000, false)
+                EventFlowSystemActor.PlayReport('cSloWeedingService', 150000)
+                run Sub_Event196()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:193_01', false)
+        else:
+            if EventFlowSystemActor.SloMainFieldWeedNum(500):
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:171', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:023', false)
+                elif EventFlowSystemActor.HasBellCount(100000):
+                    EventFlowSystemActor.BellCountDown(-100000, false)
+                    EventFlowSystemActor.PlayReport('cSloWeedingService', 100000)
+                    run Sub_Event196()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:193_01', false)
+            elif EventFlowSystemActor.SloMainFieldWeedNum(300):
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:170', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:023', false)
+                elif EventFlowSystemActor.HasBellCount(30000):
+                    EventFlowSystemActor.BellCountDown(-30000, false)
+                    EventFlowSystemActor.PlayReport('cSloWeedingService', 30000)
+                    run Sub_Event196()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:193_01', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:193', false)
+        EventFlowSystemActor.UIMoneyDisappear()
+        run slo_Again()
+    else:
+        EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 0, 120000, '')
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:165', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Sub_Event252()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:168', false)
+
+local flow Sub_Event216():
+    EventFlowSystemActor.SetTagFromSystem('cSloWeatherBushName', 'cDegit', 0, 0, '')
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:058', false)
+
+local flow Sub_Event252():
+    if EventFlowSystemActor.HasBellCount(120000):
+        EventFlowSystemActor.BellCountDown(-120000, false)
+        EventFlowSystemActor.PlayReport('cSloWeedingService', 120000)
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:167', false)
+        System.EventFlags['cLand:SloWeedingFlag'] = true
+        MainNpc.SloDecideReward(0)
+        EventFlowSystemActor.SystemMailSend('cSlo', 'MAIL_SNpc_slo', 1, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:193_01', false)
+
+local flow Sub_Event318():
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:197', false)
+    System.EventFlags['cPlayer:SloExplainPumpkinColorFlag'] = true
+    if not EventFlowSystemActor.EnvCheckBetweenDate(10, 1, 10, 31, 'cLastGrowUpTime'):
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:203', false)
+    elif System.EventFlags['cPlayer:SloExplainPumpkinSeedingFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:203', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:202', false)
+        System.EventFlags['cPlayer:SloExplainPumpkinSeedingFlag'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:106', false)
+
+local flow Sub_Event361():
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:011', true)
+    fork:
+        branch:
+            EventFlowSystemActor.UIMoneyDisappear()
+        branch:
+            EventFlowSystemActor@sub2.MessageSuspend()
+        branch:
+            EventFlowSystemActor@sub.UIShopBuyDisappear()
+
+local flow Sub_Event365():
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:055', false)
+    fork:
+        branch:
+            EventFlowSystemActor.UIMoneyDisappear()
+        branch:
+            EventFlowSystemActor@sub2.MessageSuspend()
+        branch:
+            EventFlowSystemActor@sub.UIShopBuyDisappear()
+
+local flow Sub_Event387():
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:012', false)
+    MainNpc.SetDeliveryItemAtRandom(2114, false, 'cVillageRemakePattern', 0)
+    MainNpc.NpcDelivery(0, 'Default')
+    if SubflowResults@2[0] == 0:
+        MainNpc.ShopBuyDone(false, false, false, false)
+    else:
+        MainNpc.ShopBuyDone(false, true, false, false)
+        EventFlowSystemActor.SetTagFromUIResult('cSloItem5Price', 0)
+    MainNpc.SetDeliveryItem(4, false)
+    EventFlowSystemActor.WaitFrame(15)
+    MainNpc.NpcDelivery(1, 'Default')
+    if not System.EventFlags['cPlayer:SloBuyToday']:
+        System.EventFlags['cPlayer:SloBuyCount'] += 1
+        System.EventFlags['cLand:SloPeddlerPurchaceToday'] = true
+        System.EventFlags['cPlayer:SloBuyToday'] = true
+    if (EventFlowSystemActor.MultiItemSelectInclude(13227, 3045, 2649, 3035, 3030, 3040, 65534, 65534, 'cItemSelect')) and (not System.EventFlags['cPlayer:SloBuyVegetableToday']):
+        System.EventFlags['cPlayer:SloBuyVegetableToday'] = true
+        System.EventFlags['cPlayer:SloVegetableCount'] += 1
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:056', false)
+    run slo_Buy_Again()
+
+local flow Sub_Event436():
+    EventFlowSystemActor.SetTagFromSystem('cSloWeatherBushName', 'cDegit', 0, 0, '')
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:302_01', false)
+
+local flow Sub_Event437():
+    EventFlowSystemActor.SetTagFromSystem('cSloWeatherBushName', 'cDegit', 0, 0, '')
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:302', false)
+
+local flow Sub_Event449():
+    EventFlowSystemActor.SetTagFromSystem('cSloWeatherBushName', 'cDegit', 0, 0, '')
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:311', false)
+
+local flow Sub_grp_Event182():
+    if not System.EventFlags['cPlayer:SloExplainPumpkinColorFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:102', false)
+        System.EventFlags['cPlayer:SloExplainPumpkinColorFlag'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:110', false)
+
+local flow Sub_grp_Event355():
+    if SubflowResults@2[0] == 0:
+        if MainNpc.ShopHasBellCount(1.0):
+            run Sub_grp_Event358()
+        else:
+            run Sub_Event365()
+    else:
+        if MainNpc.ShopHasBellCount(5.0):
+            run Sub_grp_Event358()
+        else:
+            run Sub_Event365()
+
+local flow Sub_grp_Event358():
+    if SubflowResults@2[0] == 0:
+        if EventFlowSystemActor.ShoppingCapacity('cSlo', 65534):
+            run Sub_Event387()
+        else:
+            run Sub_Event361()
+    else:
+        if EventFlowSystemActor.ShoppingCapacity('cSlo5', 65534):
+            run Sub_Event387()
+        else:
+            run Sub_Event361()
+
+local flow Sub_grp_Event38(EachWeedPrice: int, TotalWeedPrice: int, WeedNum: int, SellTotal: int):
+    if EventFlowSystemActor.HasKindItem('cKind', 'Weed', ''):
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:022', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            EventFlowSystemActor.UIMoneyAppear()
+            MainNpc.ShopSellCalc(SellTotal, 2.0, true, false)
+            run Demo_Common::Demo_Slo_Selling()
+            switch EventFlowSystemActor.MoneyCapacity(0, 'cShop'):
+                case 0:
+                    MainNpc.ShopSellDone(2.0, false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:024', false)
+                    run Sub_Event134(EachWeedPrice=EachWeedPrice, TotalWeedPrice=TotalWeedPrice, WeedNum=WeedNum, SellTotal=SellTotal)
+                case 1:
+                    MainNpc.ShopSellDone(2.0, false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:027', false)
+                    run Sub_Event134(EachWeedPrice=EachWeedPrice, TotalWeedPrice=TotalWeedPrice, WeedNum=WeedNum, SellTotal=SellTotal)
+                default:
+                    return
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:023', false)
+            run slo_Again()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:021', false)
+        run slo_Again()
+
+flow slo_Again():
+    if (not System.EventFlags['cPlayer:SloTalkCommuneBeforeFlag']) and (not ((System.EventFlags['cPlayer:SloWeedingBeforeCommune']) and (System.EventFlags['cLand:TkkFirstLive']))):
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:029', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                run slo_Buy()
+            case 1:
+                run slo_SellWeed()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:031', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:179', false)
+        switch EventFlowSystemActor.GeneralTalkChoice4():
+            case 0:
+                run slo_Buy()
+            case 1:
+                run slo_SellWeed()
+            case 2:
+                run slo_WeedingService()
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo_02_Commune:016', true)
+
+flow slo_Buy():
+    run `slo_Buy2.0.0`()
+
+flow `slo_Buy2.0.0`():
+    if System.EventFlags['cPlayer:SloExplainVegetableSeedling']:
+        if (EventFlowSystemActor.EnvCheckBetweenDate(10, 1, 10, 31, 'cLastGrowUpTime')) and (not System.EventFlags['cPlayer:SloExplainAddVegetable']):
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:107', false)
+            System.EventFlags['cPlayer:SloExplainAddVegetable'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:110', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:198', false)
+        if System.EventFlags['cPlayer:SloExplainPumpkinColorFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:200', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:199', false)
+        System.EventFlags['cPlayer:SloExplainVegetableSeedling'] = true
+        System.EventFlags['cPlayer:SloExplainBuyVegetableSeedling'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:007', false)
+    EventFlowSystemActor.UIMoneyAppear()
+    EventFlowSystemActor.UIShopBuyAppear('cReiji')
+    if EventFlowSystemActor.UIResultMenuDecide():
+        run Slo_Purchase_Processing()
+    else:
+        fork:
+            branch:
+                EventFlowSystemActor.UIMoneyDisappear()
+            branch:
+                EventFlowSystemActor@sub.UIShopBuyDisappear()
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:023', false)
+
+flow slo_Buy_Again():
+    EventFlowSystemActor.UIShopBuyReselectionAppear()
+    if EventFlowSystemActor.UIResultMenuDecide():
+        run Slo_Purchase_Processing()
+    else:
+        fork:
+            branch:
+                EventFlowSystemActor.UIMoneyDisappear()
+            branch:
+                EventFlowSystemActor@sub.UIShopBuyDisappear()
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:008', false)
+
+flow `slo_FirstTalk2.0.0`():
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:040', false)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:041', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:042', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:061', false)
+            System.EventFlags['cPlayer:SloExplainbush'] = true
+            System.EventFlags['cPlayer:ReijiTalkBeforeFlag'] = true
+            System.EventFlags['cPlayer:SloTalkedToday'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:048', false)
+            System.EventFlags['cPlayer:SloExplainVegetableSeedling'] = true
+
+flow `slo_Purchase2.0.0`():
+    if (EventFlowSystemActor.MultiKindItemSelectInclude('BushSeedling', '', '', '', '', '', '', '', 'cItemSelect')) and (System.EventFlags['cPlayer:SloExplainbush']):
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:301', false)
+        System.EventFlags['cPlayer:SloExplainbush'] = false
+        if EventFlowSystemActor.SloIsWeatherBushCommune():
+            if System.EventFlags['cLand:CommuneSloDonation'] < 2:
+                run Sub_Event437()
+            else:
+                if EventFlowSystemActor.EnvWeatherArea() == `cWeatherArea_North`:
+                    if EventFlowSystemActor.EnvCheckBetweenDate(6, 1, 9, 20, 'cGrowUpTime'):
+                        run Sub_Event436()
+                    else:
+                        run Sub_Event437()
+                elif EventFlowSystemActor.EnvCheckBetweenDate(12, 1, 3, 20, 'cGrowUpTime'):
+                    run Sub_Event436()
+                else:
+                    run Sub_Event437()
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:303', false)
+    else:
+        if EventFlowSystemActor.MultiItemSelectInclude(13227, 3045, 2649, 3035, 3030, 3040, 65534, 65534, 'cItemSelect'):
+            if not System.EventFlags['cPlayer:SloExplainBuyVegetableSeedling']:
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:199', false)
+                System.EventFlags['cPlayer:SloExplainBuyVegetableSeedling'] = true
+                if EventFlowSystemActor.MultiItemSelectInclude(13227, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+                    run Sub_Event318()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:201', false)
+            elif not EventFlowSystemActor.MultiItemSelectInclude(13227, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:038', false)
+            elif System.EventFlags['cPlayer:SloExplainPumpkinColorFlag']:
+                run Slo_Chk_PumpkinSeeding()
+            else:
+                run Sub_Event318()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:038', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            SubflowResults[0] = 0
+            run Sub_grp_Event355()
+        case 1:
+            SubflowResults[0] = 1
+            run Sub_grp_Event355()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:039', false)
+            run slo_Buy_Again()
+
+flow `slo_Root_MyIsland2.0.0`():
+    if not System.EventFlags['cPlayer:ReijiTalkBeforeFlag']:
+        if System.EventFlags['cPlayer:TalkSloCommuneOpenEvent']:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:155', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:157', false)
+            System.EventFlags['cPlayer:ReijiTalkBeforeFlag'] = true
+            System.EventFlags['cPlayer:SloTalkCommuneBeforeFlag'] = true
+            System.EventFlags['cPlayer:SloFirstTalkCommune'] = true
+            System.EventFlags['cPlayer:SloTalkBeforeCommune'] = true
+            System.EventFlags['cPlayer:SloExplainbush'] = true
+            System.EventFlags['cPlayer:SloExplainVegetableSeedling'] = true
+            System.EventFlags['cPlayer:SloTalkedToday'] = true
+        else:
+            run `slo_FirstTalk2.0.0`()
+    elif System.EventFlags['cPlayer:SloFirstTalkCommune']:
+        if System.EventFlags['cPlayer:SloTalkBeforeCommune']:
+            run `slo_Select2.0.0`()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:155', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:157', false)
+            System.EventFlags['cPlayer:SloTalkBeforeCommune'] = true
+    elif not System.EventFlags['cPlayer:SloTalkCommuneBeforeFlag']:
+        run `slo_Select2.0.0`()
+    elif System.EventFlags['cPlayer:SloTalkBeforeCommune']:
+        run `slo_Select2.0.0`()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:158', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:159', false)
+        if System.EventFlags['cPlayer:SloExplainWeeding']:
+            if System.EventFlags['cPlayer:SloWeedingBeforeCommune']:
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:162', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:160', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:161', false)
+            System.EventFlags['cPlayer:SloTalkBeforeCommune'] = true
+        else:
+            System.EventFlags['cPlayer:SloTalkBeforeCommune'] = true
+
+flow slo_Select():
+    if System.EventFlags['cPlayer:SloTalkedToday']:
+        if (System.EventFlags['cPlayer:SloExplainAddVegetable']) and (System.EventFlags['cPlayer:ExplainPumpkinColorFlag']):
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:005', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:057', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:004', false)
+    else:
+        System.EventFlags['cPlayer:SloTalkedToday'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:057', false)
+        if EventFlowSystemActor.SloIsWeatherBushCommune():
+            if System.EventFlags['cLand:CommuneSloDonation'] < 2:
+                EventFlowSystemActor.SetTagFromSystem('cSloWeatherBushName', 'cDegit', 0, 0, '')
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:058', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:004', false)
+            else:
+                if EventFlowSystemActor.EnvWeatherArea() == `cWeatherArea_North`:
+                    if EventFlowSystemActor.EnvCheckBetweenDate(6, 1, 9, 20, 'cGrowUpTime'):
+                        EventFlowSystemActor.SetTagFromSystem('cSloWeatherBushName', 'cDegit', 0, 0, '')
+                        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:311', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:004', false)
+                    else:
+                        EventFlowSystemActor.SetTagFromSystem('cSloWeatherBushName', 'cDegit', 0, 0, '')
+                        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:058', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:004', false)
+                elif EventFlowSystemActor.EnvCheckBetweenDate(12, 1, 3, 20, 'cGrowUpTime'):
+                    EventFlowSystemActor.SetTagFromSystem('cSloWeatherBushName', 'cDegit', 0, 0, '')
+                    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:311', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:004', false)
+                else:
+                    EventFlowSystemActor.SetTagFromSystem('cSloWeatherBushName', 'cDegit', 0, 0, '')
+                    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:058', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:004', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:004', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run slo_Buy()
+        case 1:
+            run slo_SellWeed()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:008', true)
+
+flow `slo_Select2.0.0`():
+    if (not System.EventFlags['cPlayer:RcoEarthDayGetHedge']) and (System.EventFlags['cPlayer:SloBuyCount'] >= 3):
+        run Get_HedgeFence()
+    elif EventFlowSystemActor.SloMainFieldWeedNum(500):
+        System.EventFlags['cPlayer:SloWeedingBeforeCommune'] = true
+        if System.EventFlags['cPlayer:SloExplainWeeding']:
+            run slo_Select_With_Weedling()
+        elif not System.EventFlags['cLand:TkkFirstLive']:
+            run slo_Select()
+        elif System.EventFlags['cPlayer:SloTalkCommuneBeforeFlag']:
+            run slo_Select_With_Weedling()
+        else:
+            run slo_WeedingService()
+    elif System.EventFlags['cPlayer:SloWeedingBeforeCommune']:
+        run slo_Select_With_Weedling()
+    elif System.EventFlags['cPlayer:SloTalkCommuneBeforeFlag']:
+        run slo_Select_With_Weedling()
+    else:
+        run slo_Select()
+
+flow slo_Select_With_Weedling():
+    if System.EventFlags['cPlayer:SloTalkedToday']:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:178', false)
+    else:
+        System.EventFlags['cPlayer:SloTalkedToday'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo_02_Commune:057', false)
+        if EventFlowSystemActor.SloIsWeatherBushCommune():
+            if System.EventFlags['cLand:CommuneSloDonation'] < 2:
+                run Sub_Event216()
+            else:
+                if EventFlowSystemActor.EnvWeatherArea() == `cWeatherArea_North`:
+                    if EventFlowSystemActor.EnvCheckBetweenDate(6, 1, 9, 20, 'cGrowUpTime'):
+                        run Sub_Event449()
+                    else:
+                        run Sub_Event216()
+                elif EventFlowSystemActor.EnvCheckBetweenDate(12, 1, 3, 20, 'cGrowUpTime'):
+                    run Sub_Event449()
+                else:
+                    run Sub_Event216()
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:173', false)
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            run slo_Buy()
+        case 1:
+            run slo_SellWeed()
+        case 2:
+            run slo_WeedingService()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo_02_Commune:016', true)
+
+flow slo_SellWeed(EachWeedPrice: int = 0, TotalWeedPrice: int = 0, WeedNum: int = 0, SellTotal: int = 0):
+    MainNpc.SloTagSet(2, 3, 4, EachWeedPrice, TotalWeedPrice, WeedNum)
+    if System.EventFlags['cPlayer:SloTalkedWeedFirst']:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:020', false)
+        run Sub_grp_Event38(EachWeedPrice=EachWeedPrice, TotalWeedPrice=TotalWeedPrice, WeedNum=WeedNum, SellTotal=SellTotal)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:044', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:045', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:046', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:047', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:059', false)
+        System.EventFlags['cPlayer:SloTalkedWeedFirst'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:060', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Sub_grp_Event38(EachWeedPrice=EachWeedPrice, TotalWeedPrice=TotalWeedPrice, WeedNum=WeedNum, SellTotal=SellTotal)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:023', false)
+
+flow slo_WeedingService():
+    if System.EventFlags['cPlayer:SloExplainWeeding']:
+        if System.EventFlags['cLand:SloWeedingFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:194', false)
+        elif EventFlowSystemActor.SloMainFieldWeedNum(300):
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:169', false)
+            run Sub_Event200()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:193', false)
+    elif (System.EventFlags['cPlayer:SloWeedingBeforeCommune']) and (not System.EventFlags['cPlayer:SloTalkCommuneBeforeFlag']):
+        EventFlowSystemActor.UIMoneyAppear()
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:163', false)
+        System.EventFlags['cPlayer:SloExplainWeeding'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:164', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Sub_Event252()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:168', false)
+        EventFlowSystemActor.UIMoneyDisappear()
+        run slo_Again()
+    else:
+        if System.EventFlags['cPlayer:SloTalkedWeedFirst']:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:180', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:186', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:187', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:183', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:186', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:187', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:188', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:189', false)
+        System.EventFlags['cPlayer:SloExplainWeeding'] = true
+        if EventFlowSystemActor.SloMainFieldWeedNum(300):
+            run Sub_Event200()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo:193_02', false)
+            run slo_Again()
+

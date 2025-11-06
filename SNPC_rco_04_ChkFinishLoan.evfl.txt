@@ -1,0 +1,52 @@
+flow FinishLoan_Force():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_PlayerPos()
+    System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+entrypoint Event21:
+    if System.EventFlags['cPlayer:PlayerMovingAfterLoanFinish']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_02_Loan:1001', false)
+        System.EventFlags['cPlayer:PlayerMovingAfterLoanFinish'] = false
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_02_Loan:001', false)
+    switch EventFlowSystemActor.PlayerHouseLevel():
+        case `BaseHouse`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_02_Loan:003', false)
+            run Sub_Event13()
+        case `HouseExpansion1`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_02_Loan:004', false)
+            run Sub_Event13()
+        case `BackRoom`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_02_Loan:005', false)
+            run Sub_Event13()
+        case `LeftRoom`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_02_Loan:006', false)
+            run Sub_Event13()
+        case `RightRoom`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_02_Loan:007', false)
+            run Sub_Event13()
+        case `SecondFloor`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_02_Loan:008', false)
+            run Sub_Event13()
+        case `Basement`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_02_Loan:1201', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_02_Loan:1201_01', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_02_Loan:1201_02', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_02_Loan:1201_03', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_02_Loan:1201_04', false)
+            System.EventFlags['cPlayer:RcoStandbyNoticeStorageExpansion'] = false
+            System.EventFlags['cPlayer:PcHousingLoanFinish'] = true
+            run Sub_Event13()
+        default:
+            return
+
+flow FinishLoan_Force_Init():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_DisableTalkCamera()
+
+flow Root():
+    if System.EventFlags['cPlayer:PlayerLoanFinish1st']:
+        run Event21()
+
+local flow Sub_Event13():
+    System.EventFlags['cPlayer:RcoHeardRemodel1'] = true
+    System.EventFlags['cPlayer:PlayerLoanFinish1st'] = false
+    EventFlowSystemActor.ExitFlowchart()
+

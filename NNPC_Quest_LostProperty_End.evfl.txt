@@ -1,0 +1,153 @@
+flow Confirm():
+    switch MainNpc.NpcLostQuestType():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:048', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:049', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:050', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:051', false)
+
+flow End():
+    if not MainNpc.NpcIsQuestClient('cLost', true, false):
+        run Give2()
+    elif MainNpc.HasNpcRequestedItem():
+        run Give1()
+    else:
+        run Confirm()
+
+flow Give1():
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:038', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:039', false)
+entrypoint Event22:
+    EventFlowSystemActor.UIItemSelectWindowHandling('cQuest', 65534, '', '', 'cItemSelect', false)
+    if not MainNpc.IsSelectNpcRequestedItem():
+        if MainNpc.NpcIsQuestClient('cLost', true, false):
+            if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:040', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:041', false)
+        elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:045', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:046', false)
+    elif MainNpc.NpcIsQuestClient('cLost', false, false):
+        MainNpc.SetDeliveryItem(4, true)
+        MainNpc.NpcDelivery(0, 'Keep')
+        if MainNpc.NpcIsQuestClient('cLost', true, false):
+            switch MainNpc.NpcLostQuestType():
+                case 0:
+                    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:001', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:002', false)
+                case 1:
+                    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:003', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:004', false)
+                case 2:
+                    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:006', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:007', false)
+                case 3:
+                    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:008', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:009', false)
+        else:
+            switch MainNpc.NpcLostQuestType():
+                case 0:
+                    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:011', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:012', false)
+                case 1:
+                    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:013', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:014', false)
+                case 2:
+                    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:016', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:017', false)
+                case 3:
+                    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:018', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:019', false)
+        MainNpc.NpcDelivery(3, 'Default')
+        run NNPC_Quest_AllReward::Root()
+        if MainNpc.NpcIsQuestClient('cLost', true, false):
+            if MainNpc.NpcLostQuestType() in (0, 2):
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:021', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:022', false)
+            elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:023', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:024', false)
+        else:
+            MainNpc.NpcAddFriendship(2)
+            if MainNpc.NpcLostQuestType() in (0, 2):
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:026', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:027', false)
+            elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:028', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:029', false)
+        MainNpc.NpcDelivery(1, '"Default"')
+        switch MainNpc.NpcQuestReward():
+            case 0:
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:031', false, true)
+                else:
+                    MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:032', false, true)
+            case 1:
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:033', false, true)
+                else:
+                    MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:034', false, true)
+            case 2:
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:035', false, true)
+                else:
+                    MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:036', false, true)
+        MainNpc.NpcQuestControl('cFinish')
+        System.EventFlags['cLifeSupportDaily:AchieveQuest'] = true
+        System.EventFlags['cLifeSupportAchievement:AchieveVillagersQuest'] += 1
+        MainNpc.EventFlags['cNpcMemory:StoodUpFlag'] = false
+        MainNpc.EventFlags['cNpcMemory:OrderQuest'] = true
+        System.EventFlags['cLand:LostPropertyFound'] = false
+        MainNpc.AddMemoryEventPlayerForNpc('NNPC_SolveRequest')
+        MainNpc.AddMemoryEventPlayerForNpc('Present_FromNNPC')
+    else:
+        MainNpc.SetDeliveryItem(4, false)
+        MainNpc.NpcDelivery(0, 'Keep')
+        MainNpc.SetNpcName(2, 0)
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:053', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:054', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:055', false)
+        MainNpc.NpcDelivery(10, '"Default"')
+        MainNpc.QuestFlags['cLostUseHint'] = true
+
+flow Give2():
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:043', false)
+        run Event22()
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_LostProperty_End:044', false)
+        run Event22()
+

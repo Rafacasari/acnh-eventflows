@@ -1,0 +1,44 @@
+flow Book():
+    if not EventFlowSystemActor.IsInspectingWherearen():
+        run ShareHouseMate_Chk()
+    MainNpc.WherearenSetTagFacilityNpcName('cSchoolTeacher', false, false, 1)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_School:103', false)
+
+flow Demand_Chk():
+    if MainNpc.IsWherearenFacilityInteraction():
+        MainNpc.WherearenSetTagFacilityNpcName('cSchoolTeacher', false, false, 1)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_School:202', false)
+        EventFlowSystemActor.ExitFlowchart()
+
+flow FacilityName_Chk():
+    if (EventFlowSystemActor.WherearenExistFacilityName('cSchool')) and (not EventFlowSystemActor.PercentChoice(80)):
+        EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cSelectFacility', 0, 'cSchool')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_School:104', false)
+        EventFlowSystemActor.ExitFlowchart()
+
+flow Root():
+    if not EventFlowSystemActor.IsInspectingWherearen():
+        run ShareHouseMate_Chk()
+    MainNpc.WherearenSetTagFacilityNpcName('cSchoolTeacher', false, false, 1)
+    run FacilityName_Chk()
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_School:101', false)
+
+flow ShareHouseMate_Chk():
+    if EventFlowSystemActor.WherearenOrderStatus() == 1:
+        MainNpc.TurnNeck(10, false)
+        run NNPC_Spot_WherearenMainFieldVisitor::LookforHouseMate()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow Sleep():
+    if not EventFlowSystemActor.IsInspectingWherearen():
+        run ShareHouseMate_Chk()
+    MainNpc.WherearenSetTagFacilityNpcName('cSchoolTeacher', false, false, 1)
+    run Demand_Chk()
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_School:102', false)
+
+flow StandSleep():
+    run NNPC_RestaurantCustomer::`StandSleep_2.1`()
+
+flow Walk():
+    run Root()
+

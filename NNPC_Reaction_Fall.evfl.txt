@@ -1,0 +1,11 @@
+flow Root():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Fall:001', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Fall:002', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Fall:003', false)
+    MainNpc.EventFlags['cNpcMemory:AcquaintanceshipFlagOff'] = true
+    EventFlowSystemActor.ExitFlowchart()
+

@@ -1,0 +1,51 @@
+flow Hospital_DonationClear():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1323', true)
+
+flow ItemCatalog_rco():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1315', true)
+    run SNPC_otg_26_WherearenEvent_ItemCatalog::rco_disappear()
+
+flow Lesson_Chm():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1309_01', true)
+
+flow Lesson_Mnc():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1314', true)
+
+flow Lesson_Slo():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1310_01', true)
+
+flow License_rco():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1316', true)
+
+flow MncBox():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1321', true)
+
+flow OfficeMachine():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1319', true)
+
+flow ResortStudy():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1318', true)
+
+flow Salary_GetDemo():
+    switch EventFlowSystemActor.FlagSystemIntValue7(7, 'cWherearenPlayer:CoordinatorGrade'):
+        case 1:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:1317_01', false)
+            run Demo_Common_Wherearen::ReserveCheckWorkContinue()
+        case 2:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:1317_02', false)
+            run Demo_Common_Wherearen::ReserveCheckWorkContinue()
+        case 3:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:1317_03', false)
+            run Demo_Common_Wherearen::ReserveCheckWorkContinue()
+        case 4:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:1317_04', false)
+            run Demo_Common_Wherearen::ReserveCheckWorkContinue()
+        case 5:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:1317_05', false)
+            run Demo_Common_Wherearen::ReserveCheckWorkContinue()
+        case 6:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:1317_06', false)
+            run Demo_Common_Wherearen::ReserveCheckWorkContinue()
+        default:
+            return
+

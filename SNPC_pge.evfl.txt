@@ -1,0 +1,854 @@
+flow Chair_Standup():
+    MainNpc.NpcAISetting(5, false)
+    MainNpc.NpcAISetting(9, false)
+    EventFlowSystemActor.MessageSuspend()
+    if (not EventFlowSystemActor.NetHasVisitor()) and (not EventFlowSystemActor.IsSharePlay(0)):
+        EventFlowSystemActor.StoreNormalCamera(false, '')
+        if Player.PlayerChairCanStandup(1):
+            Player.PlayerChairStandup(1)
+        else:
+            Player.PlayerChairStandup(3)
+
+flow Multi_Auto():
+    EventFlowSystemActor.MessageAutoPass(0, true)
+
+flow Multi_Auto_Wait():
+    EventFlowSystemActor.WaitFrame(30)
+
+flow Multi_Auto_Wait_Close():
+    run Multi_Auto_Wait()
+    EventFlowSystemActor.MessageSuspend()
+
+flow Multi_Net():
+    System.EventFlags['cPlayerTemp:PgeMultiFlag'] = true
+    MainNpc.SetDefaultWaitAs('cPgeBaseWait')
+    MainNpc.NpcAISetting(5, false)
+    MainNpc.NpcAISetting(9, false)
+    Player.PlayerForceLookAtDemoPartnerNpc(2)
+    MainNpc.TurnBody(13, 0.0)
+    System.EventFlags['cPlayerTemp:CafeTalkSitdown'] = 2
+    EventFlowSystemActor.CafeSequenceWait('cStart')
+    if EventFlowSystemActor.IsCafeMainPlayer():
+        EventFlowSystemActor.UIMoneyAppear()
+        System.EventFlags['cPlayerVisit:PgeVisitorTalkFlag'] = true
+        System.EventFlags['cLandTemp:MuseumCafePayOption'] = 0
+        EventFlowSystemActor.SetTagFromSystem('cNetJoinedPlayerNum', 'cDegit', 0, 0, '')
+        EventFlowSystemActor.SetTagFromSystem('cCafeMultiCoffeePrice', 'cMoney', 1, 0, '')
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:152', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                System.EventFlags['cLandTemp:MuseumCafePayOption'] = 1
+                EventFlowSystemActor.CafeSequenceWait('cPayOption')
+                MainNpc.SetPlayerName(6)
+                run Multi_Auto()
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:157', false)
+                run Multi_Auto_Wait()
+                EventFlowSystemActor.DecrementCoffeePrice()
+                if EventFlowSystemActor.HaveCoffeePrice():
+                    run Sub_Event511()
+                else:
+                    run Multi_Auto()
+                    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:154', false)
+                    run Multi_Auto_Wait()
+                    run Sub_Event511()
+            case 1:
+                System.EventFlags['cLandTemp:MuseumCafePayOption'] = 2
+                EventFlowSystemActor.CafeSequenceWait('cPayOption')
+                run Multi_Auto()
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:158', false)
+                run Multi_Auto_Wait()
+                EventFlowSystemActor.DecrementCoffeePrice()
+                if EventFlowSystemActor.HaveCoffeePrice():
+                    run Sub_Event511()
+                else:
+                    run Multi_Auto()
+                    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:155', false)
+                    run Multi_Auto_Wait()
+                    run Sub_Event511()
+            case 2:
+                System.EventFlags['cLandTemp:MuseumCafePayOption'] = 3
+                EventFlowSystemActor.CafeSequenceWait('cPayOption')
+                run Multi_Auto()
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:153', false)
+                run Multi_Auto_Wait()
+                run TurnToCounter()
+                EventFlowSystemActor.CafeSequenceWait('cFinish')
+                Player.PlayerForceLookAtDemoPartnerNpc(3)
+                MainNpc.PgeCafeReaction('cStoreBaseLayerCamera', false)
+                run Pge_DeleteUI()
+    else:
+        MainNpc.NpcAISetting(23, true)
+        EventFlowSystemActor.CafeSequenceWait('cPayOption')
+        MainNpc.NpcAISetting(23, false)
+        EventFlowSystemActor.UIMoneyAppear()
+        run Multi_Auto()
+        if System.EventFlags['cLandTemp:MuseumCafePayOption'] == 1:
+            MainNpc.SetPlayerName(6)
+            run Multi_Auto()
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:157', false)
+            run Multi_Auto_Wait()
+            EventFlowSystemActor.DecrementCoffeePrice()
+            if EventFlowSystemActor.HaveCoffeePrice():
+                run Sub_Event517()
+            else:
+                run Multi_Auto()
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:154', false)
+                run Multi_Auto_Wait()
+                run Sub_Event517()
+        elif System.EventFlags['cLandTemp:MuseumCafePayOption'] != 2:
+            run Multi_Auto()
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:153', false)
+            run Multi_Auto_Wait()
+            run TurnToCounter()
+            EventFlowSystemActor.CafeSequenceWait('cFinish')
+            Player.PlayerForceLookAtDemoPartnerNpc(3)
+            run Pge_DeleteUI()
+        else:
+            run Multi_Auto()
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:158', false)
+            run Multi_Auto_Wait()
+            EventFlowSystemActor.DecrementCoffeePrice()
+            if EventFlowSystemActor.HaveCoffeePrice():
+                run Sub_Event517()
+            else:
+                run Multi_Auto()
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:155', false)
+                run Multi_Auto_Wait()
+                run Sub_Event517()
+
+flow Multi_Net_Init():
+    run SetupSharePlayCamera()
+
+flow Multi_Party():
+    System.EventFlags['cPlayerTemp:PgeMultiFlag'] = true
+    MainNpc.SetDefaultWaitAs('cPgeBaseWait')
+    MainNpc.NpcAISetting(5, false)
+    MainNpc.NpcAISetting(9, false)
+    Player.PlayerForceLookAtDemoPartnerNpc(2)
+    MainNpc.TurnBody(10, 0.0)
+    System.EventFlags['cPlayerTemp:CafeTalkSitdown'] = 2
+    EventFlowSystemActor.SetTagFromSystem('cNetJoinedPlayerNum', 'cDegit', 0, 0, '')
+    EventFlowSystemActor.SetTagFromSystem('cCafeMultiCoffeePrice', 'cMoney', 1, 0, '')
+    System.EventFlags['cLandTemp:MuseumCafePayOption'] = 0
+    EventFlowSystemActor.UIMoneyAppear()
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:152', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            MainNpc.SetPlayerName(6)
+            System.EventFlags['cLandTemp:MuseumCafePayOption'] = 1
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:157', false)
+            if EventFlowSystemActor.HaveCoffeePrice():
+                run Sub_Event194()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:154', false)
+                run Sub_Event194()
+        case 1:
+            System.EventFlags['cLandTemp:MuseumCafePayOption'] = 2
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:158', false)
+            if EventFlowSystemActor.HaveCoffeePrice():
+                run Sub_Event194()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:155', false)
+                run Sub_Event194()
+        case 2:
+            System.EventFlags['cLandTemp:MuseumCafePayOption'] = 3
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:153', false)
+            Player.PlayerForceLookAtDemoPartnerNpc(3)
+            run Pge_DeleteUI()
+
+flow Multi_Party_Init():
+    run SetupSharePlayCamera()
+
+flow Not_Counter():
+    MainNpc.SetDefaultWaitAs('cPgeBaseWait')
+    run PgeRegularCount()
+    switch SubflowResults@6[0]:
+        case 0, 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:200', true)
+        case 2, 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:201', true)
+        case 4, 5:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:202', true)
+    run Chair_Standup()
+
+flow Not_Counter_Init():
+    run SetupSharePlayCamera()
+
+flow PgeRegularCount():
+    if EventFlowSystemActor.IsMyVillage():
+        if System.EventFlags['cPlayer:PgeRegularCount'] < 1:
+            SubflowResults[2] = 1
+            SubflowResults[0] = 0
+        elif System.EventFlags['cPlayer:PgeRegularCount'] < 4:
+            SubflowResults[0] = 1
+        elif System.EventFlags['cPlayer:PgeRegularCount'] < 8:
+            SubflowResults[0] = 2
+        elif System.EventFlags['cPlayer:PgeRegularCount'] < 12:
+            SubflowResults[0] = 3
+        elif System.EventFlags['cPlayer:PgeRegularCount'] < 16:
+            SubflowResults[0] = 4
+        else:
+            SubflowResults[0] = 5
+    else:
+        SubflowResults[0] = 0
+
+flow Pge_Anime_Drink(IsSharePlay: bool):
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.BGMPropertyControl(158)
+    EventFlowSystemActor.SoundDuckingOn(61)
+    Player.PlayerMuseumCafe(1, IsSharePlay)
+    EventFlowSystemActor.WaitFrame(165)
+
+flow Pge_Anime_Finish(IsSharePlay: bool):
+    EventFlowSystemActor.MessageSuspend()
+    run Pge_Anime_FinishCamera()
+    Player.PlayerMuseumCafe(3, IsSharePlay)
+    MainNpc.SetDefaultWaitAs('cPgeBaseWait')
+    MainNpc.PgeCafeReaction('cPutaway', false)
+
+flow Pge_Anime_FinishCamera():
+    if (MainNpc.NpcNetStatus(0)) and (EventFlowSystemActor.CafePlayerSeatPos() == 0):
+        MainNpc.NpcAISetting(4, false)
+        MainNpc.NpcAISetting(21, true)
+    else:
+        EventFlowSystemActor.StoreNormalCamera(false, '')
+        MainNpc.TalkCamera(true, 'PutAwayCup', 0)
+
+flow Pge_Anime_Make():
+    MainNpc.TurnBody(12, 270.0)
+    MainNpc.NpcWaitTurn()
+    MainNpc.PgeCafeReaction('cTakeOut', false)
+    MainNpc.PgeCafeReaction('cPourCoffee', false)
+    if System.EventFlags['cPlayerTemp:PgeAddMilkFlag']:
+        MainNpc.PgeCafeReaction('cPourMilk', false)
+    MainNpc.PgeCafeReaction('cPutOnTable', false)
+    MainNpc.SetDefaultWaitAs('cPgeWait')
+
+flow Pge_Anime_Make_TakeoutNpc():
+    MainNpc.TurnBody(12, 270.0)
+    MainNpc.NpcWaitTurn()
+    MainNpc.PgeCafeReaction('cTakeOut', true)
+    MainNpc.PgeCafeReaction('cPourCoffee', true)
+    MainNpc.PgeCafeReaction('cPutOnLid', true)
+
+flow Pge_Arrange():
+    if (EventFlowSystemActor.MainPlayerIsBirthday(false, 'cGrowUpTime')) and (System.EventFlags['cPlayer:PgeRegularCount'] >= 10) and (not System.EventFlags['cPlayer:PgeCoffeeTodayFlag']):
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:017', false)
+        SubflowResults[2] = 1
+    elif (EventFlowSystemActor.EnvCheckBetweenDate(2, 14, 2, 14, 'cLastGrowUpTime')) and (System.EventFlags['cPlayer:PgeRegularCount'] >= 4) and (not System.EventFlags['cPlayer:PgeCoffeeTodayFlag']):
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:017', false)
+        SubflowResults[2] = 1
+    elif System.EventFlags['cPlayer:PgeRegularCount'] < 5:
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:017', false)
+    else:
+        switch EventFlowSystemActor.FlagSystemIntValue4(4, 'cPlayer:PgeTepidCount'):
+            case 0:
+                run Pge_Arrange_AddMilk()
+            case 1:
+                if EventFlowSystemActor.PercentChoice(30):
+                    run Pge_Arrange_Cool()
+                else:
+                    run Pge_Arrange_AddMilk()
+            case 2:
+                if EventFlowSystemActor.PercentChoice(70):
+                    run Pge_Arrange_Cool()
+                else:
+                    run Pge_Arrange_AddMilk()
+            case 3:
+                run Pge_Arrange_Cool()
+
+flow Pge_Arrange_AddMilk():
+    if EventFlowSystemActor.PercentChoice(30):
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:015', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:016', true)
+            System.EventFlags['cPlayerTemp:PgeAddMilkFlag'] = true
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:017', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:017', false)
+
+flow Pge_Arrange_Cool():
+    System.EventFlags['cPlayer:PgeTepidCount'] = 0
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:019', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:020', false)
+        SubflowResults[3] = 1
+        System.EventFlags['cPlayerTemp:PgeCoolFlag'] = true
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:017', false)
+
+flow Pge_DeleteUI():
+    fork:
+        branch:
+            MainNpc.MessageSuspend()
+        branch:
+            EventFlowSystemActor@UI.UIMoneyDisappear()
+
+flow Pge_Dream():
+    if EventFlowSystemActor.NetIsDreaming():
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:080', false)
+        EventFlowSystemActor.ExitFlowchart()
+
+flow Pge_First():
+    if not System.EventFlags['cPlayer:PgeTalkFirstFlag']:
+        System.EventFlags['cPlayer:PgeTalkFirstFlag'] = true
+
+flow Pge_FirstCafe():
+    if (System.EventFlags['cPlayer:MuseumCafeEv_2_TalkedWithMasterAtIsland']) and (not System.EventFlags['cPlayer:PgeTalkCafeFlag']):
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:065', false)
+        System.EventFlags['cPlayer:PgeTalkCafeFlag'] = true
+        if SubflowResults@2[1] == 1:
+            EventFlowSystemActor.ExitFlowchart()
+
+flow Pge_FirstReset():
+    System.EventFlags['cPlayerTemp:PgeAddMilkFlag'] = false
+    System.EventFlags['cPlayerTemp:PgeCoolFlag'] = false
+    System.EventFlags['cPlayerTemp:PgeMultiFlag'] = false
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 0, 200, '')
+    SubflowResults[1] = 0
+    SubflowResults[2] = 0
+    SubflowResults[3] = 0
+
+flow Pge_ImmpressCamera():
+    if not EventFlowSystemActor.IsSharePlay(0):
+        switch EventFlowSystemActor.CafePlayerSeatPos():
+            case 0:
+                if MainNpc.NpcNetStatus(0):
+                    MainNpc.NpcAISetting(4, false)
+                    MainNpc.NpcAISetting(21, true)
+                else:
+                    EventFlowSystemActor.CameraSetDemoParam('CafeImpressCounter', 'cDefault', 'Player', false, false, false, 0)
+            case 1:
+                EventFlowSystemActor.CameraSetDemoParam('CafeImpressTable0', 'cDefault', 'Player', false, false, false, 0)
+            case 2:
+                EventFlowSystemActor.CameraSetDemoParam('CafeImpressTable1', 'cDefault', 'Player', false, false, false, 0)
+            case 3:
+                EventFlowSystemActor.CameraSetDemoParam('CafeImpressTable2', 'cDefault', 'Player', false, false, false, 0)
+            case 4:
+                EventFlowSystemActor.CameraSetDemoParam('CafeImpressTable3', 'cDefault', 'Player', false, false, false, 0)
+            default:
+                return
+
+flow Pge_Impressions(IsSharePlay: bool):
+    run Pge_ImmpressCamera()
+    Player.PlayerMuseumCafe(2, IsSharePlay)
+    EventFlowSystemActor.NpcPlayerActivity('cActivityType_OrderCoffeeCount')
+    if System.EventFlags['cPlayerTemp:PgeMultiFlag']:
+        run Pge_Impressions_Multi()
+    else:
+        run Pge_Impressions_Solo()
+    EventFlowSystemActor.SoundDuckingOff(61)
+
+flow Pge_Impressions_Multi():
+    if EventFlowSystemActor.IsCafePlayerDrinkWater():
+        EventFlowSystemActor.SoundTriggerEmit('AfterDrink_Water', -1)
+        Player.OpenMessageWindow('TalkSys/SYS_Player:608', true)
+    else:
+        EventFlowSystemActor.SoundTriggerEmit('AfterDrink_Coffee', -1)
+        if not EventFlowSystemActor.IsMyVillage():
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+                case 0:
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:605_01', false)
+                    run Multi_Auto_Wait()
+                    run Multi_Auto()
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:605_06', false)
+                    EventFlowSystemActor.WaitFrame(15)
+                case 1:
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:605_02', false)
+                    run Multi_Auto_Wait()
+                    run Multi_Auto()
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:605_07', false)
+                    EventFlowSystemActor.WaitFrame(15)
+                case 2:
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:605_03', false)
+                    run Multi_Auto_Wait()
+                    run Multi_Auto()
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:605_08', false)
+                    EventFlowSystemActor.WaitFrame(15)
+                case 3:
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:605_04', false)
+                    run Multi_Auto_Wait()
+                    run Multi_Auto()
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:605_09', false)
+                    EventFlowSystemActor.WaitFrame(15)
+                case 4:
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:605_05', false)
+                    run Multi_Auto_Wait()
+                    run Multi_Auto()
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:605_10', false)
+                    EventFlowSystemActor.WaitFrame(15)
+        elif EventFlowSystemActor.IsSharePlay(0):
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_01', false)
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_06', false)
+                case 1:
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_03', false)
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_08', false)
+                case 2:
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_05', false)
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_10', false)
+            EventFlowSystemActor.MessageSuspend()
+        else:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+                case 0:
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_01', false)
+                    run Multi_Auto_Wait()
+                    run Multi_Auto()
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_06', false)
+                    EventFlowSystemActor.WaitFrame(15)
+                case 1:
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_02', false)
+                    run Multi_Auto_Wait()
+                    run Multi_Auto()
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_07', false)
+                    EventFlowSystemActor.WaitFrame(15)
+                case 2:
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_03', false)
+                    run Multi_Auto_Wait()
+                    run Multi_Auto()
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_08', false)
+                    EventFlowSystemActor.WaitFrame(15)
+                case 3:
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_04', false)
+                    run Multi_Auto_Wait()
+                    run Multi_Auto()
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_09', false)
+                    EventFlowSystemActor.WaitFrame(15)
+                case 4:
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_05', false)
+                    run Multi_Auto_Wait()
+                    run Multi_Auto()
+                    Player.OpenMessageWindow('TalkSys/SYS_Player:609_10', false)
+                    EventFlowSystemActor.WaitFrame(15)
+
+flow Pge_Impressions_Solo():
+    EventFlowSystemActor.SoundTriggerEmit('AfterDrink_Coffee', -1)
+    if not EventFlowSystemActor.IsMyVillage():
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+            case 0:
+                Player.OpenMessageWindow('TalkSys/SYS_Player:605_01', false)
+                Player.OpenMessageWindow('TalkSys/SYS_Player:605_06', false)
+            case 1:
+                Player.OpenMessageWindow('TalkSys/SYS_Player:605_02', false)
+                Player.OpenMessageWindow('TalkSys/SYS_Player:605_07', false)
+            case 2:
+                Player.OpenMessageWindow('TalkSys/SYS_Player:605_03', false)
+                Player.OpenMessageWindow('TalkSys/SYS_Player:605_08', false)
+            case 3:
+                Player.OpenMessageWindow('TalkSys/SYS_Player:605_04', false)
+                Player.OpenMessageWindow('TalkSys/SYS_Player:605_09', false)
+            case 4:
+                Player.OpenMessageWindow('TalkSys/SYS_Player:605_05', false)
+                Player.OpenMessageWindow('TalkSys/SYS_Player:605_10', false)
+    elif (System.EventFlags['cPlayer:PgeCoffeeTodayFlag']) and (System.EventFlags['cPlayer:PgeTalkBirthdayFlag']):
+        run Sub_grp_Event161()
+    else:
+        if (EventFlowSystemActor.MainPlayerIsBirthday(false, 'cGrowUpTime')) and (System.EventFlags['cPlayer:PgeRegularCount'] >= 10):
+            Player.OpenMessageWindow('TalkSys/SYS_Player:607', true)
+        elif (EventFlowSystemActor.EnvCheckBetweenDate(2, 14, 2, 14, 'cLastGrowUpTime')) and (System.EventFlags['cPlayer:PgeRegularCount'] >= 4):
+            Player.OpenMessageWindow('TalkSys/SYS_Player:606', true)
+        elif System.EventFlags['cPlayerTemp:PgeCoolFlag']:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:604', true)
+        else:
+            if System.EventFlags['cPlayerTemp:PgeAddMilkFlag']:
+                Player.OpenMessageWindow('TalkSys/SYS_Player:601', true)
+            else:
+                run Sub_grp_Event161()
+
+flow Pge_Msg_Cool():
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:043', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:044', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 1:
+            switch SubflowResults@6[0]:
+                case 0, 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:045', false)
+                    run Sub_Event274()
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:046', false)
+                    run Sub_Event274()
+                case 3:
+                    if SubflowResults@2[3] == 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:047', false)
+                        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                            run Sub_Event265()
+                        else:
+                            run Sub_Event266()
+                    else:
+                        run Sub_Event370()
+                case 4, 5:
+                    if SubflowResults@2[3] == 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:048', false)
+                        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                            run Sub_Event265()
+                        else:
+                            run Sub_Event266()
+                    else:
+                        run Sub_Event370()
+
+flow Pge_Msg_Cool_4Times():
+    run Event171()
+
+flow Pge_Msg_Last():
+    EventFlowSystemActor.WaitFrame(15)
+    EventFlowSystemActor.BGMPropertyControl(157)
+    if EventFlowSystemActor.IsCafePlayerDrinkWater():
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:032', false)
+    elif System.EventFlags['cPlayer:PgeTalkBirthdayFlag']:
+        if (not EventFlowSystemActor.EnvCheckBetweenDate(2, 14, 2, 14, 'cLastGrowUpTime')) or (System.EventFlags['cPlayer:PgeRegularCount'] < 4):
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:073', false)
+        elif System.EventFlags['cPlayer:PgeTalkValentineFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:073', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:032', false)
+            System.EventFlags['cPlayer:PgeTalkValentineFlag'] = true
+    elif (EventFlowSystemActor.MainPlayerIsBirthday(false, 'cGrowUpTime')) and (System.EventFlags['cPlayer:PgeRegularCount'] >= 10):
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:033', false)
+        System.EventFlags['cPlayer:PgeTalkBirthdayFlag'] = true
+    elif (EventFlowSystemActor.EnvCheckBetweenDate(1, 1, 1, 1, 'cNowTime')) and (System.EventFlags['cPlayer:PgeRegularCount'] >= 3):
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:034', false)
+        System.EventFlags['cPlayer:PgeTalkBirthdayFlag'] = true
+    elif (EventFlowSystemActor.EnvCheckBetweenDate(12, 24, 12, 24, 'cLastGrowUpTime')) and (System.EventFlags['cPlayer:PgeRegularCount'] >= 4):
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:035', false)
+        System.EventFlags['cPlayer:PgeTalkBirthdayFlag'] = true
+    elif (EventFlowSystemActor.EnvCheckBetweenDate(2, 14, 2, 14, 'cLastGrowUpTime')) and (System.EventFlags['cPlayer:PgeRegularCount'] >= 4):
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:036', false)
+        System.EventFlags['cPlayer:PgeTalkBirthdayFlag'] = true
+    elif System.EventFlags['cPlayer:PgeCoffeeTodayFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:073', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:032', false)
+
+flow Pge_Msg_Offer():
+    if (System.EventFlags['cPlayer:PgeCoffeeTodayFlag']) and (System.EventFlags['cPlayer:PgeTalkBirthdayFlag']):
+        run Sub_grp_Event283()
+    else:
+        if (EventFlowSystemActor.MainPlayerIsBirthday(false, 'cGrowUpTime')) and (System.EventFlags['cPlayer:PgeRegularCount'] >= 10):
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:029', false)
+            SubflowResults[2] = 1
+        else:
+            if EventFlowSystemActor.EnvCheckBetweenDate(2, 14, 2, 14, 'cLastGrowUpTime'):
+                if System.EventFlags['cPlayer:PgeRegularCount'] >= 4:
+                    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:028', false)
+                    SubflowResults[2] = 1
+            else:
+                run Sub_grp_Event283()
+
+flow Pge_Msg_Order():
+    if EventFlowSystemActor.EnvCheckBetweenDate(2, 14, 2, 14, 'cNowTime'):
+        if System.EventFlags['cPlayer:PgeRegularCount'] < 4:
+            run Sub_grp_Event88()
+        else:
+            if System.EventFlags['cPlayer:PgeCoffeeTodayFlag']:
+                if System.EventFlags['cPlayer:PgeTalkValentineFlag']:
+                    run Sub_Event61()
+                else:
+                    run Sub_grp_Event88()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:007', false)
+    else:
+        run Sub_Event61()
+
+flow Root():
+    run Pge_FirstReset()
+    run Pge_Dream()
+    run PgeRegularCount()
+    if EventFlowSystemActor.IsCafeWaitSitAll():
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:300', false)
+        Player.CafeMainPlayerLookAtTable()
+    elif EventFlowSystemActor.IsMyVillage():
+        run Pge_First()
+        run Pge_FirstCafe()
+        EventFlowSystemActor.UIMoneyAppear()
+        run Pge_Msg_Order()
+        if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+            switch SubflowResults@6[0]:
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:011', false)
+                case 1, 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:012', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:013', false)
+                case 4, 5:
+                    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:014', false)
+            run Pge_DeleteUI()
+            run Chair_Standup()
+        elif not EventFlowSystemActor.HasBellCount(200):
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:018', false)
+            run Pge_DeleteUI()
+            run Chair_Standup()
+        elif (not EventFlowSystemActor.NetHasVisitor()) and (not EventFlowSystemActor.IsSharePlay(0)):
+            run Sub_Event108()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:150', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:151', false)
+                EventFlowSystemActor.SetCafeMainPlayer()
+                Player.CafeMainPlayerLookAtTable()
+                run Pge_DeleteUI()
+            else:
+                run Sub_Event108()
+    else:
+        EventFlowSystemActor.UIMoneyAppear()
+        System.EventFlags['cPlayerVisit:PgeVisitorTalkFlag'] = true
+        if System.EventFlags['cPlayerVisit:PgeVisitorCoffeeFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:070', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:057', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:058', false)
+            run Pge_DeleteUI()
+        elif EventFlowSystemActor.HasBellCount(200):
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:150', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:151', false)
+                EventFlowSystemActor.SetCafeMainPlayer()
+                Player.CafeMainPlayerLookAtTable()
+                run Pge_DeleteUI()
+            else:
+                EventFlowSystemActor.BellCountDown(200, true)
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:059', false)
+                run Pge_DeleteUI()
+                run Pge_Anime_Make()
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:060', false)
+                while EventFlowSystemActor.GeneralTalkChoice2() == 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:061', false)
+                    System.EventFlags['cPlayerTemp:PgeCoolFlag'] = true
+                    MainNpc.PgeCafeReaction('cCold', false)
+                run Pge_Anime_Drink(IsSharePlay=false)
+                System.EventFlags['cLandTemp:MuseumCafePgeCoffeeStatus'] = 0
+                run Pge_Impressions(IsSharePlay=false)
+                run Pge_Anime_Finish(IsSharePlay=false)
+                EventFlowSystemActor.BGMPropertyControl(157)
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:032', true)
+                System.EventFlags['cPlayerVisit:PgeVisitorCoffeeFlag'] = true
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:018', false)
+            run Pge_DeleteUI()
+
+flow Root_Init():
+    MainNpc.SetDefaultWaitAs('cPgeBaseWait')
+    run SetupSharePlayCamera()
+
+flow SetupSharePlayCamera():
+    if (EventFlowSystemActor.IsSharePlay(0)) and (EventFlowSystemActor.CafePlayerSeatPos() in (0, 1, 2, 3, 4)):
+        MainNpc.NpcAISetting(22, true)
+    else:
+        MainNpc.NpcAISetting(22, false)
+
+local flow Sub_Event108():
+    EventFlowSystemActor.BellCountDown(200, true)
+    run Pge_Arrange()
+    run Pge_DeleteUI()
+    run Pge_Anime_Make()
+    run Pge_Msg_Offer()
+    if (SubflowResults@2[2] == 0) and (EventFlowSystemActor.GeneralTalkChoice2() != 0):
+        System.EventFlags['cPlayerTemp:PgeCoolFlag'] = true
+        MainNpc.PgeCafeReaction('cCold', false)
+        run Pge_Msg_Cool()
+    run Pge_Anime_Drink(IsSharePlay=false)
+    System.EventFlags['cLandTemp:MuseumCafePgeCoffeeStatus'] = 0
+    run Pge_Impressions(IsSharePlay=false)
+    run Pge_Anime_Finish(IsSharePlay=false)
+    run Pge_Msg_Last()
+    System.EventFlags['cPlayer:PgeCoffeeTodayFlag'] = true
+    System.EventFlags['cPlayer:PgeCoffeeEatInTodayFlag'] = true
+    if (System.EventFlags['cPlayer:PgeRegularCount'] == 2) and (not System.EventFlags['cPlayer:PgeTalkTakeOutFlag']):
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:037', true)
+        System.EventFlags['cPlayer:PgeTalkTakeOutFlag'] = true
+    EventFlowSystemActor.MessageSuspend()
+    if (not EventFlowSystemActor.NetHasVisitor()) and (not EventFlowSystemActor.IsSharePlay(0)):
+        EventFlowSystemActor.MuseumCafeCreateTakeoutNpc()
+        if EventFlowSystemActor.MuseumCafeTakeoutNpcVisit():
+            run SNPC_common_CafeTakeout::Root()
+        run Chair_Standup()
+
+local flow Sub_Event194():
+    EventFlowSystemActor.DecrementCoffeePrice()
+    EventFlowSystemActor.DecideCafeDrinkType()
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:159', false)
+    run Pge_DeleteUI()
+    fork:
+        branch:
+            run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+        branch:
+            MainNpc.PgeCafeReaction('cPutCloth', false)
+    Player.PlayerForceLookAtDemoPartnerNpc(3)
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.CafeCreateDrink()
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:156', true)
+    run Pge_Anime_Drink(IsSharePlay=true)
+    run Pge_Impressions(IsSharePlay=true)
+    Player.PlayerMuseumCafe(3, true)
+    Player.PlayerForceLookAtDemoPartnerNpc(2)
+    if EventFlowSystemActor.IsExistCafeCounterPlayer():
+        MainNpc.TurnBody(12, 270.0)
+        MainNpc.NpcWaitTurn()
+        MainNpc.PgeCafeReaction('cPutawayNet', false)
+    EventFlowSystemActor.WaitFrame(15)
+    EventFlowSystemActor.BGMPropertyControl(157)
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:032', false)
+    System.EventFlags['cPlayer:PgeCoffeeTodayFlag'] = true
+    Player.PlayerForceLookAtDemoPartnerNpc(3)
+    EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_Event265():
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:049', false)
+    System.EventFlags['cPlayer:PgeLikeTepidLasttimeFlag'] = true
+    run Pge_Msg_Cool_4Times()
+
+local flow Sub_Event266():
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:050', false)
+    run Pge_Msg_Cool_4Times()
+
+local flow Sub_Event274():
+    while EventFlowSystemActor.GeneralTalkChoice2() == 1:
+entrypoint Event171:
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:051', false)
+
+local flow Sub_Event370():
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:052', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:053', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:053', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:054', false)
+            run Pge_Msg_Cool_4Times()
+
+local flow Sub_Event511():
+    run Multi_Auto()
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:159', false)
+    run Multi_Auto_Wait()
+    run Pge_DeleteUI()
+    fork:
+        branch:
+            run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+        branch:
+            MainNpc.PgeCafeReaction('cPutCloth', false)
+    Player.PlayerForceLookAtDemoPartnerNpc(3)
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.CafeSequenceWait('cCoffeeType')
+    EventFlowSystemActor.CafeCreateDrink()
+    EventFlowSystemActor.CafeSequenceWait('cCoffeeSet')
+    EventFlowSystemActor.CameraSetDemoParam('CafeParty', '', 'CameraTag:CafeCenter', false, false, false, 0)
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+    run Multi_Auto()
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:156', false)
+    run Multi_Auto_Wait_Close()
+    run Pge_Anime_Drink(IsSharePlay=false)
+    run Multi_Auto()
+    run Pge_Impressions(IsSharePlay=false)
+    run Multi_Auto_Wait_Close()
+    Player.PlayerMuseumCafe(3, false)
+    Player.PlayerForceLookAtDemoPartnerNpc(2)
+    if EventFlowSystemActor.IsExistCafeCounterPlayer():
+        MainNpc.PgeCafeReaction('cPutawayNet', false)
+    EventFlowSystemActor.WaitFrame(15)
+    EventFlowSystemActor.BGMPropertyControl(157)
+    run Multi_Auto()
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:032', false)
+    run Multi_Auto_Wait_Close()
+    run TurnToCounter()
+    EventFlowSystemActor.CafeSequenceWait('cFinish')
+    Player.PlayerForceLookAtDemoPartnerNpc(3)
+
+local flow Sub_Event517():
+    run Multi_Auto()
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:159', false)
+    run Multi_Auto_Wait()
+    run Pge_DeleteUI()
+    fork:
+        branch:
+            run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+        branch:
+            MainNpc.PgeCafeReaction('cPutCloth', false)
+    Player.PlayerForceLookAtDemoPartnerNpc(3)
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.CafeSequenceWait('cCoffeeType')
+    EventFlowSystemActor.CafeCreateDrink()
+    EventFlowSystemActor.CafeSequenceWait('cCoffeeSet')
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+    run Multi_Auto()
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:156', false)
+    run Multi_Auto_Wait_Close()
+    run Pge_Anime_Drink(IsSharePlay=false)
+    run Multi_Auto()
+    run Pge_Impressions(IsSharePlay=false)
+    run Multi_Auto_Wait_Close()
+    Player.PlayerMuseumCafe(3, false)
+    EventFlowSystemActor.CameraSetDemoParam('CafeParty', 'cTalk', 'CameraTag:CafeCenter', false, false, false, 0)
+    Player.PlayerForceLookAtDemoPartnerNpc(2)
+    if EventFlowSystemActor.IsExistCafeCounterPlayer():
+        MainNpc.PgeCafeReaction('cPutawayNet', false)
+    EventFlowSystemActor.WaitFrame(15)
+    EventFlowSystemActor.BGMPropertyControl(157)
+    run Multi_Auto()
+    MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:032', false)
+    run Multi_Auto_Wait()
+    run TurnToCounter()
+    EventFlowSystemActor.CafeSequenceWait('cFinish')
+    Player.PlayerForceLookAtDemoPartnerNpc(3)
+
+local flow Sub_Event61():
+    if System.EventFlags['cPlayer:PgeCoffeeEatInTodayFlag']:
+        switch SubflowResults@6[0]:
+            case 0, 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:070', false)
+            case 2, 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:071', false)
+            case 4, 5:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:072', false)
+    else:
+        run Sub_grp_Event88()
+
+local flow Sub_grp_Event161():
+    switch EventFlowSystemActor.PercentChoice3(30, 30, 40):
+        case 0:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:602', true)
+        case 1:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:603', true)
+        case 2:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:600', true)
+
+local flow Sub_grp_Event283():
+    if System.EventFlags['cPlayerTemp:PgeCoolFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:031', false)
+    else:
+        switch SubflowResults@6[0]:
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:022', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:023', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:024', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:025', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:026', false)
+            case 5:
+                MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:027', false)
+
+local flow Sub_grp_Event88():
+    switch SubflowResults@6[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:001', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:002', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:003', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:004', false)
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:005', false)
+        case 5:
+            MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge:006', false)
+
+flow TurnToCounter():
+    MainNpc.NpcAISetting(2, false)
+    MainNpc.NpcAISetting(3, false)
+    MainNpc.TurnBody(12, 270.0)
+    MainNpc.NpcWaitTurn()
+

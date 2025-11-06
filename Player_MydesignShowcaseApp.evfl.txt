@@ -1,0 +1,48 @@
+flow Parental():
+    MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:362', false)
+
+flow Root():
+    if EventFlowSystemActor.NetIsDreaming():
+        if System.EventFlags['cLand:DreamUploadPlayerHaveCreaterID']:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:347', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:348', false)
+    elif not EventFlowSystemActor.IsMyVillage():
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:343', false)
+    elif EventFlowSystemActor.NetIsConnected():
+        if EventFlowSystemActor.NetHasVisitor():
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:341', false)
+        elif EventFlowSystemActor.IsVillageGateOpened():
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:340', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:342', false)
+    elif EventFlowSystemActor.IsSharePlay(0):
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:344', false)
+    elif (EventFlowSystemActor.IsWherearenOrderStaySequence()) or (System.EventFlags['cWherearenPlayer:IsParty']) or ((EventFlowSystemActor.SystemCheckNowStage('cAnyNpcHouse')) and (System.EventFlags['cLandTemp:NpcInteriorCoordinate'])) or ((EventFlowSystemActor.SystemCheckNowStage('cCheckStageSymbol00')) and (not System.EventFlags['cWherearenPlayer:OtgGetStartingSalary'])):
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:349', false)
+    elif (not EventFlowSystemActor.SystemCheckNowStage('cKappeiIsland')) and (not EventFlowSystemActor.SystemCheckNowStage('cMysteryTourIsland')):
+        switch EventFlowSystemActor.UICheckSceneChangable(0):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:360', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run SignIn()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:342', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:344', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:345', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:346', false)
+
+flow SignIn():
+    if not System.EventFlags['cPlayer:MyDesignExchangeFirstAccess']:
+        System.EventFlags['cPlayer:MyDesignExchangeExp_v1_4'] = true
+    EventFlowSystemActor.CheckFreeCommunication(true)
+    if EventFlowSystemActor.IsApprovedFreeCommunication():
+        run System_ServerRegistration::UserRegist(WithLogin=false, Terminate=true, WithSave=true)
+        EventFlowSystemActor.BGMPropertyControl(59)
+        EventFlowSystemActor.SystemRequestChangeStage('cMyDesignExchange', 'cMyDesignGo', 'cMyDesignGo', 'cBlack', 1.0, 1.0)
+    else:
+        run Parental()
+

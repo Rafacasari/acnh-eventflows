@@ -1,0 +1,203 @@
+flow BgmStart():
+    EventFlowSystemActor.BGMPropertyControl(154)
+
+flow Content_Chm():
+    MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:200', true)
+    MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:201', false)
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:202_01', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:202_02', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:202_03', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:202_04', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:203', false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:203_01', false)
+        branch:
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoAppear('cTga', 0, false, 0.0, 0.0, 'MsgPhoto_020')
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:203_02', false)
+        branch:
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoChange('cTga', 0, false, 0.0, 0.0, 'MsgPhoto_021')
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:204', true)
+        branch:
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoDisappear()
+
+flow Content_Mnc():
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:010', true)
+    SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:011', true)
+    MainNpc.CharacterEmoticonAction('Blushing', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(60)
+    MainNpc.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:012', false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:013', false)
+        branch:
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoAppear('cTga', 0, false, 0.0, 0.0, 'MsgPhoto_000')
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:014', false)
+        branch:
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoChange('cTga', 0, false, 0.0, 0.0, 'MsgPhoto_001')
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:015', false)
+        branch:
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoChange('cTga', 0, false, 0.0, 0.0, 'MsgPhoto_002')
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:016', false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:017', false)
+        branch:
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoChange('cTga', 0, false, 0.0, 0.0, 'MsgPhoto_003')
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:018', false)
+        branch:
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoDisappear()
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:019', true)
+            SubNpc.TurnNeck(10, false)
+            SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:022', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:020', false)
+            run Sub_Event130()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:021', false)
+            run Sub_Event130()
+    SubNpc.TurnNeck(0, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:024', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:025', true)
+            run Sub_Event126()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:026', true)
+            Npc_2.TurnNeck(10, false)
+            Npc_2.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:028', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:027', true)
+            run Sub_Event126()
+    Npc_2.TurnNeck(0, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:030', true)
+    run Demo_Common_PhoneCall::SendingDataWithP_Mnc()
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:031', false)
+    run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:032', true)
+
+flow Content_Slo():
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo_WherearenEvent:200', true)
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo_WherearenEvent:201', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo_WherearenEvent:202_01', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo_WherearenEvent:202_02', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo_WherearenEvent:202_03', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo_WherearenEvent:203', true)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo_WherearenEvent:203_01', false)
+        branch:
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoAppear('cTga', 0, false, 0.0, 0.0, 'MsgPhoto_010')
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo_WherearenEvent:203_02', false)
+        branch:
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoChange('cTga', 0, false, 0.0, 0.0, 'MsgPhoto_011')
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/slo/SP_slo_WherearenEvent:204', true)
+        branch:
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoDisappear()
+
+flow LessonStart():
+    EventFlowSystemActor.SoundTriggerEmit('SchoolEventStart_Chime', -1)
+    EventFlowSystemActor.SchoolEvent('cStart')
+    EventFlowSystemActor.WaitFrame(90)
+    EventFlowSystemActor.SystemFaderRelease()
+
+flow StartStudentAnim():
+    if not Npc_1.IsSleepStudentInSchoolEvent():
+        Npc_1.NpcStartAS('NpcSchoolDemoStudent', false, true)
+    if not Npc_2.IsSleepStudentInSchoolEvent():
+        Npc_2.NpcStartAS('NpcSchoolDemoStudent', false, true)
+    if not Npc_3.IsSleepStudentInSchoolEvent():
+        Npc_3.NpcStartAS('NpcSchoolDemoStudent', false, true)
+
+local flow Sub_Event126():
+    Npc_2.TurnNeck(10, false)
+    Npc_2.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:029', true)
+
+local flow Sub_Event130():
+    SubNpc.TurnNeck(10, false)
+    SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:023', true)
+
+flow bev_Lesson_Init():
+    run chm_Lesson_Init()
+
+flow chm_Lesson():
+    run StartStudentAnim()
+    EventFlowSystemActor.WaitFrame(40)
+    run BgmStart()
+    run Content_Chm()
+    EventFlowSystemActor.SystemBGMVolumeFadeOut(0.75, 0, 0.0)
+    EventFlowSystemActor.WaitFrame(15)
+    EventFlowSystemActor.SoundTriggerEmit('SchoolEventEnd_Chime', -1)
+    System.EventFlags['cWherearenPlayer:Unlock_Insect'] = true
+    EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Wherearen', 'Lesson_Chm', 'cNowDemoEnd', false)
+    run Event25()
+
+flow chm_Lesson_Init():
+    MainNpc.NpcAITalkCastSetting('WherearenSchoolEvent')
+
+flow mnc_Lesson():
+    EventFlowSystemActor.WaitFrame(40)
+    run BgmStart()
+    run Content_Mnc()
+    EventFlowSystemActor.SystemBGMVolumeFadeOut(0.75, 0, 0.0)
+    EventFlowSystemActor.WaitFrame(15)
+    EventFlowSystemActor.SoundTriggerEmit('SchoolEventEnd_Chime', -1)
+    EventFlowSystemActor.PlayerSetCraftRecipe('WherearenMncLesson', 65534)
+    System.EventFlags['cWherearenPlayer:Unlock_PillarCatalog_01'] = true
+    System.EventFlags['cWherearenPlayer:MncLessonDone'] = true
+    EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Wherearen', 'Lesson_Mnc', 'cNowDemoEnd', false)
+    run Event67()
+
+flow mnc_Lesson_Init():
+    MainNpc.NpcAITalkSubCastEntry('otg', 1)
+    MainNpc.NpcAITalkSubCastEntry('man', 2)
+
+flow slo_Lesson():
+    run StartStudentAnim()
+    EventFlowSystemActor.WaitFrame(40)
+    run BgmStart()
+    run Content_Slo()
+    EventFlowSystemActor.SystemBGMVolumeFadeOut(0.75, 0, 0.0)
+    EventFlowSystemActor.WaitFrame(15)
+    EventFlowSystemActor.SoundTriggerEmit('SchoolEventEnd_Chime', -1)
+    System.EventFlags['cWherearenPlayer:Unlock_FlowerCatalog'] = true
+    System.EventFlags['cPlayer:OtgTipsCompleteSloSchoolEvent'] = true
+    EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Wherearen', 'Lesson_Slo', 'cNowDemoEnd', false)
+entrypoint Event25:
+    System.EventFlags['cWherearenPlayer:SNPCAppearCtrl'] = 0
+entrypoint Event67:
+    EventFlowSystemActor.NextLPFadeOff()
+    EventFlowSystemActor.WaitFrame(1)
+    EventFlowSystemActor.BGMPropertyControl(153)
+    System.EventFlags['cPlayerTemp:WHEREAREN_LessonEventStart'] = false
+    run `00_System_StageChange`::ChangeStage(FadeColorString='cBlack', TargetStage='cWherearenMainIslandFrontSchool', FadeOutKindString='cCircle', FadeInKindString='cCircle', FadeOutSpeed=0.0, FadeInSpeed='cNormal')
+
+flow slo_Lesson_Init():
+    run chm_Lesson_Init()
+

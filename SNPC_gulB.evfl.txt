@@ -1,0 +1,355 @@
+flow GulBAfterQuest():
+    if System.EventFlags['cLandTemp:GulBTalkShareplay']:
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:120', false)
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        run GulBAfterQuestChat()
+
+flow GulBAfterQuestChat():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:040_01', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:040_02', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:040_03', true)
+    MainNpc.SmartPhone(0)
+    MainNpc.SmartPhone(4)
+    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:041', true)
+    MainNpc.SmartPhone(1)
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:042', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:043', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:044', false)
+    EventFlowSystemActor.ExitFlowchart()
+
+flow GulBClear():
+    if not System.EventFlags['cPlayer:GulBQuestFinishFlag']:
+        System.EventFlags['cLifeSupportAchievement:HelpGul'] += 1
+        System.EventFlags['cPlayer:GulBHelpCount'] += 1
+        System.EventFlags['cPlayer:GulBQuestFinishFlag'] = true
+        System.EventFlags['cLand:JohnnyQuestFinishFlagIsland'] = true
+        EventFlowSystemActor.SetMemoryEventPlayer('cBlancoEventPlayer:PE_GulB_Help')
+    System.EventFlags['cPlayer:GulBQuestStartFlag'] = false
+    MainNpc.GulFreeAction('cGulActionType_SetAnotherPlayerClearFlag')
+    System.EventFlags['cLandTemp:GulBTalkShareplay'] = false
+
+flow GulBGivePartsForced():
+    MainNpc.SetDeliveryItemAtRandom(13105, false, 'cVillageRemakePattern', 0)
+    MainNpc.NpcDelivery(0, 'Keep')
+    MainNpc.GulFreeAction('cGulActionType_PresentPiratesParts')
+    MainNpc.NpcDelivery(3, '"Default"')
+
+flow GulBKeepSleep():
+    if not System.EventFlags['cPlayer:GulBTalkBeforeFlag']:
+        MainNpc.NpcChangeNameStatus(3)
+    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:060', false)
+    MainNpc.NpcChangeNameStatus(0)
+    EventFlowSystemActor.ExitFlowchart()
+
+flow GulBQuestClear():
+    EventFlowSystemActor.WaitFrame(4)
+    MainNpc.CharacterEmoticonAction('Dance', false, '', 0, false)
+    EventFlowSystemActor.WaitFrame(60)
+    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:033', true)
+    MainNpc.SmartPhone(0)
+    MainNpc.SmartPhone(4)
+    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:036', true)
+    MainNpc.SmartPhone(1)
+    MainNpc.DecideEventReward('cGulBReward')
+    MainNpc.SetDeliveryItem(1, true)
+    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:034', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:035', true)
+    run GulBClear()
+    switch EventFlowSystemActor.RandomChoice5(5):
+        case 0:
+            EventFlowSystemActor.SystemMailSend('cGulB', 'MAIL_SNpc_gulB', 1, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+        case 1:
+            EventFlowSystemActor.SystemMailSend('cGulB', 'MAIL_SNpc_gulB', 2, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+        case 2:
+            EventFlowSystemActor.SystemMailSend('cGulB', 'MAIL_SNpc_gulB', 3, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+        case 3:
+            EventFlowSystemActor.SystemMailSend('cGulB', 'MAIL_SNpc_gulB', 4, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+        case 4:
+            EventFlowSystemActor.SystemMailSend('cGulB', 'MAIL_SNpc_gulB', 5, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+
+flow GulBQuestNow():
+    if EventFlowSystemActor.HasTargetItem(13105, 1):
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:030', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.SetDeliveryItemAtRandom(13105, false, 'cVillageRemakePattern', 0)
+            MainNpc.NpcDelivery(0, 'Keep')
+            MainNpc.GulFreeAction('cGulActionType_PresentPiratesParts')
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:032', true)
+            MainNpc.NpcDelivery(3, '"Default"')
+            run GulBQuestClear()
+        else:
+            run Sub_grp_Event192()
+    else:
+        run Sub_grp_Event192()
+
+flow GulBQuestNow_OtherClear():
+    run Event163()
+
+flow GulBSitUp():
+    if not System.EventFlags['cPlayer:GulBTalkBeforeFlag']:
+        MainNpc.NpcChangeNameStatus(3)
+    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:065', true)
+    MainNpc.NpcChangeNameStatus(0)
+    MainNpc.SetDefaultWaitAs('cDefault')
+    MainNpc.RequestSimple('GulGetUp', true)
+    MainNpc.TurnBody(10, 0.0)
+    System.EventFlags['cLand:JohnnySitUpFlag'] = true
+
+flow GulBStart():
+    if System.EventFlags['cPlayer:GulBQuestStartFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:023', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:022', false)
+    System.EventFlags['cPlayer:GulBQuestStartFlag'] = true
+    System.EventFlags['cLandTemp:GulBTalkShareplay'] = true
+    System.EventFlags['cPlayer:GulBAnotherPlayerClearFlag'] = false
+
+flow GulBStartWithStanding():
+    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:121', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:122', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:123', false)
+    run GulBStart()
+    EventFlowSystemActor.ExitFlowchart()
+
+flow GulBTalkChk():
+    if EventFlowSystemActor.IsMyVillage():
+        System.EventFlags['cPlayer:GulBTalkBeforeFlag'] = true
+
+flow GulBTalkSleep():
+    if not System.EventFlags['cPlayer:GulBTalkBeforeFlag']:
+        MainNpc.NpcChangeNameStatus(3)
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious10(10, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:001_01', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:001_02', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:001_03', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:001_04', false)
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:001_05', false)
+        case 5:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:001_06', false)
+        case 6:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:001_07', false)
+        case 7:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:001_08', false)
+        case 8:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:001_09', false)
+        case 9:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:001_10', false)
+    MainNpc.NpcChangeNameStatus(0)
+    EventFlowSystemActor.ExitFlowchart()
+
+flow GulB_DC():
+    if System.EventFlags['cLand:JohnnySitUpFlag']:
+        run GulBTalkChk()
+        if System.EventFlags['cLandTemp:GulBTalkShareplay']:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:062_01', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:062_02', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:062_03', false)
+        else:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:061_01', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:061_02', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:061_03', false)
+    else:
+        run GulBKeepSleep()
+
+flow GulB_GetUp_NotStart():
+    run GulBSitUp()
+    if MainNpc.GulFreeQuery2('cGulQueryType_OtherPlayerQuestNow'):
+        if not System.EventFlags['cPlayer:GulBTalkBeforeFlag']:
+            MainNpc.NpcChangeNameStatus(3)
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:100', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:101', true)
+        run GulBTalkChk()
+        MainNpc.NpcChangeNameStatus(0)
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:102', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:103', false)
+    else:
+        if MainNpc.GulFreeQuery2('cGulQueryType_OtherPlayerClear'):
+            if not System.EventFlags['cPlayer:GulBTalkBeforeFlag']:
+                MainNpc.NpcChangeNameStatus(3)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:100', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:101', true)
+            run GulBTalkChk()
+            MainNpc.NpcChangeNameStatus(0)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:105', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:106', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:106_01', false)
+            MainNpc.NpcStartAS('GulBLostPhone', true, false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:107', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:108', false)
+        else:
+            if System.EventFlags['cPlayer:GulBSitUpBeforeFlag']:
+                switch EventFlowSystemActor.RandomChoice4(4):
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:005', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:006', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:008', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:009', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:011', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:012', false)
+                    case 3:
+                        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:014', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:015', false)
+            else:
+                if not System.EventFlags['cPlayer:GulBTalkBeforeFlag']:
+                    MainNpc.NpcChangeNameStatus(3)
+                MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:002', true)
+                System.EventFlags['cPlayer:GulBSitUpBeforeFlag'] = true
+                run GulBTalkChk()
+                MainNpc.NpcChangeNameStatus(0)
+                MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:003', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:004', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:018', false)
+            MainNpc.NpcStartAS('GulBLostPhone', true, false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:018_01', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:018_02', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:019', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:020', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:021', false)
+    run GulBStart()
+    EventFlowSystemActor.ExitFlowchart()
+
+flow GulB_GetUp_Start():
+    run GulBSitUp()
+    MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:080', false)
+    if System.EventFlags['cPlayer:GulBAnotherPlayerClearFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:112', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:113', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:113_01', false)
+        MainNpc.NpcStartAS('GulBLostPhone', true, false)
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:107', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:114', false)
+        run GulBStart()
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:110', false)
+        run GulBStart()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow GulB_NetHost():
+    if System.EventFlags['cLand:JohnnySitUpFlag']:
+        run GulBTalkChk()
+        if System.EventFlags['cPlayer:GulBQuestFinishFlag']:
+            run GulBAfterQuestChat()
+        elif not System.EventFlags['cPlayer:GulBQuestStartFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:067', false)
+            EventFlowSystemActor.ExitFlowchart()
+        elif EventFlowSystemActor.HasTargetItem(13105, 1):
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:066', false)
+            run GulBGivePartsForced()
+            run GulBQuestClear()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:068', false)
+            EventFlowSystemActor.ExitFlowchart()
+    elif System.EventFlags['cPlayer:GulBQuestFinishFlag']:
+        run GulBKeepSleep()
+    elif not System.EventFlags['cPlayer:GulBQuestStartFlag']:
+        run GulBKeepSleep()
+    elif EventFlowSystemActor.HasTargetItem(13105, 1):
+        run GulBSitUp()
+        MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:066', false)
+        run GulBGivePartsForced()
+        run GulBQuestClear()
+    else:
+        run GulBKeepSleep()
+
+flow GulB_Share():
+    if System.EventFlags['cLand:JohnnySitUpFlag']:
+        run GulBTalkChk()
+        if System.EventFlags['cLandTemp:GulBTalkShareplay']:
+            if System.EventFlags['cPlayer:GulBQuestFinishFlag']:
+                run GulBAfterQuest()
+            elif not System.EventFlags['cPlayer:GulBQuestStartFlag']:
+                run GulBStartWithStanding()
+            elif System.EventFlags['cPlayer:GulBAnotherPlayerClearFlag']:
+                run GulBQuestNow_OtherClear()
+            else:
+                run GulBQuestNow()
+        elif System.EventFlags['cPlayer:GulBQuestFinishFlag']:
+            run GulBAfterQuestChat()
+        else:
+            if System.EventFlags['cPlayer:GulBQuestStartFlag']:
+entrypoint Event163:
+                MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:126', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:121', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:125', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:112', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:127', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:127_01', false)
+            MainNpc.NpcStartAS('GulBLostPhone', true, false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:128', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:128_01', false)
+            run GulBStart()
+            EventFlowSystemActor.ExitFlowchart()
+    elif System.EventFlags['cPlayer:GulBQuestFinishFlag']:
+        run GulBKeepSleep()
+    elif System.EventFlags['cPlayer:GulBQuestStartFlag']:
+        run GulB_GetUp_Start()
+    else:
+        run GulB_GetUp_NotStart()
+
+flow Root():
+    if EventFlowSystemActor.IsSharePlay(0):
+        run GulB_Share()
+    elif not EventFlowSystemActor.IsMyVillage():
+        run GulB_DC()
+    elif EventFlowSystemActor.NetHasVisitor():
+        run GulB_NetHost()
+    elif System.EventFlags['cLand:JohnnySitUpFlag']:
+        run GulBTalkChk()
+        if System.EventFlags['cPlayer:GulBQuestFinishFlag']:
+            run GulBAfterQuest()
+        elif System.EventFlags['cPlayer:GulBQuestStartFlag']:
+            run GulBQuestNow()
+        else:
+            run GulBStartWithStanding()
+    elif System.EventFlags['cPlayer:GulBQuestFinishFlag']:
+        run GulBKeepSleep()
+    elif System.EventFlags['cPlayer:GulBQuestStartFlag']:
+        run GulB_GetUp_Start()
+    else:
+        System.EventFlags['cPlayer:JonnyTalkCount'] += 1
+        if System.EventFlags['cPlayer:JonnyTalkCount'] == 1:
+            run GulBTalkSleep()
+        elif EventFlowSystemActor.PercentChoice(10):
+            run GulB_GetUp_NotStart()
+        elif System.EventFlags['cPlayer:JonnyTalkCount'] < 6:
+            run GulBTalkSleep()
+        else:
+            run GulB_GetUp_NotStart()
+
+local flow Sub_grp_Event192():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:031_01', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:031_02', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/gul/SP_gulB:031_03', false)
+

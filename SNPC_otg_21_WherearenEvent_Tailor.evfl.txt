@@ -1,0 +1,172 @@
+flow IntroduceFacility():
+    EventFlowSystemActor.BGMPropertyControl(148)
+    EventFlowSystemActor.FadeIn(false)
+    EventFlowSystemActor.CameraSetDemoParam('FacilityTailorEditStartDemo', 'FacilityEditStartDemo_0', 'Player', false, false, false, 0)
+    fork:
+        branch:
+            Player.PlayerMoveToTarget(false, 632.0, 400.0, 0.0, 0.0, false, '')
+            Player.TurnBody(12, 180.0)
+        branch:
+            MainNpc.NpcMoveDirection(180.0, 25.0, 1, false, false)
+            MainNpc.TurnBody(12, 180.0)
+    EventFlowSystemActor.WaitFrame(30)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:021', false)
+    fork:
+        branch:
+            Player.TurnBody(0, 0.0)
+        branch:
+            MainNpc.TurnBody(10, 0.0)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:022', true)
+    run Demo_Common_Wherearen::EditFacilityExterior()
+    System.EventFlags['cPlayerTemp:WHEREAREN_OtgTalkReserve_Facility'] = true
+    EventFlowSystemActor.ReserveSkipSceneStartDemo()
+    System.EventFlags['cLandTemp:ReserveFaderKeep'] = true
+    run `00_System_StageChange`::ChangeStage(FadeColorString='cBlack', TargetStage='cWherearenFacilityOrder', FadeOutSpeed=0.0, FadeInSpeed='cNormal', FadeOutKindString='cCircle', FadeInKindString='cCircle')
+
+flow PostEdit():
+    System.EventFlags['cWherearenPlayer:SeqTailorEditOngoing'] = false
+    System.EventFlags['cWherearenPlayer:MncGenerateInOfficeTemp'] = true
+
+flow PreEdit():
+    EventFlowSystemActor.BGMPropertyControl(147)
+    MainNpc.TurnBody(10, 0.0)
+    EventFlowSystemActor.WaitFrame(5)
+    Player.TurnBody(0, 0.0)
+    if System.EventFlags['cWherearenPlayer:FacilityPreEditTalkDone']:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:051', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:041', true)
+        MainNpc.TurnNeck(11, false)
+        MainNpc.TurnBody(12, 180.0)
+        EventFlowSystemActor.WaitFrame(12)
+        Player.TurnBody(12, 180.0)
+        EventFlowSystemActor.WaitFrame(15)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:042', false)
+        MainNpc.TurnBody(10, 0.0)
+        fork:
+            branch:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:043', true)
+            branch:
+                EventFlowSystemActor.WaitFrame(15)
+                Player.TurnBody(0, 0.0)
+        System.EventFlags['cWherearenPlayer:FacilityPreEditTalkDone'] = true
+
+flow ReturnOffice():
+    if EventFlowSystemActor.SystemCheckNowStage('cWherearenOffice1'):
+        MainNpc.TurnNeck(10, false)
+        Player.TurnNeck(0, false)
+        EventFlowSystemActor.WaitFrame(20)
+        EventFlowSystemActor.SystemFaderRelease()
+        EventFlowSystemActor.WaitFrame(30)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:061', false)
+        fork:
+            branch:
+                SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:062', false)
+            branch:
+                EventFlowSystemActor.WaitFrame(20)
+                MainNpc.TurnNeck(1, false)
+                Npc_2.TurnNeck(1, false)
+            branch:
+                EventFlowSystemActor@sub.WaitFrame(15)
+                Player.TurnNeck(1, false)
+        SubNpc.TurnNeck(0, false)
+        fork:
+            branch:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:063', false)
+            branch:
+                EventFlowSystemActor.WaitFrame(20)
+                Npc_2.TurnNeck(0, false)
+            branch:
+                EventFlowSystemActor@sub.WaitFrame(15)
+                Player.TurnNeck(0, false)
+        switch EventFlowSystemActor.GeneralTalkChoice2():
+            case 0, 1:
+                fork:
+                    branch:
+                        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:065', true)
+                    branch:
+                        EventFlowSystemActor.WaitFrame(20)
+                        SubNpc.TurnNeck(0, false)
+                        Npc_2.TurnNeck(0, false)
+                    branch:
+                        EventFlowSystemActor@sub.WaitFrame(15)
+                        Player.TurnNeck(0, false)
+                run ReturnOfficePose2F()
+                System.EventFlags['cWherearenPlayer:FacilityPreEditTalkDone'] = false
+                System.EventFlags['cWherearenPlayer:MncGenerateInOfficeTemp'] = false
+                System.EventFlags['cPlayerTemp:WHEREAREN_IsSequenceFirstKKFes'] = true
+                System.EventFlags['cWherearenPlayer:FirstKKFesStep'] = 2
+                run Demo_Common_Wherearen::ToKKFesDemoLive()
+    else:
+        run SNPC_otg_01_WherearenOffice::SetSalaryForEvent()
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:071', true)
+        run SNPC_otg_01_WherearenOffice::GetSalaryForEvent()
+        Npc_2.TurnNeck(10, false)
+        fork:
+            branch:
+                Npc_2.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:075', true)
+            branch:
+                MainNpc.TurnNeck(2, false)
+            branch:
+                Player.TurnNeck(2, false)
+        MainNpc.TurnNeck(10, false)
+        fork:
+            branch:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:073', true)
+            branch:
+                Player.TurnNeck(0, false)
+        System.EventFlags['cWherearenPlayer:Unlock_Faclility_Tailor'] = true
+        System.EventFlags['cPlayer:OtgTipsCompleteBoutiqueBuild'] = true
+        SubflowResults[3] = 0
+        run SNPC_otg_01_WherearenOffice::OrderClose_Complete()
+        Player.TurnNeck(0, false)
+        Player.TurnBody(0, 0.0)
+        EventFlowSystemActor.WaitFrame(20)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:074', true)
+        if not System.EventFlags['cPlayer:EnableEmoticonUI']:
+            System.EventFlags['cPlayer:EnableEmoticonUI'] = true
+            System.EventFlags['cPlayer:EnabledEmoticonIrregular'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:076', false)
+        EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Emoticons', 'Get_Emoticon_FesDance', 'cNowDemoEnd', false)
+
+flow ReturnOfficePose2F():
+    Player.TurnBody(0, 0.0)
+    run SNPC_otg_18_WherearenEvent_Party::LookCamera()
+    Player.CharacterEmoticonAction('Nodding', false, '', 0, false)
+    MainNpc.CharacterEmoticonAction('OtgHappy', true, '', 0, false)
+    SubNpc.CharacterEmoticonAction('Clapping', true, '', 0, false)
+    Npc_2.NpcChangeHandTool(14700, 'cNone', false)
+    Npc_2.CharacterEmoticonAction('Smiling', true, '', 0, false)
+
+flow ReturnOffice_Init():
+    MainNpc.NpcAITalkCastSetting('WherearenPrologue')
+
+flow Root():
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:001', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:003', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_08_WherearenEvent_Tailor:004', true)
+    System.EventFlags['cWherearenPlayer:SeqTailorEditOngoing'] = true
+    System.EventFlags['cWherearenPlayer:IsFacilityEditStartDemo'] = 1
+    System.EventFlags['cPlayerTemp:WHEREAREN_OtgTalkReserve_Facility'] = true
+    System.EventFlags['cLandTemp:ReserveFaderKeep'] = true
+    EventFlowSystemActor.ReserveSkipSceneStartDemo()
+    run StartReaction()
+
+flow StartReaction():
+    EventFlowSystemActor.SystemBGMVolumeFadeOut(0.800000011920929, 0, 0.0)
+    fork:
+        branch:
+            Player.CharacterEmoticonAction('Assent', true, '', 0, false)
+        branch:
+            MainNpc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.WherearenTakeOnFacilityOrder('cTailor', 'cNew')
+    EventFlowSystemActor.WherearenOrderCallback('cStart')
+    EventFlowSystemActor.WherearenOrderCallback('cConfirm')
+    EventFlowSystemActor.SoundTriggerEmit('Demo_Oshigoto_Wipe', -1)
+    EventFlowSystemActor.WaitFrame(6)
+    EventFlowSystemActor.NextLPFadeTime(0.7300000190734863)
+    EventFlowSystemActor.SoundSceneChangeFadeOutDucking(10)
+    EventFlowSystemActor.CameraReserveFirstStateCommand('Demo:TailorEditStartDemo_0', 'Player', false)
+    EventFlowSystemActor.SystemRequestChangeStage('cWherearenFacilitySuspended', 'cOrderWherearen', 'cOrderWherearen', 'cBlack', 1.0, 1.0)
+

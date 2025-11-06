@@ -1,0 +1,116 @@
+flow Chat():
+    if System.EventFlags['cPlayer:FoxCommuneBuyArtTodayFlag']:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious6(6, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:020', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:021', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:028', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:029', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:030', false)
+            case 5:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:023', false)
+    elif System.EventFlags['cPlayer:FoxBuyTodayFlag']:
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:030', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:023', false)
+    elif System.EventFlags['cLand:FoxCommuneArtStockCount'] != 2:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious6(6, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:022', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:024', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:031', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:032', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:033', false)
+            case 5:
+                if System.EventFlags['cLand:FoxCommuneArtStockCount'] != 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:027', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:026', false)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:025', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:034', false)
+
+flow Close():
+    if EventFlowSystemActor.EnvHourCompare(1, -1, true, true) in (1, 2):
+        Player.TurnBody(0, 0.0)
+        MainNpc.NpcAISetting(9, true)
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:014', false)
+        EventFlowSystemActor.ExitFlowchart()
+
+flow CommonTalk():
+    if System.EventFlags['cPlayer:FoxTalkOnlyStandShopFlag']:
+        System.EventFlags['cPlayer:FoxTalkOnlyStandShopFlag'] = false
+    if System.EventFlags['cPlayer:FoxCommuneTalkTodayFlag']:
+        run Close()
+        if SubflowResults@3[0] == 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:002', false)
+    else:
+        System.EventFlags['cPlayer:FoxCommuneTalkTodayFlag'] = true
+        if System.EventFlags['cPlayer:FoxCommuneTalkExplainFlag']:
+            run Close()
+        else:
+            Player.TurnBody(0, 0.0)
+            MainNpc.NpcAISetting(9, true)
+        if not System.EventFlags['cPlayer:TunekichiTalkBefore']:
+            System.EventFlags['cPlayer:TunekichiTalkBefore'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:002', false)
+            run Sub_Event32()
+        elif (SubflowResults@3[0] in (0, 2)) or (not System.EventFlags['cPlayer:FoxCommuneTalkExplainFlag']):
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:001', false)
+            if System.EventFlags['cPlayer:FoxCommuneTalkExplainFlag']:
+                switch SubflowResults@3[0]:
+                    case 0:
+                        run Sub_grp_Event15()
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:002', false)
+                    default:
+                        return
+            else:
+                run Sub_Event32()
+
+flow Root():
+    SubflowResults[0] = 0
+    run CommonTalk()
+    run Chat()
+
+local flow Sub_Event32():
+    System.EventFlags['cPlayer:FoxCommuneTalkExplainFlag'] = true
+    System.EventFlags['cPlayer:FoxCommuneTalkBeforeFlag'] = true
+    if System.EventFlags['cPlayer:TalkFoxCommuneOpenEvent']:
+        if System.EventFlags['cPlayer:FoxCommuneTalkLotteryTodayFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:003', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:004', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:005', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:006', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:007', false)
+    if EventFlowSystemActor.EnvHourCompare(1, -1, true, true) == 0:
+        if SubflowResults@3[0] in (0, 1):
+            run Sub_grp_Event15()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:011', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:012', false)
+        EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_grp_Event15():
+    if (not System.EventFlags['cPlayer:FoxBuyArtTodayFlag']) and (System.EventFlags['cLand:FoxCommuneArtStockCount'] < 2):
+        if System.EventFlags['cLand:FoxCommuneArtStockCount'] < 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:008', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:009', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_02_Commune:010', false)
+    EventFlowSystemActor.ExitFlowchart()
+

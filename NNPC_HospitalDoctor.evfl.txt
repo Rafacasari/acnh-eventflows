@@ -1,0 +1,246 @@
+flow Baggage_Chk():
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:046', false)
+        EventFlowSystemActor.ExitFlowchart()
+
+flow Cancell():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:045', false)
+
+flow Examine():
+    if not EventFlowSystemActor.IsInspectingWherearen():
+        run ShareHouseMate_Chk()
+    if EventFlowSystemActor.IsImmendiatelyAfterWherearenDoctorEvent():
+        run FacilityName_Chk()
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Hospital:204', true)
+        run KKFes_Chk()
+    elif (System.EventFlags['cWherearenPlayer:DoctorEventStart']) and (not System.EventFlags['cWherearenPlayer:GetMedicalEquipToday']) and (not EventFlowSystemActor.IsInspectingWherearen()) and (EventFlowSystemActor.WherearenOrderStatus() == 0):
+        run HospitalEvent()
+    else:
+        MainNpc.WherearenSetTagFacilityNpcName('cHospitalExamination', false, false, 0)
+        run FacilityName_Chk()
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Hospital:201', true)
+        run KKFes_Chk()
+
+flow FacilityName_Chk():
+    if (EventFlowSystemActor.WherearenExistFacilityName('cHospital')) and (not EventFlowSystemActor.PercentChoice(80)):
+        EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cSelectFacility', 0, 'cHospital')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Hospital:203', false)
+        run KKFes_Chk()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow HeadGear_Chk():
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 3:
+        System.EventFlags['cPlayerTemp:WHEREAREN_OperationFlag'] = 3
+
+flow Head_A1():
+    EventFlowSystemActor.SetItemToPocket(12975, 1)
+
+flow Head_A2():
+    EventFlowSystemActor.SetItemToPocket(4452, 1)
+
+flow Head_B1():
+    EventFlowSystemActor.SetItemToPocket(4677, 1)
+
+flow Head_B2():
+    EventFlowSystemActor.SetItemToPocket(5324, 1)
+
+flow Head_B3():
+    switch EventFlowSystemActor.RandomChoice5(5):
+        case 0:
+            EventFlowSystemActor.SetItemToPocket(14673, 1)
+        case 1:
+            EventFlowSystemActor.SetItemToPocket(14675, 1)
+        case 2:
+            EventFlowSystemActor.SetItemToPocket(14676, 1)
+        case 3:
+            EventFlowSystemActor.SetItemToPocket(12963, 1)
+        case 4:
+            EventFlowSystemActor.SetItemToPocket(14674, 1)
+
+flow HospitalEvent():
+    MainNpc.TurnNeck(10, false)
+    MainNpc.TurnBody(10, 0.0)
+    if (MainNpc.NpcIsTalkedFromBehind()) and (MainNpc.NpcNowPosture() != 0):
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:030', false)
+    else:
+        switch EventFlowSystemActor.FlagSystemIntValue4(4, 'cWherearenPlayer:HospitalReceptionFlag'):
+            case 0:
+                MainNpc.WherearenSetTagFacilityNpcName('cHospitalExamination', false, false, 0)
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Hospital:201', true)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:031', false)
+                switch EventFlowSystemActor.GeneralTalkChoice3():
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:041_01', false)
+                        run Baggage_Chk()
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            run Treatment_Demo()
+                            run Head_A1()
+                            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:051_01', false)
+                            run Sub_Event44()
+                        else:
+                            run Treatment_Demo()
+                            run Head_A2()
+                            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:051_02', false)
+                            run Sub_Event44()
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:041_02', false)
+                        run Baggage_Chk()
+                        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                            case 0:
+                                run Treatment_Demo()
+                                run Head_B1()
+                                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:052_01', false)
+                                run Sub_Event44()
+                            case 1:
+                                run Treatment_Demo()
+                                run Head_B2()
+                                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:052_02', false)
+                                run Sub_Event44()
+                            case 2:
+                                run Treatment_Demo()
+                                run Head_B3()
+                                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:052_03', false)
+                                run Sub_Event44()
+                    case 2:
+                        run Cancell()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:032', false)
+                switch EventFlowSystemActor.GeneralTalkChoice3():
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:042_01', false)
+                        run Baggage_Chk()
+                        run Treatment_Demo()
+                        run Nose_A1()
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:053_01', false)
+                        run Sub_Event43()
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:042_02', false)
+                        run Baggage_Chk()
+                        run Treatment_Demo()
+                        run Nose_B1()
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:054_01', false)
+                        run Sub_Event43()
+                    case 2:
+                        run Cancell()
+            case 3:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:034', false)
+                switch EventFlowSystemActor.GeneralTalkChoice3():
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:044_01', false)
+                        run Baggage_Chk()
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            run Treatment_Demo()
+                            run Knee_A1()
+                            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:057_01', false)
+                            run Sub_Event41()
+                        else:
+                            run Sub_Event24()
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:044_02', false)
+                        run Baggage_Chk()
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            run Sub_Event24()
+                        else:
+                            run Treatment_Demo()
+                            run Knee_B1()
+                            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:058_01', false)
+                            run Sub_Event41()
+                    case 2:
+                        run Cancell()
+
+flow KKFes_Chk():
+    if (not EventFlowSystemActor.IsInspectingWherearen()) and (EventFlowSystemActor.WherearenKKFesStatus(false) == 2):
+        MainNpc.TurnNeck(10, true)
+        MainNpc.NpcKKFesJoinOpenMessage('TalkNNpc/B1_Bo/OneRoom/BO_Facility_KKFes:001')
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_KKFes:103', true)
+            run Demo_Common_Wherearen::ToKKFesDemoLive()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_KKFes:200', false)
+            EventFlowSystemActor.ExitFlowchart()
+
+flow Knee_2():
+    EventFlowSystemActor.SetItemToPocket(3607, 1)
+
+flow Knee_A1():
+    EventFlowSystemActor.SetItemToPocket(12966, 1)
+
+flow Knee_B1():
+    switch EventFlowSystemActor.RandomChoice5(5):
+        case 0:
+            EventFlowSystemActor.SetItemToPocket(14669, 1)
+        case 1:
+            EventFlowSystemActor.SetItemToPocket(14671, 1)
+        case 2:
+            EventFlowSystemActor.SetItemToPocket(14672, 1)
+        case 3:
+            EventFlowSystemActor.SetItemToPocket(12960, 1)
+        case 4:
+            EventFlowSystemActor.SetItemToPocket(14670, 1)
+
+flow Nose_A1():
+    EventFlowSystemActor.SetItemToPocket(12965, 1)
+
+flow Nose_B1():
+    EventFlowSystemActor.SetItemToPocket(14247, 1)
+
+flow OnePiece_Chk():
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 2:
+        System.EventFlags['cPlayerTemp:WHEREAREN_OperationFlag'] = 2
+
+flow Root():
+    if not EventFlowSystemActor.IsInspectingWherearen():
+        run ShareHouseMate_Chk()
+    if EventFlowSystemActor.IsImmendiatelyAfterWherearenDoctorEvent():
+        run FacilityName_Chk()
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Hospital:205', true)
+        run KKFes_Chk()
+    elif (System.EventFlags['cWherearenPlayer:DoctorEventStart']) and (not System.EventFlags['cWherearenPlayer:GetMedicalEquipToday']) and (not EventFlowSystemActor.IsInspectingWherearen()) and (EventFlowSystemActor.WherearenOrderStatus() == 0):
+        run HospitalEvent()
+    else:
+        MainNpc.WherearenSetTagFacilityNpcName('cHospitalExamination', false, false, 0)
+        run FacilityName_Chk()
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Hospital:202', true)
+        run KKFes_Chk()
+
+flow ShareHouseMate_Chk():
+    if EventFlowSystemActor.WherearenOrderStatus() == 1:
+        MainNpc.TurnNeck(10, false)
+        run NNPC_Spot_WherearenMainFieldVisitor::LookforHouseMate()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow StandSleep():
+    run NNPC_RestaurantCustomer::`StandSleep_2.1`()
+
+local flow Sub_Event24():
+    run Treatment_Demo()
+    run Knee_2()
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:056_02', false)
+    run Sub_Event41()
+
+local flow Sub_Event41():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:060', false)
+    System.EventFlags['cWherearenPlayer:GetMedicalEquipToday'] = true
+    System.EventFlags['cWherearenPlayer:HospitalReceptionFlag'] = 0
+
+local flow Sub_Event43():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:060', false)
+    System.EventFlags['cWherearenPlayer:GetMedicalEquipToday'] = true
+    System.EventFlags['cWherearenPlayer:HospitalReceptionFlag'] = 0
+
+local flow Sub_Event44():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:060', false)
+    System.EventFlags['cWherearenPlayer:GetMedicalEquipToday'] = true
+    System.EventFlags['cWherearenPlayer:HospitalReceptionFlag'] = 0
+
+flow Treatment_Demo():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Hospital:047', true)
+    run Treatment_Fade()
+
+flow Treatment_Fade():
+    run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+    MainNpc.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(40)
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+

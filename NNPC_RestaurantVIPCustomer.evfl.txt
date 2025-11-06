@@ -1,0 +1,81 @@
+flow Cutlery():
+    run NNPC_RestaurantCustomer::TalkChk()
+    MainNpc.WherearenSetTagFacilityNpcName('cRestaurantCustomer2F', false, false, 0)
+    switch SubflowResults@3[1]:
+        case 0:
+            run FacilityNameCutlery_Chk()
+            run Cutlery_ShareHouseMate_Chk()
+        case 1:
+            run FacilityNameCutlery_Chk()
+            run Cutlery_ShareHouseMate_Chk()
+            run NewBuildOrder_Cutlery()
+        case 2:
+            MainNpc.TurnBody(10, 0.0)
+            MainNpc.TurnNeck(10, false)
+            MainNpc.NpcChangeHandTool(65534, 'cPutAway', false)
+            EventFlowSystemActor.WaitFrame(10)
+            run NNPC_Spot_WherearenMainFieldVisitor::LookforHouseMate()
+
+flow Cutlery_ShareHouseMate_Chk():
+    if EventFlowSystemActor.IsSharehousePareWherearenRestaurant2FCustomers():
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:513', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:512', true)
+
+flow FacilityNameCutlery_Chk():
+    if (EventFlowSystemActor.WherearenExistFacilityName('cRestaurant')) and (not EventFlowSystemActor.PercentChoice(80)):
+        EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cSelectFacility', 0, 'cRestaurant')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:503', false)
+        run NNPC_RestaurantCustomer::TalkChk()
+        if SubflowResults@3[1] not in (0, 2):
+            run NewBuildOrder_Cutlery()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow FacilityNameRoot_Chk():
+    if (EventFlowSystemActor.WherearenExistFacilityName('cRestaurant')) and (not EventFlowSystemActor.PercentChoice(80)):
+        EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cSelectFacility', 0, 'cRestaurant')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:503', false)
+        run NNPC_RestaurantCustomer::TalkChk()
+        if SubflowResults@3[1] not in (0, 2):
+            run NewBuildOrder_Root()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow NewBuildOrder_Cutlery():
+    if EventFlowSystemActor.IsWherearenWorkMode():
+        MainNpc.TurnBody(10, 0.0)
+        MainNpc.TurnNeck(10, false)
+        MainNpc.NpcChangeHandTool(65534, 'cPutAway', false)
+        EventFlowSystemActor.WaitFrame(10)
+        run NNPC_Spot_WherearenMainFieldVisitor::NewBuildInFacility()
+
+flow NewBuildOrder_Root():
+    if EventFlowSystemActor.IsWherearenWorkMode():
+        MainNpc.TurnBody(10, 0.0)
+        MainNpc.TurnNeck(10, false)
+        run NNPC_Spot_WherearenMainFieldVisitor::NewBuildInFacility()
+
+flow Root():
+    run NNPC_RestaurantCustomer::TalkChk()
+    MainNpc.WherearenSetTagFacilityNpcName('cRestaurantCustomer2F', false, false, 0)
+    switch SubflowResults@3[1]:
+        case 0:
+            run FacilityNameRoot_Chk()
+            run Root_ShareHouseMate_Chk()
+        case 1:
+            run FacilityNameRoot_Chk()
+            run Root_ShareHouseMate_Chk()
+            run NewBuildOrder_Root()
+        case 2:
+            MainNpc.TurnBody(10, 0.0)
+            MainNpc.TurnNeck(10, false)
+            run NNPC_Spot_WherearenMainFieldVisitor::LookforHouseMate()
+
+flow Root_ShareHouseMate_Chk():
+    if EventFlowSystemActor.IsSharehousePareWherearenRestaurant2FCustomers():
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:511', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:510', true)
+
+flow StandSleep():
+    run NNPC_RestaurantCustomer::`StandSleep_2.1`()
+

@@ -1,0 +1,130 @@
+flow AfterMoveToRoom():
+    MainNpc.TurnBody(1, 0.0)
+    MainNpc.TurnNeck(1, false)
+    MainNpc.NpcAISetting(2, true)
+    MainNpc.NpcAISetting(3, true)
+    Player.TurnBody(1, 0.0)
+    SubNpc.SetNpcName(0, 0)
+    SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:065', true)
+    MainNpc.TurnNeck(10, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:066', false)
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:067', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            MainNpc.TurnNeck(1, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:068', false)
+    MainNpc.TurnNeck(10, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:069', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(0, false)
+    run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+    MainNpc.NpcSetVisibleAction(false)
+    EventFlowSystemActor.WaitFrame(20)
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+    EventFlowSystemActor.ReserveSystemFlowDemo('System_WherearenUIDialog', 'NoticeAboutPhotoRegistration', true, false, false)
+
+flow AfterMoveToRoom_Init():
+    MainNpc.NpcAITalkSubCastEntry('-Wherearen:Customer', 1)
+    MainNpc.NpcAISetting(2, false)
+    MainNpc.NpcAISetting(3, false)
+
+flow CancelConstructionPortfolio():
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:053', true)
+
+flow Departure():
+    EventFlowSystemActor.WherearenSetFirstCustomerInfo(0)
+    if System.EventFlags['cWherearenPlayer:SeqFirstVisitCustomerArrivalTalk']:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:056', false)
+    else:
+        if System.EventFlags['cWherearenPlayer:SeqFirstVisitCustomerMncTalk']:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:055', false)
+        else:
+            System.EventFlags['cWherearenPlayer:SeqFirstVisitCustomerMncTalk'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:051', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+        run CancelConstructionPortfolio()
+    elif EventFlowSystemActor.IsWherearenWorkMode():
+        if System.EventFlags['cWherearenPlayer:SeqFirstVisitCustomerHowToGo']:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:057', true)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:052', true)
+            System.EventFlags['cWherearenPlayer:SeqFirstVisitCustomerHowToGo'] = true
+        run SNPC_mnc_01_Wherearen::OpenResortPlanner()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:054', true)
+
+flow First_RevisitEnter():
+    MainNpc.NpcAISetting(4, false)
+    EventFlowSystemActor.CollisionWherearenAirWall(false)
+    fork:
+        branch:
+            Player.PlayerDemoMove('cForward', 9)
+            Player.TurnBody(11, 0.0)
+            Player.TurnNeck(1, false)
+        branch:
+            MainNpc.TurnNeck(11, false)
+            MainNpc.NpcMoveDirection(180.0, 45.0, 1, false, true)
+            MainNpc.TurnBody(11, 0.0)
+            MainNpc.TurnNeck(1, false)
+        branch:
+            EventFlowSystemActor.WaitFrame(40)
+            SubNpc.CharacterEmoticonAction('Aha', true, '', 0, false)
+            EventFlowSystemActor.WaitFrame(10)
+    fork:
+        branch:
+            EventFlowSystemActor@player.WaitFrame(15)
+            Player.PlayerDemoMove('cForward', 1)
+        branch:
+            EventFlowSystemActor@mnc.WaitFrame(15)
+            MainNpc.NpcMoveDirection(180.0, 5.0, 0, false, true)
+        branch:
+            SubNpc.NpcMoveDirection(0.0, 35.0, 1, false, true)
+        branch:
+            EventFlowSystemActor@housemate.WaitFrame(30)
+            EventFlowSystemActor.CameraSetDemoParam('LandingTalk', 'cDefault', 'Place:SafeArea', false, false, false, 0)
+    Player.TurnBody(1, 0.0)
+    Player.PlayerWaitTurn()
+    EventFlowSystemActor.CollisionWherearenAirWall(true)
+    MainNpc.NpcAISetRequestSpeakFunc('cLeaveWherearenGarden', false)
+
+flow ForceTalkBridge():
+    EventFlowSystemActor.WherearenSetFirstCustomerInfo(0)
+    EventFlowSystemActor.WherearenResetVisitInfo()
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:084', true)
+
+flow TalkInGarden():
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:081', true)
+
+flow VisitTalk_FristVisitCustomer():
+    if System.EventFlags['cWherearenPlayer:SeqFirstVisitCustomerArrivalTalk']:
+        run NNPC_Spot_WherearenGarden::EnterGardenWithoutCustomer()
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:083', true)
+    else:
+        System.EventFlags['cWherearenPlayer:SeqFirstVisitCustomerArrivalTalk'] = true
+        run First_RevisitEnter()
+        MainNpc.TurnNeck(1, false)
+        SubNpc.TurnNeck(10, false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:061', true)
+        switch EventFlowSystemActor.GeneralTalkChoice2():
+            case 0, 1:
+                MainNpc.TurnNeck(10, false)
+                MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:062', false)
+                MainNpc.TurnNeck(1, false)
+                fork:
+                    branch:
+                        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:063', true)
+                    branch:
+                        EventFlowSystemActor.WaitFrame(15)
+                        SubNpc.TurnNeck(0, false)
+                SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:064', false)
+                SubNpc.TurnNeck(10, false)
+                SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:064_01', true)
+                System.EventFlags['cPlayerTemp:WHEREAREN_MncTalkReserve_House'] = true
+                EventFlowSystemActor.SystemRequestChangeStage('cWherearenMainIslandFirstVisitNpcHouse', 'cCircle', 'cCircle', 'cBlack', 1.0, 1.0)
+

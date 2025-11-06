@@ -1,0 +1,43 @@
+flow FireworksSet_Blue():
+    MainNpc.SetDeliveryItemAtRandom(12974, true, 'cVillageRemakePattern', 0)
+
+flow FireworksSet_Red():
+    MainNpc.SetDeliveryItemAtRandom(5743, true, 'cVillageRemakePattern', 0)
+
+flow GetFireworksItem():
+    if EventFlowSystemActor.PercentChoice(50):
+        run FireworksSet_Red()
+        if EventFlowSystemActor.ShoppingCapacity('cNpcTrade', 5743):
+            run Sub_Event16()
+        else:
+            run FireworksSet_Blue()
+            if EventFlowSystemActor.ShoppingCapacity('cNpcTrade', 12974):
+                run Sub_Event16()
+            else:
+                run Sub_Event23()
+    else:
+        run FireworksSet_Blue()
+        if EventFlowSystemActor.ShoppingCapacity('cNpcTrade', 12974):
+            run Sub_Event16()
+        else:
+            run FireworksSet_Red()
+            if EventFlowSystemActor.ShoppingCapacity('cNpcTrade', 5743):
+                run Sub_Event16()
+            else:
+                run Sub_Event23()
+
+flow Root():
+    if MainNpc.IsFirewoksApproachNpc():
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Fireworks:001', false)
+        run GetFireworksItem()
+
+local flow Sub_Event16():
+    MainNpc.NpcDelivery(1, 'Default')
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Fireworks:002', false)
+    MainNpc.EventFlags['cNpcMemory:FireworksGetItemFlag'] = true
+
+local flow Sub_Event23():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Fireworks:003', false)
+    MainNpc.EventFlags['cNpcMemory:FireworksCannotGetNnpcItemFlag'] = true
+    System.EventFlags['cPlayer:FireworkCannotGetNnpcItemFlag'] = true
+

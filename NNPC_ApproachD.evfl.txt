@@ -1,0 +1,60 @@
+flow MoveCancel():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachD_Moving:004', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachD_Moving:005', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachD_Moving:006', false)
+    MainNpc.SetNpcMoveoutStopInfo(0)
+    MainNpc.EventFlags['cNpcMemory:MoveCancelTalk'] = true
+entrypoint Event18:
+    MainNpc.EventFlags['cNpcMemory:NextMoveOutTalk'] = true
+    System.EventFlags['cLand:IsMovingConsultationToPlayer'] = true
+
+flow MoveConfirm():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachD_Moving:007', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachD_Moving:008', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachD_Moving:009', false)
+    MainNpc.SetNpcMoveoutStopInfo(1)
+    run Event18()
+
+flow Moving():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachD_Moving:001', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run MoveCancel()
+            else:
+                run MoveConfirm()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachD_Moving:002', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run MoveCancel()
+            else:
+                run MoveConfirm()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachD_Moving:003', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run MoveCancel()
+            else:
+                run MoveConfirm()
+
+flow Stay():
+    MainNpc.SetPlayerName(1)
+    if MainNpc.IsMovingConsultationPlayerNotLiving():
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachD_Stay:004', false)
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachD_Stay:001', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachD_Stay:002', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachD_Stay:003', false)
+    MainNpc.EventFlags['cNpcMemory:MoveCancelTalk'] = true
+

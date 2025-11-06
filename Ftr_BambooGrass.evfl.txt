@@ -1,0 +1,57 @@
+flow Conditional():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious9(9, false):
+        case 0:
+            if EventFlowSystemActor.OfficeLevel() == `ResServiceBuilding`:
+                EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_BambooGrass:002', false)
+                EventFlowSystemActor.ExitFlowchart()
+        case 1:
+            if EventFlowSystemActor.MuseumLevel() in (`BlathersTent`, `BlathersMuseumNoArt`, `BlathersMuseumArt`, `BlathersCafe`):
+                EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_BambooGrass:012', false)
+                EventFlowSystemActor.ExitFlowchart()
+        case 2:
+            if System.EventFlags['cPlayer:JohnnyHelpCount'] >= 1:
+                EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_BambooGrass:013', false)
+                EventFlowSystemActor.ExitFlowchart()
+        case 3:
+            if EventFlowSystemActor.VillagerNpcNum(false) >= 5:
+                EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_BambooGrass:004', false)
+                EventFlowSystemActor.ExitFlowchart()
+        case 4:
+            if EventFlowSystemActor.VillagerNpcNum(false) >= 5:
+                EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_BambooGrass:006', false)
+                EventFlowSystemActor.ExitFlowchart()
+        case 5:
+            if EventFlowSystemActor.VillagerNpcNum(false) >= 5:
+                EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_BambooGrass:007', false)
+                EventFlowSystemActor.ExitFlowchart()
+        case 6:
+            if EventFlowSystemActor.VillagerNpcNum(false) >= 6:
+                EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_BambooGrass:011', false)
+                EventFlowSystemActor.ExitFlowchart()
+        case 7:
+            if EventFlowSystemActor.VillagerNpcNum(false) >= 8:
+                EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_BambooGrass:017', false)
+                EventFlowSystemActor.ExitFlowchart()
+        case 8:
+            if EventFlowSystemActor.VillagerNpcNum(false) >= 8:
+                EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_BambooGrass:018', false)
+                EventFlowSystemActor.ExitFlowchart()
+
+flow Conditional_Chk():
+    if (EventFlowSystemActor.MuseumLevel() == `BlathersNotMovedIn`) and (System.EventFlags['cPlayer:JohnnyHelpCount'] < 1) and (EventFlowSystemActor.VillagerNpcNum(false) < 5) and (EventFlowSystemActor.OfficeLevel() in (`ResServiceTent0`, `ResServiceTent1`)):
+        run Event0()
+
+flow Root():
+    EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_BambooGrass:001', false)
+    run Conditional_Chk()
+    if EventFlowSystemActor.PercentChoice(70):
+entrypoint Event11:
+        run Conditional()
+        run Event11()
+    else:
+entrypoint Event0:
+        EventFlowSystemActor.NpcSelectMessage('cWildCard', '', '', '', 'TalkFtr/FTR_BambooGrass', '', '', '')
+        EventFlowSystemActor.MessageSuspend()
+        EventFlowSystemActor.ExitFlowchart()
+        return
+

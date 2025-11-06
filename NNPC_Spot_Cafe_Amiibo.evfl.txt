@@ -1,0 +1,34 @@
+flow NNPC_TYPE_CHK():
+    if not MainNpc.IsVillagerNpc():
+        if MainNpc.IsLivedSameNpc() == 0:
+            SubflowResults[0] = 3
+        elif MainNpc.IsAcquaintedWithSameNpc():
+            SubflowResults[0] = 1
+        else:
+            SubflowResults[0] = 2
+
+flow Root():
+    run NNPC_TYPE_CHK()
+    if MainNpc.MuseumCafeNpcTalkCount() == 0:
+        MainNpc.AddMuseumCafeTalkCount()
+        if MainNpc.NpcMuseumCafeCallCount() != 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Amiibo:011', false)
+        elif SubflowResults@4[0] in (0, 1):
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Amiibo:001', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Amiibo:003', false)
+    else:
+        MainNpc.AddMuseumCafeTalkCount()
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Amiibo:101', false)
+        else:
+            switch SubflowResults@4[0]:
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Amiibo:201', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Amiibo:301', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Amiibo:401', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Amiibo:501', false)
+

@@ -1,0 +1,118 @@
+flow NFC_AirplaneMode():
+    run Event7()
+
+flow NFC_AskRetry():
+    Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:303', false)
+    run NFC_AskRetry_Select()
+
+flow NFC_AskRetry_Select():
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        switch SubflowResults@4[19]:
+            case 0:
+                run Obj_Cafe_Telephone::Telephone_StartUsing()
+            case 1:
+                run Obj_RcoMachine_Amiibo::AmiiboPhone_RetryFromUI()
+            case 2:
+                run Obj_WherearenAmiiboDevice::StartAmiiboReading()
+            case 3:
+                run System_CastUI_Amiibo::Root()
+    else:
+        switch SubflowResults@4[19]:
+            case 0:
+                run Obj_Cafe_Telephone::Finish_UsingTelephone()
+            case 1:
+                run Obj_RcoMachine_Amiibo::AmiiboPhone_Exit_SeeYouNext()
+            case 2:
+                run Obj_WherearenAmiiboDevice::FinishUsingAmiiboReader()
+            case 3:
+                EventFlowSystemActor.ExitFlowchart()
+
+flow NFC_AskUsingOtherAmiibo():
+    Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:302', false)
+    run NFC_AskRetry_Select()
+
+flow NFC_ReadError(NpadId: int = 0, ReadPadId: int = 0):
+    switch EventFlowSystemActor.NfpErrorType():
+        case 0:
+            Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:101', false)
+            run NFC_AskUsingOtherAmiibo()
+        case 1:
+            Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:102', false)
+            run NFC_AskRetry()
+        case 2:
+            Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:103', false)
+            run NFC_AskRetry()
+
+flow NFC_ReadProcess(NpadId: int = 0, ReadPadId: int = 0):
+    if EventFlowSystemActor.NfcDisabled():
+        run NFC_AirplaneMode()
+    else:
+        EventFlowSystemActor.CheckNfpController(NpadId)
+        ReadPadId = NpadId
+        EventFlowSystemActor.ReadAmiibo(ReadPadId)
+        if not EventFlowSystemActor.UIResultMenuDecide():
+            Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:301', false)
+            run NFC_AskRetry_Select()
+        elif EventFlowSystemActor.CheckErrorType(1):
+            run NFC_ReadError()
+        elif not EventFlowSystemActor.IsAcceptableAmiibo():
+            Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:101', false)
+            run NFC_AskUsingOtherAmiibo()
+        elif EventFlowSystemActor.CheckAmiiboNPC('cVillager'):
+            switch SubflowResults@4[19]:
+                case 0:
+                    Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:100_01', false)
+                    run NFC_AskUsingOtherAmiibo()
+                case 1:
+                    Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:100_02', false)
+                    run NFC_AskUsingOtherAmiibo()
+                case 2:
+                    Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:100_03', false)
+                    run NFC_AskUsingOtherAmiibo()
+                default:
+                    return
+        else:
+            EventFlowSystemActor.SetTagFromSystem('cAmiiboCallNpcName', 'cDegit', 0, 0, '')
+            if EventFlowSystemActor.CheckAmiiboNPC('cNNPC'):
+                if SubflowResults@4[19] in (0, 2, 3):
+                    Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:201', false)
+            elif EventFlowSystemActor.CheckAmiiboNPC('cRcmAndRct'):
+                if SubflowResults@4[19] in (0, 2, 3):
+                    Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:203', false)
+                else:
+                    Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:203_01', false)
+                    run NFC_AskUsingOtherAmiibo()
+            elif SubflowResults@4[19] in (0, 2, 3):
+                if EventFlowSystemActor.AmiiboNameWithTitle() == 0:
+                    Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:202', false)
+                else:
+                    Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:201', false)
+            else:
+                if EventFlowSystemActor.AmiiboNameWithTitle() == 0:
+                    Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:202_01', false)
+                else:
+                    Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:201_01', false)
+                run NFC_AskUsingOtherAmiibo()
+
+flow NFC_SettingChk(NpadId: int = 0):
+    if EventFlowSystemActor.NfcDisabled():
+entrypoint Event7:
+        Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:001', false)
+        run Sub_grp_Event59(NpadId=NpadId)
+    else:
+        EventFlowSystemActor.CheckNfpController(NpadId)
+        if NpadId < 0:
+            Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:002', false)
+            run Sub_grp_Event59(NpadId=NpadId)
+
+local flow Sub_grp_Event59(NpadId: int):
+    switch SubflowResults@4[19]:
+        case 0:
+            Player.PlayerMuseumCafe(5, false)
+        case 1, 3:
+            pass
+        case 2:
+            EventFlowSystemActor.WaitFrame(10)
+            GeneralObject.StartAnimation('Off', 'cTrigger')
+    EventFlowSystemActor.ExitFlowchart()
+

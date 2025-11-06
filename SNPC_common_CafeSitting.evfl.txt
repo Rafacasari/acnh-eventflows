@@ -1,0 +1,302 @@
+flow Root():
+    if not MainNpc.IsTalkedInMuseumCafe():
+        MainNpc.SetIsTalkedInMuseumCafe()
+        switch MainNpc.MuseumCafeMeetCount():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:001', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:002', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:003', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:004', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:005', false)
+        MainNpc.AddMuseumCafeMeetCount()
+    elif System.EventFlags['cLand:MuseumCafeConstruction_3_OpenDay']:
+        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:021', false)
+    elif MainNpc.NpcLabel('chy'):
+        if EventFlowSystemActor.RandomChoiceExcludePrevious9(9, true) not in (0, 1, 2, 3, 4, 5, 6, 7):
+            if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                switch MainNpc.EnvWeatherNNpcTalkCustom():
+                    case `Fine`, `Blossom`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_11', false)
+                    case `Cloudy`, `Rain`, `HeavyRain`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_12', false)
+                    case `Snow`, `HeavySnow`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_13', false)
+            else:
+                switch EventFlowSystemActor.EnvSeason():
+                    case `Spring`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_15', false)
+                    case `Summer`:
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_17', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_18', false)
+                    case `Autumn`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_19', false)
+                    default:
+                        return
+        elif not EventFlowSystemActor.CatchFesFreeQuery2('cChmQueryType_AttendFishingConvention'):
+            if EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true) == 0:
+                switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_01', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_02', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_03', false)
+            else:
+                switch EventFlowSystemActor.RandomChoiceExcludePrevious9(9, true):
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_05', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_07', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_06', false)
+                    case 3:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_08', false)
+                    case 4:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_09', false)
+                    case 5:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_16', false)
+                    case 6:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_20', false)
+                    case 7:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_21', false)
+                    case 8:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_22', false)
+        elif EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true) == 0:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious4(4, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_01', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_02', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_03', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_chy:011_04', false)
+        else:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious10(10, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_05', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_07', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_06', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_08', false)
+                case 4:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_09', false)
+                case 5:
+                    if (System.EventFlags['cPlayer:BeyDaily_ReqObj']) and (EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0):
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_chy:011_23', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_chy:011_10', false)
+                case 6:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_16', false)
+                case 7:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_20', false)
+                case 8:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_21', false)
+                case 9:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_22', false)
+    elif MainNpc.NpcLabel('bey'):
+        if EventFlowSystemActor.RandomChoiceExcludePrevious9(9, true) not in (0, 1, 2, 3, 4, 5, 6, 7):
+            if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                switch MainNpc.EnvWeatherNNpcTalkCustom():
+                    case `Fine`, `Blossom`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_11', false)
+                    case `Cloudy`, `Rain`, `HeavyRain`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_12', false)
+                    case `Snow`, `HeavySnow`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_13', false)
+            else:
+                switch EventFlowSystemActor.EnvSeason():
+                    case `Spring`:
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_15', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_16', false)
+                    case `Summer`:
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_17', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_18', false)
+                    case `Autumn`:
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_19', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_20', false)
+                    case `Winter`:
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_21', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_22', false)
+        elif not EventFlowSystemActor.CatchFesFreeQuery2('cChmQueryType_AttendInsectConvention'):
+            if EventFlowSystemActor.RandomChoice3(3) == 0:
+                switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_01', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_02', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_03', false)
+            else:
+                switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_05', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_07', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_06', false)
+                    case 3:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_08', false)
+                    case 4:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_09', false)
+        elif EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true) == 0:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious4(4, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_01', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_02', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_03', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_bey:011_04', false)
+        else:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious7(7, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_05', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_07', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_06', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_08', false)
+                case 4:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_09', false)
+                case 5:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_bey:011_24', false)
+                case 6:
+                    MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_bey:011_23', false)
+    elif (not MainNpc.NpcLabel('boc')) and (not MainNpc.NpcLabel('doc')):
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious9(9, true):
+            case 0, 1, 2, 3, 4, 5:
+                if EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true) == 0:
+                    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                        case 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_01', false)
+                        case 1:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_02', false)
+                        case 2:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_03', false)
+                else:
+                    switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+                        case 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_05', false)
+                        case 1:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_07', false)
+                        case 2:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_06', false)
+                        case 3:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_08', false)
+                        case 4:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_09', false)
+            case 6:
+                switch MainNpc.EnvWeatherNNpcTalkCustom():
+                    case `Fine`, `Blossom`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_11', false)
+                    case `Cloudy`, `Rain`, `HeavyRain`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_12', false)
+                    case `Snow`, `HeavySnow`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_13', false)
+            case 7, 8:
+                switch EventFlowSystemActor.EnvSeason():
+                    case `Spring`:
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_15', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_16', false)
+                    case `Summer`:
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_17', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_18', false)
+                    case `Autumn`:
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_19', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_20', false)
+                    case `Winter`:
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_21', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_22', false)
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious9(9, true):
+            case 0, 1, 2, 3, 4, 5, 6:
+                if EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true) == 0:
+                    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                        case 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_01', false)
+                        case 1:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_02', false)
+                        case 2:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_03', false)
+                else:
+                    switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+                        case 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_05', false)
+                        case 1:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_07', false)
+                        case 2:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_06', false)
+                        case 3:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_08', false)
+                        case 4:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_09', false)
+            case 7:
+                switch MainNpc.EnvWeatherNNpcTalkCustom():
+                    case `Fine`, `Blossom`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_11', false)
+                    case `Cloudy`, `Rain`, `HeavyRain`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_12', false)
+                    case `Snow`, `HeavySnow`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_13', false)
+            case 8:
+                switch EventFlowSystemActor.EnvSeason():
+                    case `Spring`:
+                        if EventFlowSystemActor.EnvWeatherArea() == `cWeatherArea_North`:
+                            if EventFlowSystemActor.EnvCheckBetweenDate(4, 1, 4, 10, 'cLastGrowUpTime'):
+                                run Sub_grp_Event144()
+                            else:
+                                MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_15', false)
+                        else:
+                            if EventFlowSystemActor.EnvCheckBetweenDate(10, 1, 10, 10, 'cLastGrowUpTime'):
+                                run Sub_grp_Event144()
+                            else:
+                                MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_15', false)
+                    case `Summer`:
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_17', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_18', false)
+                    case `Autumn`:
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_19', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_20', false)
+                    case `Winter`:
+                        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_21', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_22', false)
+
+local flow Sub_grp_Event144():
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_15', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/ForCafe/Normal_Sitting/SP_CafeSitting_tkk:011_16', false)
+

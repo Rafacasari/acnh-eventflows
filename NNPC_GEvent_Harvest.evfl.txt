@@ -1,0 +1,386 @@
+flow After_EV():
+    if (System.EventFlags['cLand:HarvestProgress'] <= 0) or (EventFlowSystemActor.PercentChoice(30)):
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:2004', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:2005', false)
+    elif System.EventFlags['cLand:HarvestProgress'] > 3:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:2008', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:2009', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:2010', false)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:2006', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:2007', false)
+
+flow Chk_DeliverFoodStuff(ItemPrice: int = 0):
+    switch EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayer:HarvestProgress'):
+        case 0:
+            run NormalOutdoor_Msg()
+            EventFlowSystemActor.ExitFlowchart()
+        case 1:
+            run Sub_Event50(ItemPrice=ItemPrice)
+        case 2:
+            if EventFlowSystemActor.RandomChoice2(2) == 0:
+                run Sub_Event50(ItemPrice=ItemPrice)
+            else:
+                if EventFlowSystemActor.RandomChoice2(2) == 0:
+                    MainNpc.SetItemName(41, 9, 0)
+                else:
+                    MainNpc.SetItemName(42, 9, 0)
+                EventFlowSystemActor.SetTagItemNameDirect(13782, 1, 8, 1)
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:007', false)
+        case 3:
+            if EventFlowSystemActor.RandomChoice3(3) in (0, 1):
+                if EventFlowSystemActor.RandomChoice2(2) == 0:
+                    run Sub_Event50(ItemPrice=ItemPrice)
+                else:
+                    if EventFlowSystemActor.RandomChoice2(2) == 0:
+                        MainNpc.SetItemName(41, 9, 0)
+                    else:
+                        MainNpc.SetItemName(42, 9, 0)
+                    EventFlowSystemActor.SetTagItemNameDirect(13782, 1, 8, 1)
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:007', false)
+            else:
+                if EventFlowSystemActor.RandomChoice2(2) == 0:
+                    MainNpc.SetItemName(43, 9, 0)
+                else:
+                    MainNpc.SetItemName(44, 9, 0)
+                EventFlowSystemActor.SetTagItemNameDirect(13780, 1, 8, 1)
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:007', false)
+        case 4:
+            if EventFlowSystemActor.RandomChoice4(4) in (0, 1, 2):
+                if EventFlowSystemActor.RandomChoice3(3) in (0, 1):
+                    if EventFlowSystemActor.RandomChoice2(2) == 0:
+                        run Sub_Event50(ItemPrice=ItemPrice)
+                    else:
+                        if EventFlowSystemActor.RandomChoice2(2) == 0:
+                            MainNpc.SetItemName(41, 9, 0)
+                        else:
+                            MainNpc.SetItemName(42, 9, 0)
+                        EventFlowSystemActor.SetTagItemNameDirect(13782, 1, 8, 1)
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:007', false)
+                else:
+                    if EventFlowSystemActor.RandomChoice2(2) == 0:
+                        MainNpc.SetItemName(43, 9, 0)
+                    else:
+                        MainNpc.SetItemName(44, 9, 0)
+                    EventFlowSystemActor.SetTagItemNameDirect(13780, 1, 8, 1)
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:007', false)
+            else:
+                if EventFlowSystemActor.RandomChoice2(2) == 0:
+                    MainNpc.SetItemName(45, 9, 0)
+                else:
+                    MainNpc.SetItemName(46, 9, 0)
+                EventFlowSystemActor.SetTagItemNameDirect(13779, 1, 8, 1)
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:007', false)
+
+flow Chk_Hint1_Never():
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayer:HarvestGetHint1') == 0:
+        run Jump_Hint1_Root()
+
+flow Chk_Hint1_OnlyLow():
+    if (EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayer:HarvestGetHint1') in (0, 1)) and (MainNpc.FlagNpcIntValue3(3, 'cNpcSave:HarvestGiveHint1') in (0, 2)):
+        run Jump_Hint1_High()
+
+flow Chk_Hint2_Never():
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayer:HarvestGetHint2') == 0:
+        run Jump_Hint2_Root()
+
+flow Chk_Hint2_OnlyLow():
+    if (EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayer:HarvestGetHint2') in (0, 1)) and (MainNpc.FlagNpcIntValue3(3, 'cNpcSave:HarvestGiveHint2') in (0, 2)):
+        run Jump_Hint2_High()
+
+flow Chk_Hint3_Never():
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayer:HarvestGetHint3') == 0:
+        run Jump_Hint3_Root()
+
+flow Chk_Hint3_OnlyLow():
+    if (EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayer:HarvestGetHint3') in (0, 1)) and (MainNpc.FlagNpcIntValue3(3, 'cNpcSave:HarvestGiveHint3') in (0, 2)):
+        run Jump_Hin3_High()
+
+flow Chk_Hint4_Never():
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayer:HarvestGetHint4') == 0:
+        run Jump_Hint4_Root()
+
+flow Chk_Hint4_OnlyLow():
+    if (EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayer:HarvestGetHint4') in (0, 1)) and (MainNpc.FlagNpcIntValue3(3, 'cNpcSave:HarvestGiveHint4') in (0, 2)):
+        run Jump_Hin4_High()
+
+flow Indoor_Root(ItemPrice: int = 0):
+    if not EventFlowSystemActor.IsMyVillage():
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1061', false)
+    elif (EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayer:HarvestProgress') not in (0, 1, 2, 3)) and (System.EventFlags['cPlayer:HarvestHQDish1P']) and (System.EventFlags['cPlayer:HarvestHQDish2P']) and (System.EventFlags['cPlayer:HarvestHQDish3P']) and (System.EventFlags['cPlayer:HarvestHQDish4P']):
+        if (MainNpc.EventFlags['cNpcMemory:HarvestItemExchangeToday']) and (EventFlowSystemActor.RandomChoice2(2) == 0):
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1041', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1042', false)
+    elif MainNpc.NpcHarvestIsDecideWantItem():
+        MainNpc.NpcSetFishExchangeWantItem()
+        MainNpc.SetItemName(39, 9, 0)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1011', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            EventFlowSystemActor.UIItemSelectWindowHandling('cItemFilter', 65534, '', 'HarvestFoodStuff1', '', false)
+            if not EventFlowSystemActor.UIResultMenuDecide():
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1013', false)
+            elif MainNpc.NpcHarvestFishExchangeSelectItem():
+                MainNpc.SetDeliveryItem(4, true)
+entrypoint Event52:
+                MainNpc.NpcChangeHandTool(65534, 'cPutAway', false)
+                MainNpc.NpcDelivery(0, 'Keep')
+                MainNpc.NpcSetHarvestFishExchangeGiveItem()
+                MainNpc.SetItemName(1, 9, 1)
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1015', false)
+                MainNpc.NpcDelivery(3, 'Keep')
+                MainNpc.SetDeliveryItem(1, false)
+                MainNpc.SetEventRewardToPlayerBaggage('cFree')
+                MainNpc.NpcDelivery(1, 'Default')
+                MainNpc.NpcResetHarvestFishExchangeWantItem()
+                MainNpc.NpcChangeHandTool(13443, 'cNone', false)
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1016', false)
+                MainNpc.EventFlags['cNpcMemory:HarvestItemExchangeToday'] = true
+                if EventFlowSystemActor.PercentChoice(80):
+                    switch EventFlowSystemActor.RandomChoice4(4):
+                        case 0:
+                            run Chk_Hint1_Never()
+                            run Chk_Hint2_Never()
+                            run Chk_Hint3_Never()
+                            run Chk_Hint4_Never()
+                        case 1:
+                            run Chk_Hint4_Never()
+                            run Chk_Hint1_Never()
+                            run Chk_Hint2_Never()
+                            run Chk_Hint3_Never()
+                        case 2:
+                            run Chk_Hint3_Never()
+                            run Chk_Hint4_Never()
+                            run Chk_Hint1_Never()
+                            run Chk_Hint2_Never()
+                        case 3:
+                            run Chk_Hint2_Never()
+                            run Chk_Hint3_Never()
+                            run Chk_Hint4_Never()
+                            run Chk_Hint1_Never()
+                    switch EventFlowSystemActor.RandomChoice4(4):
+                        case 0:
+                            run Chk_Hint1_OnlyLow()
+                            run Chk_Hint2_OnlyLow()
+                            run Chk_Hint3_OnlyLow()
+                            run Chk_Hint4_OnlyLow()
+                        case 1:
+                            run Chk_Hint4_OnlyLow()
+                            run Chk_Hint1_OnlyLow()
+                            run Chk_Hint2_OnlyLow()
+                            run Chk_Hint3_OnlyLow()
+                        case 2:
+                            run Chk_Hint3_OnlyLow()
+                            run Chk_Hint4_OnlyLow()
+                            run Chk_Hint1_OnlyLow()
+                            run Chk_Hint2_OnlyLow()
+                        case 3:
+                            run Chk_Hint2_OnlyLow()
+                            run Chk_Hint3_OnlyLow()
+                            run Chk_Hint4_OnlyLow()
+                            run Chk_Hint1_OnlyLow()
+                    run Jump_Random()
+                else:
+                    run Jump_Random()
+            else:
+                MainNpc.SetDeliveryItem(4, false)
+                MainNpc.NpcDelivery(0, 'Keep')
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1014', false)
+                MainNpc.NpcDelivery(10, 'Default')
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1012', false)
+    else:
+        if MainNpc.EventFlags['cNpcMemory:HarvestItemExchangeToday']:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1002', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1001', false)
+        MainNpc.NpcSetHarvestFishExchange()
+        MainNpc.NpcSetFishExchangeWantItem()
+        MainNpc.SetItemName(39, 9, 0)
+        if MainNpc.EventFlags['cNpcTemp:HarvestNpcAttentionPPocket']:
+            run Skip_AttentionPlayerPocket()
+        elif MainNpc.NpcHarvestIsHaveWantItem():
+            MainNpc.EventFlags['cNpcTemp:HarvestNpcAttentionPPocket'] = true
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1004', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Jump_ExchangeFoodStuff()
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1005', false)
+        else:
+            run Skip_AttentionPlayerPocket()
+
+flow Jump_ExchangeFoodStuff():
+    MainNpc.SetDeliveryItem(39, true)
+    run Event52()
+
+flow Jump_Hin3_High():
+    run Event92()
+
+flow Jump_Hin3_Low():
+    run Event93()
+
+flow Jump_Hin4_High():
+    run Event94()
+
+flow Jump_Hin4_Low():
+    run Event95()
+
+flow Jump_Hint1_High():
+    run Event88()
+
+flow Jump_Hint1_Low():
+    run Event89()
+
+flow Jump_Hint1_Root():
+    switch MainNpc.FlagNpcIntValue3(3, 'cNpcSave:HarvestGiveHint1'):
+        case 0:
+            if EventFlowSystemActor.PercentChoice(60):
+entrypoint Event88:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1021', false)
+                MainNpc.EventFlags['cNpcSave:HarvestGiveHint1'] = 2
+                System.EventFlags['cPlayer:HarvestGetHint1'] = 2
+            else:
+entrypoint Event89:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1022', false)
+                MainNpc.EventFlags['cNpcSave:HarvestGiveHint1'] = 1
+                if EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayer:HarvestGetHint1') in (0, 1):
+                    System.EventFlags['cPlayer:HarvestGetHint1'] = 1
+            EventFlowSystemActor.ExitFlowchart()
+        case 1:
+            run Jump_Hint1_Low()
+        case 2:
+            run Jump_Hint1_High()
+
+flow Jump_Hint2_High():
+    run Event90()
+
+flow Jump_Hint2_Low():
+    run Event91()
+
+flow Jump_Hint2_Root():
+    switch MainNpc.FlagNpcIntValue3(3, 'cNpcSave:HarvestGiveHint2'):
+        case 0:
+            if EventFlowSystemActor.PercentChoice(60):
+entrypoint Event90:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1023', false)
+                MainNpc.EventFlags['cNpcSave:HarvestGiveHint2'] = 2
+                System.EventFlags['cPlayer:HarvestGetHint2'] = 2
+            else:
+entrypoint Event91:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1024', false)
+                MainNpc.EventFlags['cNpcSave:HarvestGiveHint2'] = 1
+                if EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayer:HarvestGetHint2') in (0, 1):
+                    System.EventFlags['cPlayer:HarvestGetHint2'] = 1
+            EventFlowSystemActor.ExitFlowchart()
+        case 1:
+            run Jump_Hint2_Low()
+        case 2:
+            run Jump_Hint2_High()
+
+flow Jump_Hint3_Root():
+    switch MainNpc.FlagNpcIntValue3(3, 'cNpcSave:HarvestGiveHint3'):
+        case 0:
+            if EventFlowSystemActor.PercentChoice(60):
+entrypoint Event92:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1025', false)
+                MainNpc.EventFlags['cNpcSave:HarvestGiveHint3'] = 2
+                System.EventFlags['cPlayer:HarvestGetHint3'] = 2
+            else:
+entrypoint Event93:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1026', false)
+                MainNpc.EventFlags['cNpcSave:HarvestGiveHint3'] = 1
+                if EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayer:HarvestGetHint3') in (0, 1):
+                    System.EventFlags['cPlayer:HarvestGetHint3'] = 1
+            EventFlowSystemActor.ExitFlowchart()
+        case 1:
+            run Jump_Hin3_Low()
+        case 2:
+            run Jump_Hin3_High()
+
+flow Jump_Hint4_Root():
+    switch MainNpc.FlagNpcIntValue3(3, 'cNpcSave:HarvestGiveHint4'):
+        case 0:
+            if EventFlowSystemActor.PercentChoice(60):
+entrypoint Event94:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1027', false)
+                MainNpc.EventFlags['cNpcSave:HarvestGiveHint4'] = 2
+                System.EventFlags['cPlayer:HarvestGetHint4'] = 2
+            else:
+entrypoint Event95:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1028', false)
+                MainNpc.EventFlags['cNpcSave:HarvestGiveHint4'] = 1
+                if EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayer:HarvestGetHint4') in (0, 1):
+                    System.EventFlags['cPlayer:HarvestGetHint4'] = 1
+            EventFlowSystemActor.ExitFlowchart()
+        case 1:
+            run Jump_Hin4_Low()
+        case 2:
+            run Jump_Hin4_High()
+
+flow Jump_Random():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious4(4, true):
+        case 0:
+            run Jump_Hint1_Root()
+        case 1:
+            run Jump_Hint2_Root()
+        case 2:
+            run Jump_Hint3_Root()
+        case 3:
+            run Jump_Hint4_Root()
+
+flow NormalOutdoor_Msg():
+    switch EventFlowSystemActor.FlagSystemIntValue5(5, 'cLand:HarvestProgress'):
+        case 0:
+            if (EventFlowSystemActor.IsMyVillage()) and (System.EventFlags['cPlayer:TukCancel1stRequest']):
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:002', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:001', false)
+        case 1, 2, 3:
+            if MainNpc.CheckHarvestSpecificPlace(0):
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:005', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:003', false)
+        case 4:
+            if MainNpc.CheckHarvestSpecificPlace(0):
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:006', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:004', false)
+
+flow Outdoor_Root():
+    if not EventFlowSystemActor.PercentChoice(20):
+        run NormalOutdoor_Msg()
+    elif EventFlowSystemActor.IsMyVillage():
+        run Chk_DeliverFoodStuff()
+    else:
+        run NormalOutdoor_Msg()
+
+flow Root():
+    switch EventFlowSystemActor.EventCheck('HarvestFestival'):
+        case 1:
+            if EventFlowSystemActor.SystemCheckNowStage('cField'):
+                run Outdoor_Root()
+                EventFlowSystemActor.ExitFlowchart()
+            else:
+                run Indoor_Root()
+                EventFlowSystemActor.ExitFlowchart()
+        case 2:
+            run After_EV()
+            EventFlowSystemActor.ExitFlowchart()
+        default:
+            return
+
+flow Skip_AttentionPlayerPocket():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:1003', false)
+
+local flow Sub_Event50(ItemPrice: int):
+    MainNpc.SetItemName(40, 9, 0)
+    EventFlowSystemActor.SetTagItemNameDirect(13781, 1, 8, 1)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Harvest:008', false)
+

@@ -1,0 +1,9 @@
+flow ChangeStick_unregistered():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:152', false)
+
+flow DisableLadder():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:151', false)
+
+flow Towel_ExistVisitor():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:041', false)
+

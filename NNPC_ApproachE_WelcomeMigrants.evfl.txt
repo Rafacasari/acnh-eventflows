@@ -1,0 +1,100 @@
+flow Cmn_RndItem():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious8(8, false):
+        case 0:
+            MainNpc.SetDeliveryItemAtRandom(2319, true, 'cVillageRemakePattern', 0)
+        case 1:
+            MainNpc.SetDeliveryItemAtRandom(3816, true, 'cVillageRemakePattern', 0)
+        case 2:
+            MainNpc.SetDeliveryItemAtRandom(4379, true, 'cVillageRemakePattern', 0)
+        case 3:
+            MainNpc.SetDeliveryItemAtRandom(3078, true, 'cVillageRemakePattern', 0)
+        case 4:
+            MainNpc.SetDeliveryItemAtRandom(144, true, 'cVillageRemakePattern', 0)
+        case 5:
+            MainNpc.SetDeliveryItemAtRandom(3346, true, 'cVillageRemakePattern', 0)
+        case 6:
+            MainNpc.SetDeliveryItemAtRandom(9619, true, 'cVillageRemakePattern', 0)
+        case 7:
+            MainNpc.SetDeliveryItemAtRandom(11943, true, 'cVillageRemakePattern', 0)
+    MainNpc.SetItemName(14, 0, 0)
+
+flow Root():
+    MainNpc.EventFlags['cNpcSave:AppE_WelcomoMigrants'] = true
+    MainNpc.EventFlags['cNpcSave:AppE_WelcomeMigrantsToday'] = true
+    MainNpc.SetNpcName(10, 0)
+    switch MainNpc.CheckNpcLook():
+        case 3:
+            MainNpc.SetNpcName(13, 1)
+            System.EventFlags['cLand:AppE_WelcomoMigrants_AN'] = true
+            if System.EventFlags['cPlayer:AppE_WelcomoMigrants_Occured']:
+                run WelcomeMigrants_AN2()
+            else:
+                System.EventFlags['cPlayer:AppE_WelcomoMigrants_Occured'] = true
+                run WelcomeMigrants_AN1()
+        case 5:
+            MainNpc.SetNpcName(14, 1)
+            System.EventFlags['cLand:AppE_WelcomoMigrants_HA'] = true
+            if System.EventFlags['cPlayer:AppE_WelcomoMigrants_Occured']:
+                run WelcomeMigrants_HA2()
+            else:
+                System.EventFlags['cPlayer:AppE_WelcomoMigrants_Occured'] = true
+                run WelcomeMigrants_HA1()
+        default:
+            return
+
+flow WelcomeMigrants_AN1():
+    MainNpc.OpenMessageWindow('TalkNNpc/G4_An/Approach/AN_ApproachE_WelcomeMigrants:001', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/G4_An/Approach/AN_ApproachE_WelcomeMigrants:002', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/G4_An/Approach/AN_ApproachE_WelcomeMigrants:003', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/G4_An/Approach/AN_ApproachE_WelcomeMigrants:004', false)
+    run Cmn_RndItem()
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkNNpc/G4_An/Approach/AN_ApproachE_WelcomeMigrants:005', false)
+        MainNpc.NpcMailSend('MAIL_XX_LifeStart', 2, 'cNone', 'cFastToday', 'cDeliveryItem', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/G4_An/Approach/AN_ApproachE_WelcomeMigrants:006_01', true)
+        MainNpc.NpcDelivery(1, 'Keep')
+        MainNpc.OpenMessageWindow('TalkNNpc/G4_An/Approach/AN_ApproachE_WelcomeMigrants:006_02', false)
+        MainNpc.NpcDelivery(2, 'Default')
+
+flow WelcomeMigrants_AN2():
+    MainNpc.OpenMessageWindow('TalkNNpc/G4_An/Approach/AN_ApproachE_WelcomeMigrants:011', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/G4_An/Approach/AN_ApproachE_WelcomeMigrants:012', false)
+    run Cmn_RndItem()
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkNNpc/G4_An/Approach/AN_ApproachE_WelcomeMigrants:013', false)
+        MainNpc.NpcMailSend('MAIL_XX_LifeStart', 2, 'cNone', 'cFastToday', 'cDeliveryItem', false)
+    else:
+        EventFlowSystemActor.MessageSuspend()
+        MainNpc.NpcDelivery(1, 'Keep')
+        MainNpc.OpenMessageWindow('TalkNNpc/G4_An/Approach/AN_ApproachE_WelcomeMigrants:014', false)
+        MainNpc.NpcDelivery(2, 'Default')
+
+flow WelcomeMigrants_HA1():
+    MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Approach/HA_ApproachE_WelcomeMigrants:001', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Approach/HA_ApproachE_WelcomeMigrants:002', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Approach/HA_ApproachE_WelcomeMigrants:003', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Approach/HA_ApproachE_WelcomeMigrants:004', false)
+    run Cmn_RndItem()
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Approach/HA_ApproachE_WelcomeMigrants:005', false)
+        MainNpc.NpcMailSend('MAIL_XX_LifeStart', 2, 'cNone', 'cFastToday', 'cDeliveryItem', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Approach/HA_ApproachE_WelcomeMigrants:006_01', true)
+        MainNpc.NpcDelivery(1, 'Keep')
+        MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Approach/HA_ApproachE_WelcomeMigrants:006_02', false)
+        MainNpc.NpcDelivery(2, 'Default')
+
+flow WelcomeMigrants_HA2():
+    MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Approach/HA_ApproachE_WelcomeMigrants:011', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Approach/HA_ApproachE_WelcomeMigrants:012', false)
+    run Cmn_RndItem()
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Approach/HA_ApproachE_WelcomeMigrants:013', false)
+        MainNpc.NpcMailSend('MAIL_XX_LifeStart', 2, 'cNone', 'cFastToday', 'cDeliveryItem', false)
+    else:
+        EventFlowSystemActor.MessageSuspend()
+        MainNpc.NpcDelivery(1, 'Keep')
+        MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Approach/HA_ApproachE_WelcomeMigrants:014', false)
+        MainNpc.NpcDelivery(2, 'Default')
+

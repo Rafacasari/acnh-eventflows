@@ -1,0 +1,73 @@
+flow `1P_Lifestart_Conv`():
+    switch MainNpc.CheckNpcLook():
+        case 3:
+            if System.EventFlags['cPlayer:Prologue4AnGetTent']:
+                if EventFlowSystemActor.SystemCheckNowStage('cTalkingNpcHouse'):
+                    MainNpc.OpenMessageWindow('TalkNNpc/G4_An/React/AN_React_1P_LifeStart:001_01', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/G4_An/React/AN_React_1P_LifeStart:001_02', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/G4_An/React/AN_React_1P_LifeStart:002', false)
+            if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/G4_An/React/AN_React_1P_LifeStart:004', true)
+                MainNpc.NpcSetRewardRecipe(6840, false)
+                MainNpc.NpcMailSend('MAIL_XX_LifeStart', 1, 'cNone', 'cFastToday', 'cReward', false)
+            else:
+                MainNpc.NpcSetRewardRecipe(6840, false)
+                MainNpc.SetItemName(1, 0, 0)
+                MainNpc.SetDeliveryItem(1, true)
+                MainNpc.OpenMessageWindow('TalkNNpc/G4_An/React/AN_React_1P_LifeStart:003_01', true)
+                MainNpc.NpcDelivery(1, 'Default')
+                MainNpc.OpenMessageWindow('TalkNNpc/G4_An/React/AN_React_1P_LifeStart:003_02', false)
+                if System.EventFlags['cPlayer:MainmenuRecipe']:
+                    MainNpc.OpenMessageWindow('TalkNNpc/G4_An/React/AN_React_1P_LifeStart:003_04', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/G4_An/React/AN_React_1P_LifeStart:003_03', false)
+        case 5:
+            if System.EventFlags['cPlayer:Prologue4HaGetTent']:
+                if EventFlowSystemActor.SystemCheckNowStage('cTalkingNpcHouse'):
+                    MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/React/HA_React_1P_LifeStart:001_01', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/React/HA_React_1P_LifeStart:001_02', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/React/HA_React_1P_LifeStart:002', false)
+            if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/React/HA_React_1P_LifeStart:004', true)
+                run RewardSetHA()
+                MainNpc.NpcMailSend('MAIL_XX_LifeStart', 1, 'cNone', 'cFastToday', 'cDeliveryItem', false)
+            else:
+                run RewardSetHA()
+                MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/React/HA_React_1P_LifeStart:003_01', true)
+                MainNpc.NpcDelivery(1, 'Keep')
+                MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/React/HA_React_1P_LifeStart:003_02', false)
+                MainNpc.NpcDelivery(2, 'Default')
+        default:
+            return
+
+flow RewardSetHA():
+    switch EventFlowSystemActor.RandomChoice6(6):
+        case 0:
+            MainNpc.SetDeliveryItemAtRandom(5136, true, 'cVillageRemakePattern', 0)
+        case 1:
+            MainNpc.SetDeliveryItemAtRandom(5128, true, 'cVillageRemakePattern', 0)
+            System.EventFlags['cPlayer:1stPresentHatType'] = 1
+        case 2:
+            MainNpc.SetDeliveryItemAtRandom(5148, true, 'cVillageRemakePattern', 0)
+            System.EventFlags['cPlayer:1stPresentHatType'] = 2
+        case 3:
+            MainNpc.SetDeliveryItemAtRandom(11521, true, 'cVillageRemakePattern', 0)
+            System.EventFlags['cPlayer:1stPresentHatType'] = 3
+        case 4:
+            MainNpc.SetDeliveryItemAtRandom(5258, true, 'cVillageRemakePattern', 0)
+            System.EventFlags['cPlayer:1stPresentHatType'] = 4
+        case 5:
+            MainNpc.SetDeliveryItemAtRandom(5293, true, 'cVillageRemakePattern', 0)
+            System.EventFlags['cPlayer:1stPresentHatType'] = 5
+    MainNpc.SetItemName(14, 6, 0)
+
+flow Root():
+    if (EventFlowSystemActor.IsMyVillage()) and (System.EventFlags['cPlayer:MakeVillagePlayerFlag']) and (MainNpc.NpcBirthType('cFirst')) and (MainNpc.IsNnpcTent()) and (not MainNpc.EventFlags['cNpcSave:TalkLifeStart1P1st']) and (MainNpc.NpcIsSitting() == 4):
+        run `1P_Lifestart_Conv`()
+        MainNpc.EventFlags['cNpcSave:TalkLifeStart1P1st'] = true
+        EventFlowSystemActor.ExitFlowchart()
+

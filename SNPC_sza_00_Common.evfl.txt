@@ -1,0 +1,157 @@
+flow Root():
+    if EventFlowSystemActor.NetHasVisitor():
+        if not System.EventFlags['cPlayer:SzaTalkAtOfficeToday']:
+            run Sza_Common_Greet()
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:801', false)
+    elif System.EventFlags['cPlayer:SzaHeardAboutIslandEvaluation']:
+        if System.EventFlags['cPlayer:ExplainIslandRegulation']:
+            run Sza_Common_Select()
+        elif System.EventFlags['cLand:v200_Enabled_ChangeRegulation']:
+            run SNPC_sza_01_Office_1_Entries::Sza_RegulationExplanation()
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:002', false)
+            run szaNormalSeq()
+        else:
+            run Sza_Common_Select()
+    elif System.EventFlags['cLand:IslandEvaluationUnlock']:
+        run SNPC_sza_01_Office_1_Entries::Sza_EvaluationExplanation()
+        if System.EventFlags['cLand:v200_Enabled_ChangeRegulation']:
+            run SNPC_sza_01_Office_1_Entries::Sza_RegulationExplanation()
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:002', false)
+        run szaNormalSeq()
+    else:
+        run Sza_Common_Select()
+
+flow Root_ForVisitor():
+    if System.EventFlags['cPlayerVisit:V_Sza_TalkInside1st']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:911', false)
+    else:
+        System.EventFlags['cPlayerVisit:V_Sza_TalkInside1st'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:901', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:902', false)
+
+flow Sza_CmnSel_Again():
+    if not System.EventFlags['cLand:IslandEvaluationUnlock']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:002_05', false)
+        run szaSel4B()
+    elif System.EventFlags['cPlayer:ExplainIslandRegulation']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_0_common_v2:001_03', false)
+        run Sza_CmnSel_v2()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:002_06', false)
+        run szaSel5B()
+
+flow Sza_CmnSel_v2():
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            run SNPC_sza_50_IslandEvaluation::Root()
+        case 1:
+            run SNPC_sza_60_aboutIsland::Root()
+        case 2:
+            run SNPC_sza_70_AboutVillager::Root()
+        case 3:
+            run Sza_Cmn_Cancel()
+
+flow Sza_Cmn_Cancel():
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:003', true)
+    if System.EventFlags['cPlayer:RcoAwaitingExplanation']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:003_01', false)
+
+flow Sza_Cmn_Christmas():
+    if (EventFlowSystemActor.GlobalEventNow('XmasEve', 'cMainOnly', false)) and (System.EventFlags['cPlayer:ReiStartQuest1']) and (not System.EventFlags['cPlayer:ReiFinishQuest1']) and (not System.EventFlags['cPlayer:SzaChristmasOrnament']):
+        if EventFlowSystemActor.IsReceiveMargeItem(5731, 5730, 5732, 65534, 65534, 3):
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:1001', true)
+            EventFlowSystemActor.SoundDuckingOn(44)
+            EventFlowSystemActor.FadeOut('cNormalFader', 'cNormalFader', 'cBlack', 1.0, 1.0, false)
+            EventFlowSystemActor.WaitFrame(40)
+            EventFlowSystemActor.SetItemToPocket(5730, 3)
+            EventFlowSystemActor.SetItemToPocket(5731, 3)
+            EventFlowSystemActor.SetItemToPocket(5732, 3)
+            EventFlowSystemActor.SoundDuckingOff(44)
+            EventFlowSystemActor.FadeIn(true)
+            System.EventFlags['cPlayer:SzaChristmasOrnament'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:1002', false)
+            EventFlowSystemActor.ExitFlowchart()
+        elif not System.EventFlags['cPlayerTemp:SzaChristmasHintMessage']:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:1003', true)
+            System.EventFlags['cPlayerTemp:SzaChristmasHintMessage'] = true
+            SubflowResults[0] = 1
+
+flow Sza_Common_Greet():
+    System.EventFlags['cPlayer:SzaTalkAtOfficeToday'] = true
+    if EventFlowSystemActor.EnvSameDate('cNewYear', 'cNowTime'):
+        if EventFlowSystemActor.MainPlayerIsBirthday(false, 'cGrowUpTime'):
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:000_06', false)
+            SubflowResults[0] = 1
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:000_05', false)
+            SubflowResults[0] = 1
+    else:
+        switch EventFlowSystemActor.EnvTimeZone():
+            case `05:00-07:59`, `08:00-11:59`:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:000_01', false)
+            case `12:00-15:59`:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:000_02', false)
+            case `16:00-18:59`:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:000_03', false)
+            case `19:00-23:59`, `00:00-04:59`:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:000_04', false)
+        if EventFlowSystemActor.MainPlayerIsBirthday(false, 'cGrowUpTime'):
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:001_01', false)
+            SubflowResults[0] = 1
+
+flow Sza_Common_Select():
+    if System.EventFlags['cPlayer:SzaTalkAtOfficeToday']:
+        run Sza_Cmn_Christmas()
+        if not System.EventFlags['cLand:IslandEvaluationUnlock']:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:002_03', false)
+            run szaSel4B()
+        elif System.EventFlags['cPlayer:ExplainIslandRegulation']:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_0_common_v2:001_02', false)
+            run Sza_CmnSel_v2()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:002_04', false)
+            run szaSel5B()
+    else:
+        run Sza_Common_Greet()
+        run Sza_Cmn_Christmas()
+        if SubflowResults@2[0] == 0:
+            run szaNormalSeq()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:002', false)
+            run szaNormalSeq()
+
+flow szaNormalSeq():
+    if not System.EventFlags['cLand:IslandEvaluationUnlock']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:002_01', false)
+        run szaSel4B()
+    elif System.EventFlags['cPlayer:ExplainIslandRegulation']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_0_common_v2:001_01', false)
+        run Sza_CmnSel_v2()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:002_02', false)
+        run szaSel5B()
+
+flow szaSel4B():
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            run SNPC_sza_01_Towntune::Root()
+        case 1:
+            run SNPC_sza_01_Flag::Root()
+        case 2:
+            run SNPC_sza_70_AboutVillager::Root()
+        case 3:
+            run Sza_Cmn_Cancel()
+
+flow szaSel5B():
+    switch EventFlowSystemActor.GeneralTalkChoice5():
+        case 0:
+            run SNPC_sza_50_IslandEvaluation::Root()
+        case 1:
+            run SNPC_sza_01_Towntune::Root()
+        case 2:
+            run SNPC_sza_01_Flag::Root()
+        case 3:
+            run SNPC_sza_70_AboutVillager::Root()
+        case 4:
+            run Sza_Cmn_Cancel()
+

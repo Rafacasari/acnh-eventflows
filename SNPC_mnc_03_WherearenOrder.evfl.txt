@@ -1,0 +1,386 @@
+flow HowToLookfor():
+    if System.EventFlags['cWherearenPlayer:CompleteAppearanceCafe']:
+        if System.EventFlags['cWherearenPlayer:CompleteAppearanceRestaurant']:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:007', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:006', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:005', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:007_01', false)
+
+flow LookforHouseMate():
+    EventFlowSystemActor.SoundDuckingOn(68)
+    EventFlowSystemActor.CameraSetDemoParam('OrderCut0', 'cDefault', '', false, false, true, 0)
+    EventFlowSystemActor.WherearenSetTagCustomerNpcName(false, 0)
+    if Player.PlayerCheckWaitType('cSit'):
+        run PlayerTurn()
+        Player.TurnNeck(0, false)
+    if System.EventFlags['cWherearenPlayer:SeqShareHouseOngoing']:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:003_01', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                run Sub_Event68()
+            case 1:
+                run Sub_Event9()
+            case 2:
+                run Sub_Event8()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:003', false)
+        switch EventFlowSystemActor.GeneralTalkChoice4():
+            case 0:
+                run Sub_Event68()
+            case 1:
+                run Sub_Event9()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:016', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:017', true)
+                    EventFlowSystemActor.SettingCustomerAIForCancelOrder()
+                    EventFlowSystemActor.WherearenOrderCallback('cCancel')
+                    EventFlowSystemActor.WherearenOrderCallback('cReturnToMainIsland')
+                    System.EventFlags['cPlayerTemp:WHEREAREN_OtgTalkReserve_Office'] = true
+                    EventFlowSystemActor.BGMPropertyControl(127)
+                    EventFlowSystemActor.SoundFadeOutDuckingOn(10)
+                    EventFlowSystemActor.SystemRequestChangeStage('cWherearenOfficeReturnEntrance', 'cCircle', 'cCircle', 'cBlack', 1.0, 1.0)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:018', true)
+                    run PlayerStandUp()
+                    EventFlowSystemActor.ExitFlowchart()
+            case 3:
+                run Sub_Event8()
+
+flow LookforHouseMate_Init():
+    MainNpc.NpcAITalkCastSetting('WherearenOrder')
+    if Player.PlayerCheckWaitType('cSit'):
+        MainNpc.NpcAISetting(4, false)
+
+flow MatchingTalk():
+    run SetupPlayerNeck()
+    SubNpc.CharacterEmoticonAction('Explain', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(60)
+    fork:
+        branch:
+            SubNpc.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+        branch:
+            switch Npc_2.CheckNpcLook():
+                case 0, 3, 4, 7:
+                    Npc_2.CharacterEmoticonAction('FaintSmile', true, '', 0, false)
+                case 1, 5:
+                    Npc_2.CharacterEmoticonAction('Smiling', true, '', 0, false)
+                case 2, 6:
+                    Npc_2.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(30)
+    Npc_1.SetNpcName(0, 1)
+    Npc_2.SetNpcName(0, 2)
+    fork:
+        branch:
+            MainNpc.TurnNeck(2, false)
+        branch:
+            Player.TurnNeck(1, false)
+    if (Npc_1.IsVillagerNpc()) and (Npc_2.IsVillagerNpc()):
+        Npc_2.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:101_01', false)
+    else:
+        Npc_2.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:101', false)
+    Npc_1.CharacterEmoticonAction('Nodding', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(20)
+    MainNpc.TurnNeck(1, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:101', false)
+    if (Npc_1.IsVillagerNpc()) and (Npc_2.IsVillagerNpc()):
+        Npc_1.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:102_01', false)
+        Npc_2.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:103_01', false)
+    else:
+        Npc_1.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:102', false)
+        Npc_2.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:103', false)
+    EventFlowSystemActor.BGMPropertyControl(139)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:102', false)
+    EventFlowSystemActor.WherearenOrderCallback('cConfirm')
+    if (System.EventFlags['cWherearenPlayer:Unlock_Extension']) and (not Npc_1.WherearenIsNpcHouseExtended()):
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:104', false)
+        Npc_1.TurnNeck(10, false)
+        Npc_1.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:104', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            Npc_1.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:106', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:106', false)
+        else:
+            Npc_1.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:105', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:105', false)
+            Npc_1.WherearenExpandNpcHouse()
+    MainNpc.TurnNeck(10, true)
+    fork:
+        branch:
+            if System.EventFlags['cWherearenPlayer:SeqShareHouseOngoing']:
+                MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:611', true)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:103', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(4)
+            Npc_1.TurnNeck(10, false)
+            EventFlowSystemActor.WaitFrame(2)
+            Npc_2.TurnNeck(10, false)
+    run SNPC_otg_02_WherearenOrder::NPC_CloseEmotion()
+    EventFlowSystemActor.WaitFrame(30)
+    System.EventFlags['cPlayerTemp:WHEREAREN_CustomerTalkReserve_Garden'] = true
+    EventFlowSystemActor.WherearenSetNpcOrderStartStage('cNpcGarden')
+    run Demo_Common_Wherearen::SetCamera_GardenVisit()
+    EventFlowSystemActor.BGMPropertyControl(140)
+    EventFlowSystemActor.SetWherearenPlayerRemoveBinderSeq(false, true)
+    EventFlowSystemActor.SoundTriggerEmit('WherearenFade_Boat', -1)
+    EventFlowSystemActor.ReserveEnterGardenPattern(3)
+    EventFlowSystemActor.SystemRequestChangeStage('cWherearenNpcStageSelected', 'cWherearen', 'cWherearen', 'cBlack', 1.0, 1.0)
+
+flow MatchingTalk_Init():
+    run OrderTalk_Init()
+
+flow NFC_CheckResidentNNPC():
+    SubflowResults[0] = 0
+    if EventFlowSystemActor.IsUISelectNpcLiving():
+        if not EventFlowSystemActor.IsUISelectNpcAcquaintance():
+            SubflowResults[0] = 1
+        elif (EventFlowSystemActor.IsUISelectNpcSick()) or (EventFlowSystemActor.IsUISelectNpcMoveInToday()):
+            SubflowResults[0] = 1
+        elif EventFlowSystemActor.IsUISelectNpcMoveOut() != 0:
+            SubflowResults[0] = 1
+        elif (EventFlowSystemActor.IsUISelectNpcBirthday()) and (EventFlowSystemActor.IsHoldNpcBirthday()):
+            SubflowResults[0] = 1
+
+flow NewHouse_OtgSick():
+    run Test_NewHouse_OtgSick()
+
+flow OpenFadeMatchingTalk():
+    run SetupPlayerNeck()
+    MainNpc.NpcAISetting(4, false)
+    EventFlowSystemActor.CameraSetDemoParam('OrderCut0', '', '', false, false, true, 0)
+    EventFlowSystemActor.SoundDuckingOn(51)
+    MainNpc.TurnNeck(1, false)
+    Npc_1.TurnNeck(2, false)
+    Npc_2.TurnNeck(1, false)
+    EventFlowSystemActor.WaitFrame(15)
+    EventFlowSystemActor.SoundDuckingOff(54)
+    EventFlowSystemActor.BGMPropertyControl(182)
+    EventFlowSystemActor.FadeIn(true)
+    run MatchingTalk()
+
+flow OpenFadeMatchingTalk_Init():
+    run OrderTalk_Init()
+
+flow OpenFadeOrder():
+    EventFlowSystemActor.SoundDuckingOn(51)
+    run SetupPlayerNeck()
+    MainNpc.NpcAISetting(4, false)
+    EventFlowSystemActor.CameraSetDemoParam('OrderCut0', '', '', false, false, true, 0)
+    MainNpc.TurnNeck(1, false)
+    SubNpc.TurnNeck(0, false)
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.SoundDuckingOff(54)
+    EventFlowSystemActor.SystemBGMVolumeFadeIn(0.0, 0, 0.0)
+    EventFlowSystemActor.BGMPropertyControl(182)
+    EventFlowSystemActor.SoundFadeOutDuckingOff()
+    EventFlowSystemActor.FadeIn(true)
+entrypoint Event207:
+    EventFlowSystemActor.WherearenSetTagCustomerNpcName(false, 0)
+    if System.EventFlags['cWherearenPlayer:SeqShareHouseOngoing']:
+        run ShareHouseTutorial()
+    else:
+        MainNpc.TurnNeck(1, false)
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:001', false)
+        MainNpc.TurnNeck(10, true)
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:002', true)
+    EventFlowSystemActor.WherearenOrderCallback('cStartLookForHousemate')
+    EventFlowSystemActor.SoundDuckingOff(51)
+    EventFlowSystemActor.BGMPropertyControl(138)
+    EventFlowSystemActor.StoreNormalCamera(false, '')
+    Player.TurnNeck(11, false)
+    Player.PlayerChairStandup(3)
+    EventFlowSystemActor.SetWherearenPlayerRemoveBinderSeq(false, false)
+    EventFlowSystemActor.SystemBGMVolumeFadeIn(0.0, 0, 0.0)
+    EventFlowSystemActor.UIMainMenuSetInvalidFrame(80)
+    EventFlowSystemActor.UIThemeAppear('cSharehouse')
+
+flow OpenFadeOrder_Init():
+    run OrderTalk_Init()
+
+flow OpenSceneMatchingTalk():
+    run SetupPlayerNeck()
+    MainNpc.TurnNeck(1, false)
+    Npc_1.TurnNeck(2, false)
+    Npc_2.TurnNeck(1, false)
+    EventFlowSystemActor.WaitFrame(15)
+    run MatchingTalk()
+
+flow OpenSceneMatchingTalk_Init():
+    run OrderTalk_Init()
+
+flow OrderTalk():
+    run SetupPlayerNeck()
+    run Event207()
+
+flow OrderTalk_Init():
+    MainNpc.NpcAISetting(9, false)
+    if EventFlowSystemActor.WherearenLookForHousemateState() in (0, 2):
+        MainNpc.NpcAITalkCastSetting('WherearenOrder')
+    else:
+        MainNpc.NpcAITalkCastSetting('WherearenShareHouse')
+    if MainNpc.IsOtgOpenFade():
+        MainNpc.NpcAISetting(4, false)
+
+flow PlayerStandUp():
+    if Player.PlayerCheckWaitType('cSit'):
+        Player.TurnNeck(11, false)
+        Player.PlayerChairStandup(3)
+
+flow PlayerTurn():
+    switch Player.PlayerCardinalDirection():
+        case 1:
+            Player.PlayerChairSitdownTurn('cLeft')
+            Player.PlayerChairSitdownTurn('cLeft')
+        case 2:
+            Player.PlayerChairSitdownTurn('cLeft')
+        case 3:
+            Player.PlayerChairSitdownTurn('cRight')
+        default:
+            return
+
+flow ReSelectCustomer():
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:013', false)
+        run SelectCustomer()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:014', true)
+        run PlayerStandUp()
+        EventFlowSystemActor.SoundDuckingOff(68)
+        EventFlowSystemActor.ExitFlowchart()
+
+flow SelectCustomer():
+    EventFlowSystemActor.UIMsgCardAdrHandling('cWherearenIslandResident')
+    if EventFlowSystemActor.UIResultMenuDecide():
+        EventFlowSystemActor.SetTagFromUIResult('cWherearenIslandsNpc', 1)
+        if EventFlowSystemActor.WherearenCheckAdrUISelectNpc('cIsShareHouse'):
+            fork:
+                branch:
+                    EventFlowSystemActor.UIWherearenIslandsMsgPhotoAppear('cJpegFromUISelect', 0, false, 0.0, 0.0, '')
+                branch:
+                    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:009_04', false)
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoDisappear()
+            run ReSelectCustomer()
+        else:
+            fork:
+                branch:
+                    EventFlowSystemActor.UIWherearenIslandsMsgPhotoAppear('cJpegFromUISelect', 0, false, 0.0, 0.0, '')
+                branch:
+                    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:009_01', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                EventFlowSystemActor.UIWherearenIslandsMsgPhotoDisappear()
+                MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:009_02', true)
+                EventFlowSystemActor.CameraSetDemoParam('OrderCut1', 'OrderCameraRP', '', false, false, false, 0)
+                run Demo_Common_PhoneCall::MakingPhoneCall_General()
+                if EventFlowSystemActor.WherearenCheckAdrUISelectNpc('cIsSpecial'):
+                    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:010_01', true)
+                    run Demo_Common_PhoneCall::FinishingPhoneCall_General()
+                    EventFlowSystemActor.CameraSetDemoParam('OrderCut0', 'cDefault', '', false, false, true, 0)
+                    EventFlowSystemActor.WaitFrame(15)
+                    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:011_01', false)
+                    run ReSelectCustomer()
+                else:
+                    run NFC_CheckResidentNNPC()
+                    if SubflowResults@2[0] == 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:010', true)
+                        run Demo_Common_PhoneCall::FinishingPhoneCall_General()
+                        EventFlowSystemActor.CameraSetDemoParam('OrderCut0', 'cDefault', '', false, false, true, 0)
+                        EventFlowSystemActor.WaitFrame(15)
+                        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:011', true)
+                        EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 1.0, 1.0, true)
+                        EventFlowSystemActor.SoundDuckingOff(68)
+                        EventFlowSystemActor.SummonUISelectNpc()
+                        EventFlowSystemActor.SetWherearenPlayerRemoveBinderSeq(true, false)
+                        EventFlowSystemActor.WaitFrame(60)
+                        EventFlowSystemActor.WherearenOrderCallback('cFinishLookForHousemate')
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:010_02', true)
+                        run Demo_Common_PhoneCall::FinishingPhoneCall_General()
+                        EventFlowSystemActor.CameraSetDemoParam('OrderCut0', 'cDefault', '', false, false, true, 0)
+                        EventFlowSystemActor.WaitFrame(15)
+                        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:011_02', false)
+                        run ReSelectCustomer()
+            else:
+                EventFlowSystemActor.UIWherearenIslandsMsgPhotoDisappear()
+                MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:009_03', false)
+                run ReSelectCustomer()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:012', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:014', true)
+            run PlayerStandUp()
+            EventFlowSystemActor.SoundDuckingOff(68)
+            EventFlowSystemActor.ExitFlowchart()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:013', false)
+            run SelectCustomer()
+
+flow SetupPlayerNeck():
+    Player.TurnNeck(11, false)
+    MainNpc.NpcAISetting(5, true)
+
+flow ShareHouseTutorial():
+    SubNpc.SetNpcName(0, 0)
+    MainNpc.TurnNeck(1, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:601', true)
+    SubNpc.CharacterEmoticonAction('Nodding', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(40)
+    MainNpc.TurnNeck(10, true)
+    SubNpc.TurnNeck(10, false)
+    Player.TurnNeck(0, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:602', false)
+    run HowToLookfor()
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:603', true)
+
+local flow Sub_Event68():
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:004', false)
+    run HowToLookfor()
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:008', true)
+    run PlayerStandUp()
+    EventFlowSystemActor.SoundDuckingOff(68)
+    EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_Event8():
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:015', true)
+    run PlayerStandUp()
+    EventFlowSystemActor.SoundDuckingOff(68)
+    EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_Event9():
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_03_WherearenOrder:009', false)
+    run SelectCustomer()
+
+flow Test_NewHouse_OtgSick():
+    SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:003_01', false)
+    SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:003_02', true)
+    run SNPC_otg_02_WherearenOrder::ShowOrder()
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_02_WherearenOrder:310', false)
+    MainNpc.TurnNeck(10, true)
+    EventFlowSystemActor.WaitFrame(12)
+    Player.TurnNeck(0, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_02_WherearenOrder:311', false)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_02_WherearenOrder:312', false)
+            Player.TurnNeck(11, true)
+            EventFlowSystemActor.WaitFrame(10)
+            run SNPC_otg_02_WherearenOrder::SelectField()
+            fork:
+                branch:
+                    SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:003_03', true)
+                branch:
+                    EventFlowSystemActor.WaitFrame(20)
+                    MainNpc.TurnNeck(1, true)
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_02_WherearenOrder:314', false)
+            SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:003', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:004', false)
+            else:
+                SubNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenOrder:005', false)
+                Npc_1.WherearenExpandNpcHouse()
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_02_WherearenOrder:313', true)
+            Player.TurnNeck(1, false)
+            System.EventFlags['cPlayerTemp:WHEREAREN_CustomerTalkReserve_Garden'] = true
+            run SNPC_otg_02_WherearenOrder::NewHouseOrderEnd()
+

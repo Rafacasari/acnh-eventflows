@@ -1,0 +1,18 @@
+flow Root():
+    MainNpc.NpcSetReactionType('cLookingUp')
+    switch MainNpc.SkyVariation():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_LookingUp:001', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_LookingUp:002', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_LookingUp:003', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_LookingUp:004', false)
+        case 4:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_LookingUp:005', false)
+        case 5:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_LookingUp:006', false)
+    MainNpc.EventFlags['cNpcMemory:AcquaintanceshipFlagOff'] = true
+    EventFlowSystemActor.ExitFlowchart()
+

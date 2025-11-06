@@ -1,0 +1,9 @@
+flow BeeSting():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:021', false)
+
+flow CockroachCleanup():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:023', false)
+
+flow MosquitoBite():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:022', true)
+

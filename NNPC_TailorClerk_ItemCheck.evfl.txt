@@ -1,0 +1,23 @@
+flow Root():
+    MainNpc.ShopCheckItemSet('CheckItemIndex', 'cWherearenTailor')
+    EventFlowSystemActor.SetTagFromUIResult('cItemName', 0)
+    EventFlowSystemActor.SetTagFromUIResult('cWherearenItemPrice', 0)
+    MainNpc.TurnNeck(13, false)
+    Player.TurnNeck(13, false)
+    if EventFlowSystemActor.IsInspectingWherearen():
+        Player.OpenMessageWindow('TalkSys/SYS_Player:1307', true)
+    else:
+        EventFlowSystemActor.UIPokiAppear()
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Tailor:011', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            if not MainNpc.ShopHasBellCount(1.0):
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Tailor:014', true)
+            elif EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Tailor:015', true)
+            else:
+                MainNpc.ShopBuyDone(false, false, false, false)
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Tailor:012', true)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Tailor:013', true)
+        EventFlowSystemActor.UIPokiDisappear()
+

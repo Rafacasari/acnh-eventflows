@@ -1,0 +1,12 @@
+flow Root():
+    EventFlowSystemActor.WaitFrame(30)
+    Player.PlayerClearFoodPowerup()
+    EventFlowSystemActor.WaitFrame(33)
+    switch EventFlowSystemActor.FortuneBranchPost():
+        case 0, 1, 2, 3, 4, 5, 6:
+            Player.OpenMessageWindow('TalkFtr/FTR_Toilet:001', false)
+        case 7:
+            Player.OpenMessageWindow('TalkFtr/FTR_Toilet:002', false)
+        case 8:
+            Player.OpenMessageWindow('TalkFtr/FTR_Toilet:003', false)
+

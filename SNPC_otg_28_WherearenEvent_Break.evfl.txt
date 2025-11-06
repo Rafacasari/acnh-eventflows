@@ -1,0 +1,55 @@
+flow ProcIntroEventEnd():
+    EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 1.0, 1.0, true)
+    MainNpc.NpcAISetting(12, false)
+    EventFlowSystemActor.WaitFrame(20)
+    EventFlowSystemActor.FadeIn(true)
+
+flow Root():
+    run SNPC_otg_01_WherearenOffice::HouseCompleteActing()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:081', false)
+    run SNPC_otg_01_WherearenOffice::SetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:082', true)
+    run SNPC_otg_01_WherearenOffice::GetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:083', true)
+    SubflowResults[3] = 0
+    run SNPC_otg_01_WherearenOffice::OrderClose_Complete()
+    Player.TurnBody(0, 0.0)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:084', true)
+    System.EventFlags['cWherearenPlayer:SeqOtgTalkAboutSoloWork'] = true
+    System.EventFlags['cWherearenPlayer:SeqFacilityIntroOngoing'] = true
+    System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = true
+    System.EventFlags['cPlayer:KppTalkAboutVine'] = true
+    run ProcIntroEventEnd()
+
+flow Root_Choco():
+    run SNPC_otg_01_WherearenOffice::HouseCompleteActing()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:321', false)
+    run SNPC_otg_01_WherearenOffice::SetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:322', true)
+    run SNPC_otg_01_WherearenOffice::GetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:323', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:324', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:325', true)
+    System.EventFlags['cWherearenPlayer:SeqOtgTalkAboutChocolate'] = true
+    SubflowResults[3] = 2
+    run SNPC_otg_01_WherearenOffice::OrderClose_Complete()
+
+flow Root_FacilityInto():
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:091', true)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            MainNpc.TurnNeck(11, false)
+            MainNpc.TurnBody(12, 180.0)
+            MainNpc.NpcWaitTurn()
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:092', false)
+            MainNpc.TurnNeck(10, false)
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:093', false)
+            MainNpc.TurnBody(10, 0.0)
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:094', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:095', true)
+            System.EventFlags['cWherearenPlayer:SeqFacilityIntroOngoing'] = false
+            System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = false
+            run ProcIntroEventEnd()
+

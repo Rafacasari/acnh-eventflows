@@ -1,0 +1,77 @@
+flow Explanation():
+    System.EventFlags['cPlayer:HighAndLowPlayed'] = true
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:002', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:017', false)
+    MainNpc.CharacterEmoticonAction('NpcHoldout', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(30)
+    MainNpc.SystemDecideHighAndLowCard(true)
+    EventFlowSystemActor.UIMiniGameHighAndLowHandling('cGameStart')
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:003', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:014', false)
+entrypoint Event4:
+    MainNpc.CharacterEmoticonAction('NpcShuffle', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(30)
+    MainNpc.CharacterEmoticonAction('NpcHoldout', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.UIMiniGameHighAndLowHandling('cNextCardIn')
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:100', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.SystemJudgeHighAndLowResult('cLarger')
+    else:
+        MainNpc.SystemJudgeHighAndLowResult('cSmaller')
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:101', false)
+    EventFlowSystemActor.UIMiniGameHighAndLowHandling('cNextCardOpen')
+    if MainNpc.SystemIsHighAndLowPlayerWin():
+        EventFlowSystemActor.SoundTriggerEmit('Success_Level1', -1)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:112', false)
+        MainNpc.SetDeliveryItem(1, true)
+        MainNpc.SetItemName(1, 4, 0)
+        MainNpc.RegistToReleaseItemList(4)
+        if EventFlowSystemActor.ShoppingCapacity('cNpcTrade', 65534):
+            EventFlowSystemActor.UIMiniGameHighAndLowHandling('cGameEnd')
+            MainNpc.NpcDelivery(1, 'Default')
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:120', true)
+            MainNpc.NpcChangeHandTool(65534, 'cSetTmpTool', false)
+            MainNpc.AddMemoryEventPlayerForNpc('Present_FromNNPC')
+        else:
+            EventFlowSystemActor.UIMiniGameHighAndLowHandling('cGameEnd')
+            MainNpc.NpcMailSendRandom('MAIL_XX_Game', 1, 3, 'cNone', 'cFastTomorrow', 'cReward', false)
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:103', true)
+            MainNpc.NpcChangeHandTool(65534, 'cSetTmpTool', false)
+    else:
+        EventFlowSystemActor.SoundTriggerEmit('Fail', -1)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:104', false)
+        EventFlowSystemActor.UIMiniGameHighAndLowHandling('cGameEnd')
+        switch MainNpc.SystemCheckHighAndLow1stCard():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:115', true)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:106', true)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:107', true)
+        MainNpc.NpcChangeHandTool(65534, 'cSetTmpTool', false)
+
+flow NoExplanation():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:016', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:018', false)
+    MainNpc.CharacterEmoticonAction('NpcHoldout', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(30)
+    MainNpc.SystemDecideHighAndLowCard(true)
+    EventFlowSystemActor.UIMiniGameHighAndLowHandling('cGameStart')
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:009', false)
+    run Event4()
+
+flow Root():
+    MainNpc.NpcDecideGeneralQuestReward(0, 1)
+    MainNpc.SetItemName(1, 4, 0)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:001', false)
+    MainNpc.NpcChangeHandTool(65534, 'cStoreTmpTool', false)
+    if System.EventFlags['cPlayer:HighAndLowPlayed']:
+        run NoExplanation()
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Game/BO_Game_HighLow:005', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Explanation()
+        else:
+            run NoExplanation()
+

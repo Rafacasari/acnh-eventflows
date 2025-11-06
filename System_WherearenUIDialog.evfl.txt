@@ -1,0 +1,15 @@
+flow NoticeAboutNpcEdit():
+    EventFlowSystemActor.WaitFrame(15)
+    EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0120', true)
+
+flow NoticeAboutOrderCatalog_CrossWall():
+    if not System.EventFlags['cWherearenPlayer:NoticeAboutOrderCatalog_CrossWall']:
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0107', false)
+        System.EventFlags['cWherearenPlayer:NoticeAboutOrderCatalog_CrossWall'] = true
+
+flow NoticeAboutPhotoRegistration():
+    EventFlowSystemActor.WaitFrame(15)
+    if not System.EventFlags['cWherearenPlayer:NoticeAboutPhotoRegistration']:
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0106', false)
+        System.EventFlags['cWherearenPlayer:NoticeAboutPhotoRegistration'] = true
+

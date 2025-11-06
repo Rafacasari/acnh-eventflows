@@ -1,0 +1,66 @@
+flow HandBag_v200():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_General:002', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_Present:221', false)
+    MainNpc.NpcDelivery(3, '"Default"')
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_Present:222', false)
+    MainNpc.NpcAddFriendship(1)
+
+flow Root():
+    if not MainNpc.NpcIsAbleEquipSelectItem():
+        run HandBag_v200()
+    elif EventFlowSystemActor.UISelectedItemIsEquiped(0, 'cItemSelect', false):
+        if EventFlowSystemActor.MultiKindItemSelectIncludeChoice5(ChoiceNumber=5, ItemKindTypeA='Tops', ItemKindTypeB='OnePiece', ItemKindTypeC='Cap', ItemKindTypeD='Accessory', JudgeTarget='cItemSelect') in (1, 2):
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_General:100', false)
+            if MainNpc.IsNpcPlayerRelativeItem() != 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_Present:104', false)
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_General:101', false)
+            MainNpc.NpcDelivery(3, '"Default"')
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_General:102', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_General:110', false)
+            if MainNpc.IsNpcPlayerRelativeItem() != 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_Present:104', false)
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_General:111', false)
+            MainNpc.NpcDelivery(3, '"Default"')
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_General:112', false)
+        MainNpc.NpcAddFriendship(1)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_General:001', false)
+        if MainNpc.IsNpcPlayerRelativeItem() != 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_Present:104', false)
+        switch EventFlowSystemActor.MultiKindItemSelectIncludeChoice5(ChoiceNumber=5, ItemKindTypeA='Tops', ItemKindTypeB='OnePiece', ItemKindTypeC='Cap', ItemKindTypeD='Accessory', JudgeTarget='cItemSelect'):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_Present:206', true)
+                MainNpc.NpcDelivery(4, '"Default"')
+                MainNpc.UpdateNpcUsuallyTops('cCap')
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_Present:201', true)
+                run Sub_Event27()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_Present:202', true)
+                run Sub_Event27()
+            case 3:
+                if EventFlowSystemActor.MultiMessageCategoryItemSelectInclude('HeadHairAcce', '', '', '', '', '', '', '', 'cItemSelect'):
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_Present:203', true)
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_Present:204', true)
+                MainNpc.NpcDelivery(4, '"Default"')
+                MainNpc.UpdateNpcUsuallyTops('cCap')
+            case 4:
+                if EventFlowSystemActor.MultiMessageCategoryItemSelectInclude('EyeAcce', 'EyeAcceBlind', '', '', '', '', '', '', 'cItemSelect'):
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_Present:205', true)
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_Present:206', true)
+                MainNpc.NpcDelivery(4, '"Default"')
+                MainNpc.UpdateNpcUsuallyTops('cAccessory')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Select/BO_Select_Present:207', false)
+        if MainNpc.DeliveryItemIsFavor():
+            MainNpc.NpcSetShowFlag()
+            MainNpc.NpcAddFriendship(2)
+        else:
+            MainNpc.NpcAddFriendship(1)
+
+local flow Sub_Event27():
+    MainNpc.NpcDelivery(4, '"Default"')
+    MainNpc.UpdateNpcUsuallyTops('cTops')
+

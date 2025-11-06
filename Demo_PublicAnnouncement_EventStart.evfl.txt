@@ -1,0 +1,140 @@
+flow Cmn_AnnounceEnd():
+    EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 0.800000011920929, 0.800000011920929, true)
+    EventFlowSystemActor.StoreNormalCamera(true, '')
+    EventFlowSystemActor.RequestRecreateFtr()
+    EventFlowSystemActor.WaitFrame(30)
+    if EventFlowSystemActor.GlobalEventNow('Halloween', 'cMainOnly', false):
+        EventFlowSystemActor.SetNpcAIBlackBoardByLabel('pkn', 'AfterAnnouncement', 1, 0)
+        EventFlowSystemActor.SetNpcAIBlackBoardByLabel('pkn', 'ForceVisible', 1, 1)
+    EventFlowSystemActor.FadeIn(true)
+    if EventFlowSystemActor.GlobalEventNow('Fireworks', 'cMainOnly', false):
+        EventFlowSystemActor.RequestStartPeriodicalFireworks()
+    EventFlowSystemActor.BGMPropertyControl(106)
+
+flow Countdown_JustBefore():
+    if (EventFlowSystemActor.EnvSameDate('cEndOfTheYear', 'cNowTime')) and (EventFlowSystemActor.EnvHourCompare(23, 57, true, true) == 2):
+        EventFlowSystemActor.ExitFlowchart()
+
+flow NewYear():
+    EventFlowSystemActor.SoundDuckingOn(38)
+    EventFlowSystemActor.BGMPropertyControl(61)
+    Player.PlayerStickLightNewYear()
+    EventFlowSystemActor.SetCountDownCamera('cLookUp')
+    EventFlowSystemActor.WaitFrame(270)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:CountdownDemo', true)
+    EventFlowSystemActor.BGMPropertyControl(60)
+    EventFlowSystemActor.SoundDuckingOff(38)
+    EventFlowSystemActor.SetCountDownCamera('cUndo')
+
+flow PrepareDemo():
+    EventFlowSystemActor.SwapSpeaker('cSza', true)
+    EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 0.800000011920929, 0.800000011920929, true)
+    EventFlowSystemActor.CameraSetDemoParam('EventNoticeStart', '', 'Place:EventPlaza', false, false, true, 0)
+    EventFlowSystemActor.FadeIn(true)
+    EventFlowSystemActor.CameraSetDemoParam('EventNotice', 'EventNotice', 'Place:EventPlaza', false, false, true, 0)
+    EventFlowSystemActor.UIDemoClock(60)
+    EventFlowSystemActor.BGMPropertyControl(107)
+    EventFlowSystemActor.WaitFrame(45)
+
+flow PrepareDemoRco():
+    EventFlowSystemActor.SwapSpeaker('cRco', true)
+    EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 0.800000011920929, 0.800000011920929, true)
+    EventFlowSystemActor.CameraSetDemoParam('EventNoticeStart', '', 'Place:EventPlaza', false, false, true, 0)
+    EventFlowSystemActor.FadeIn(true)
+    EventFlowSystemActor.CameraSetDemoParam('EventNotice', 'EventNotice', 'Place:EventPlaza', false, false, true, 0)
+    EventFlowSystemActor.UIDemoClock(60)
+    EventFlowSystemActor.BGMPropertyControl(107)
+    EventFlowSystemActor.WaitFrame(45)
+
+flow Root():
+    run Countdown_JustBefore()
+    switch EventFlowSystemActor.EventBranch(false, 0):
+        case `None`:
+            run PrepareDemo()
+            run Cmn_AnnounceEnd()
+        case `FishingConvention`:
+            run PrepareDemo()
+            if EventFlowSystemActor.EnvHourCompare(10, -1, true, true) == 0:
+                switch EventFlowSystemActor.EnvSeason():
+                    case `Spring`:
+                        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:FishingStart', true)
+                        run Cmn_AnnounceEnd()
+                    case `Summer`:
+                        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:FishingStart_01', true)
+                        run Cmn_AnnounceEnd()
+                    case `Autumn`:
+                        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:FishingStart_03', true)
+                        run Cmn_AnnounceEnd()
+                    case `Winter`:
+                        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:FishingStart_05', true)
+                        run Cmn_AnnounceEnd()
+            else:
+                switch EventFlowSystemActor.EnvSeason():
+                    case `Spring`:
+                        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:FishingStart_00', true)
+                        run Cmn_AnnounceEnd()
+                    case `Summer`:
+                        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:FishingStart_02', true)
+                        run Cmn_AnnounceEnd()
+                    case `Autumn`:
+                        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:FishingStart_04', true)
+                        run Cmn_AnnounceEnd()
+                    case `Winter`:
+                        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:FishingStart_06', true)
+                        run Cmn_AnnounceEnd()
+        case `InsectConvention`:
+            run PrepareDemo()
+            if EventFlowSystemActor.EnvHourCompare(10, -1, true, true) == 0:
+                EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:InsectStart', true)
+                run Cmn_AnnounceEnd()
+            else:
+                EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:InsectStart_00', true)
+                run Cmn_AnnounceEnd()
+        case `Countdown`:
+            run PrepareDemo()
+            EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:CountdownStart', true)
+            run Cmn_AnnounceEnd()
+        case `Easter`:
+            run PrepareDemo()
+            run Cmn_AnnounceEnd()
+        case `Fireworks`:
+            if System.EventFlags['cLand:BuiltTownOffice']:
+                run PrepareDemo()
+                if EventFlowSystemActor.EnvHourCompare(19, 1, true, true) == 0:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:FireworksStart_01', true)
+                    run Cmn_AnnounceEnd()
+                else:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:FireworksStart_02', true)
+                    run Cmn_AnnounceEnd()
+            else:
+                run PrepareDemoRco()
+                if EventFlowSystemActor.EnvHourCompare(19, 1, true, true) == 0:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:FireworksStart', true)
+                    run Cmn_AnnounceEnd()
+                else:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:FireworksStart_00', true)
+                    run Cmn_AnnounceEnd()
+        case `Halloween`:
+            if System.EventFlags['cLand:BuiltTownOffice']:
+                run PrepareDemo()
+                if EventFlowSystemActor.EnvHourCompare(18, -1, true, true) == 0:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:HalloweenStart_01', true)
+                else:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:HalloweenStart_02', true)
+            else:
+                run PrepareDemoRco()
+                if EventFlowSystemActor.EnvHourCompare(18, -1, true, true) == 0:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:HalloweenStart', true)
+                else:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:HalloweenStart_00', true)
+            run Cmn_AnnounceEnd()
+        case `HarvestFestival`:
+            run PrepareDemo()
+            if EventFlowSystemActor.EnvHourCompare(10, -1, true, true) == 0:
+                EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:HarvestStart', true)
+            else:
+                EventFlowSystemActor.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_EventStart:HarvestStart_00', true)
+            run Cmn_AnnounceEnd()
+        default:
+            return
+

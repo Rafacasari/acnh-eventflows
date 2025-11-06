@@ -1,0 +1,317 @@
+flow ChkClearNum(ClearNum: int = 0):
+    if System.EventFlags['cLand:ImmQ_A_Complete']:
+        ClearNum += 1
+        System.EventFlags['cPlayer:ImmQHeardClearInfoA'] = true
+    if System.EventFlags['cLand:ImmQ_B_Complete']:
+        ClearNum += 1
+        System.EventFlags['cPlayer:ImmQHeardClearInfoB'] = true
+    if System.EventFlags['cLand:ImmQ_C_Complete']:
+        ClearNum += 1
+        System.EventFlags['cPlayer:ImmQHeardClearInfoC'] = true
+    if ClearNum == 1:
+        SubflowResults[0] = 1
+    elif ClearNum == 2:
+        SubflowResults[0] = 2
+    elif ClearNum == 3:
+        SubflowResults[0] = 3
+
+flow Ending():
+    System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:201', false)
+    switch EventFlowSystemActor.EnvTimeZone():
+        case `05:00-07:59`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:201_01', false)
+        case `08:00-11:59`, `12:00-15:59`, `16:00-18:59`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:201_02', false)
+        case `19:00-23:59`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:201_03', false)
+        case `00:00-04:59`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:201_04', false)
+    if EventFlowSystemActor.NpcHouseNum('cConstructed') < 5:
+        if EventFlowSystemActor.NpcHouseNum('cConstructed') < 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:202_01', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:202_02', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:202_03', false)
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:203_01', false)
+        EventFlowSystemActor.SelectRewardItemDirect(11711, 50, 'cVillageRemakePattern', 0)
+        EventFlowSystemActor.SystemMailSend('cRco', 'MAIL_SNpc_rco', 2, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:203_02', true)
+        run Ending2()
+    if not System.EventFlags['cPlayer:PAnnouceHeardRemakeWsNewsToday']:
+        run UnlockRemake_byPlayerMoving()
+    elif System.EventFlags['cPlayer:EnableDiyRemake']:
+        run UnlockRemake_byPlayerMoving()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:206', false)
+        System.EventFlags['cPlayer:RcoTalkAboutRemakeTrial'] = false
+        run UnlockRemake_byPlayerMoving()
+
+flow Ending2(ItemPrice: int = 0):
+    EventFlowSystemActor.NpcEventItemSet(11711, 'cTalk', 0, ItemPrice)
+    MainNpc.SetDeliveryItemAtRandom(11711, false, 'cVillageRemakePattern', 0)
+    MainNpc.NpcDelivery(1, 'Keep')
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:204', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:205', false)
+    System.EventFlags['cPlayer:ImmQGetQuestPrize'] = true
+    MainNpc.NpcDelivery(2, 'Default')
+    EventFlowSystemActor.SetItemToPocket(11711, 50)
+
+flow FinishBridge():
+    System.EventFlags['cPlayer:ImmQTalkRcoBridgeKitSet'] = false
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:000', false)
+    if EventFlowSystemActor.BridgeNum('cNoReserve') < 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:017', false)
+        switch EventFlowSystemActor.GeneralTalkChoice2():
+            case 0, 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:017_01', false)
+    else:
+        run SNPC_rco_05_ChkCeremony::ChkCeremonyBridge()
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:018', false)
+        if SubflowResults@2[9] == 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:018_01', false)
+
+flow FinishBridge_Force():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_PlayerPos()
+    System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+    run FinishBridge()
+
+flow FinishBridge_Force_Init():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_DisableTalkCamera()
+
+flow FirstIntroduction():
+    if System.EventFlags['cPlayer:NotStartImmQByDIYDisable']:
+        if System.EventFlags['cPlayer:MainmenuRecipe']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:903', false)
+            run Sub_Event648()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:902', false)
+    else:
+        if System.EventFlags['cPlayer:RcoImmQClear1QuestToday']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:011_01', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:011_02', false)
+        if System.EventFlags['cPlayer:MainmenuRecipe']:
+            run Sub_Event648()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:901', false)
+            System.EventFlags['cPlayer:NotStartImmQByDIYDisable'] = true
+
+flow GetHousingKit():
+    if System.EventFlags['cPlayer:ImmQGetHousingFullItem']:
+        if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:032_02', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:032_03', false)
+            run Sub_Event73()
+    else:
+        if System.EventFlags['cPlayer:RcoImmQClear1QuestToday']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:031_01', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:031_02', false)
+        if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:032_01', false)
+            System.EventFlags['cPlayer:ImmQGetHousingFullItem'] = true
+        else:
+            run Sub_Event73()
+
+flow OnlyReservePlace():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:041', false)
+    if EventFlowSystemActor.NpcHouseNum('cExist') < 3:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:042_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:042_02', false)
+
+flow Rco_FinishMigrantEvent_Reward():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:107', false)
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:108_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:109', false)
+        EventFlowSystemActor.SelectRewardItemDirect(11711, 50, 'cVillageRemakePattern', 0)
+        EventFlowSystemActor.SystemMailSend('cRco', 'MAIL_SNpc_rco', 2, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:108_02', false)
+        if System.EventFlags['cPlayerTemp:RcoForceTalk']:
+            MainNpc.NpcMoveToPlayer()
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:108_04', true)
+        run Ending2()
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:109', true)
+        if System.EventFlags['cPlayerTemp:RcoForceTalk']:
+            EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 1.0, 1.0, true)
+            MainNpc.NpcRailMove(1, true, false, -1, -1, 0)
+            EventFlowSystemActor.WaitFrame(45)
+            EventFlowSystemActor.FadeIn(true)
+    System.EventFlags['cPlayer:ImmQTalkAboutPrize'] = true
+    System.EventFlags['cLand:RcmImmQuestComplete'] = true
+    System.EventFlags['cLand:RcmImmQuestRunning'] = false
+
+flow Rco_ImmQ_ClearTalk_Force():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_PlayerPos()
+    System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+entrypoint Event595:
+    run ChkClearNum()
+    System.EventFlags['cPlayer:ImmQHeardNoticeRemoveFtr'] = false
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:000', false)
+    switch SubflowResults@4[0]:
+        case 1, 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:101', false)
+            switch EventFlowSystemActor.GeneralTalkChoice2():
+                case 0, 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:103_01', false)
+                    run Sub_grp_Event104()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:102', false)
+            switch EventFlowSystemActor.GeneralTalkChoice2():
+                case 0, 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:103_02', false)
+                    run Sub_grp_Event104()
+        default:
+            return
+
+flow Rco_ImmQ_ClearTalk_Force_Init():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_DisableTalkCamera()
+
+flow Rco_ImmQ_ClearTalk_NotForce():
+    run Event595()
+
+flow Rco_ImmQ_ForceTalkEntry():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_PlayerPos()
+    System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+    run Rco_ImmQ_ReactTalkEntry()
+
+flow Rco_ImmQ_ForceTalkEntry_Init():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_DisableTalkCamera()
+
+flow Rco_ImmQ_ReactTalkEntry():
+    if (System.EventFlags['cLand:RcmImmQuestOpen']) and (not System.EventFlags['cLand:RcmImmQuestComplete']):
+        if not System.EventFlags['cLand:RcmImmQuestRunning']:
+            run SNPC_rco_01_Tent_1_Entries::RcoTentImmQuestIntroNotForce()
+            EventFlowSystemActor.ExitFlowchart()
+        elif not System.EventFlags['cPlayer:ImmQRunningForPlayer']:
+            run SNPC_rco_01_Tent_1_Entries::RcoTentImmQuestIntroNotForce()
+            EventFlowSystemActor.ExitFlowchart()
+        elif System.EventFlags['cPlayer:ImmQTalkRcoBridgeKitSet']:
+            run FinishBridge()
+            EventFlowSystemActor.ExitFlowchart()
+        elif (System.EventFlags['cLand:ImmQ_SetBridge']) and (System.EventFlags['cPlayer:ImmQSetBridgeKitMySelf']) and (System.EventFlags['cLand:ImmQ_A_GetHousing']) and (System.EventFlags['cPlayer:ImmQHeardNoticeRemoveFtr']):
+            run Rco_ImmQ_ClearTalk_NotForce()
+            EventFlowSystemActor.ExitFlowchart()
+
+flow Root():
+    if not System.EventFlags['cPlayer:ImmQFirstExplain']:
+        run FirstIntroduction()
+    elif not System.EventFlags['cLand:ImmQ_SetBridge']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:014', false)
+        if EventFlowSystemActor.HasTargetItem(7211, 1):
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:015_02', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:015_04_01', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:015_04_02', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:015_04_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:015_03', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:015_01', false)
+    elif System.EventFlags['cLand:ImmQ_A_GetHousing']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:041', false)
+        if EventFlowSystemActor.NpcHouseNum('cExist') < 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:042_01', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:042_02', false)
+    else:
+        run GetHousingKit()
+
+local flow Sub_Event648():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:012_01', true)
+    run Demo_Common_PhoneCall::SendingDataOneWay()
+    EventFlowSystemActor.PlayerSetCraftRecipe('', 7211)
+    EventFlowSystemActor.PlayerSetCraftRecipe('', 5973)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:012_02', false)
+    MainNpc.SmartPhone(1)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:012_03', false)
+    System.EventFlags['cPlayer:ImmQFirstExplain'] = true
+    System.EventFlags['cLand:QuestReserveStart'] = true
+
+local flow Sub_Event73():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:033', true)
+    MainNpc.SetDeliveryItemAtRandom(5827, false, 'cVillageRemakePattern', 0)
+    MainNpc.NpcDelivery(1, 'Default')
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:034', true)
+    run Demo_Common_PhoneCall::SendingDataOneWay()
+    EventFlowSystemActor.WaitFrame(5)
+    MainNpc.SmartPhone(1)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:035', false)
+    EventFlowSystemActor.SetItemToPocket(5827, 1)
+    EventFlowSystemActor.SetItemToPocket(5828, 1)
+    EventFlowSystemActor.SetItemToPocket(5829, 1)
+    System.EventFlags['cLand:ImmQ_A_GetHousing'] = true
+    System.EventFlags['cLand:ImmQ_B_GetHousing'] = true
+    System.EventFlags['cLand:ImmQ_C_GetHousing'] = true
+    EventFlowSystemActor.PlayerSetCraftRecipe('None', 2615)
+    System.EventFlags['cLand:VillageExtensionLevel3'] = true
+    run Player_Demo_HousingFinish::RecipeGetA()
+    run Player_Demo_HousingFinish::RecipeGetB()
+    run Player_Demo_HousingFinish::RecipeGetC()
+
+local flow Sub_grp_Event104():
+    if System.EventFlags['cPlayer:RcoMigrantProgressTalk1st']:
+        if EventFlowSystemActor.NpcHouseNum('cConstructed') < 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:111_02', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:111_01', false)
+        run Rco_FinishMigrantEvent_Reward()
+    else:
+        System.EventFlags['cPlayer:RcoMigrantProgressTalk1st'] = true
+        if EventFlowSystemActor.NpcHouseNum('cConstructed') < 3:
+            switch SubflowResults@4[0]:
+                case 1, 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:104_01', false)
+                    run Sub_grp_Event816()
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:104_02', false)
+                    run Sub_grp_Event816()
+                default:
+                    return
+        else:
+            switch SubflowResults@4[0]:
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:104_03', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:110', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:104_04', false)
+                    run Rco_FinishMigrantEvent_Reward()
+                default:
+                    return
+
+local flow Sub_grp_Event816():
+    if EventFlowSystemActor.IsFirstNpcLiveInTent():
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:105_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:105_02', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:106', false)
+    switch SubflowResults@4[0]:
+        case 1, 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:110', false)
+        case 3:
+            run Rco_FinishMigrantEvent_Reward()
+        default:
+            return
+
+flow UnlockRemake_byPlayerMoving():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_05_MigrantsQuest:109', true)
+    System.EventFlags['cPlayer:ImmQTalkAboutPrize'] = true
+    System.EventFlags['cPlayer:RcoStayMyHouseImmQClear'] = false
+    if EventFlowSystemActor.EventBranch(false, 0) in (`None`, `FishingConvention`, `InsectConvention`, `Easter`, `Fireworks`, `Halloween`, `HarvestFestival`, `XmasEve`, `Unknown9`):
+        EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 1.0, 1.0, true)
+        EventFlowSystemActor.WaitFrame(30)
+        EventFlowSystemActor.CameraSetDemoParam('cNormal', '', 'Player', false, false, false, 0)
+        MainNpc.NpcAISetting(12, false)
+        Player.TurnBody(11, 0.0)
+        EventFlowSystemActor.SetHideObjectVisible()
+        EventFlowSystemActor.FadeIn(true)
+    else:
+        EventFlowSystemActor.SystemReenterStage(0, 'cCircle', 'cCircle', 'cBlack', 1.0, 1.0)
+

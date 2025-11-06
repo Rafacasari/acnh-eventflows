@@ -1,0 +1,29 @@
+flow ChangeFgFailed():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Telepathy:038', false)
+
+flow ChangeFgFailedInSitNpc():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Telepathy:042', false)
+
+flow FirstTimeInteriorEdit():
+    if System.EventFlags['cWherearenPlayer:NoticeAboutGardenInteriorMode']:
+        if (not System.EventFlags['cWherearenPlayer:NoticeAboutCreateRoad']) and (System.EventFlags['cWherearenPlayer:Unlock_CreateRoad']):
+            System.EventFlags['cWherearenPlayer:NoticeAboutCreateRoad'] = true
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0101_04', false)
+        if (not System.EventFlags['cWherearenPlayer:NoticeAboutChangeBridge']) and (EventFlowSystemActor.StructureIsExistBridgeSlopeCurrentField(3)):
+            System.EventFlags['cWherearenPlayer:NoticeAboutChangeBridge'] = true
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0101_05', true)
+    else:
+        System.EventFlags['cWherearenPlayer:NoticeAboutGardenInteriorMode'] = true
+        if System.EventFlags['cWherearenPlayer:Unlock_CreateRoad']:
+            System.EventFlags['cWherearenPlayer:NoticeAboutCreateRoad'] = true
+            if EventFlowSystemActor.StructureIsExistBridgeSlopeCurrentField(3):
+                System.EventFlags['cWherearenPlayer:NoticeAboutChangeBridge'] = true
+                EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0101_03', true)
+            else:
+                EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0101_01', true)
+        elif EventFlowSystemActor.StructureIsExistBridgeSlopeCurrentField(3):
+            System.EventFlags['cWherearenPlayer:NoticeAboutChangeBridge'] = true
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0101_02', true)
+        else:
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0101', true)
+

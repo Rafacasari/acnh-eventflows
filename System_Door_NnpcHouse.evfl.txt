@@ -1,0 +1,109 @@
+flow Root():
+    if System.EventFlags['cLand:ValidateVillageSave']:
+        GeneralObject.SetTagFromSystem('cNpcHouseDoor', 'cDegit', 0, 0, '')
+        switch GeneralObject.CheckLockReason():
+            case 0:
+                run Sys_Door_Sleep()
+                EventFlowSystemActor.SetCheckResultStructureDoor(CheckResult=1)
+            case 1:
+                run Sys_Door_Out()
+                EventFlowSystemActor.SetCheckResultStructureDoor(CheckResult=1)
+            case 2:
+                run Sys_Door_Move()
+                EventFlowSystemActor.SetCheckResultStructureDoor(CheckResult=1)
+            case 3:
+                run Sys_Door_Sick()
+                EventFlowSystemActor.SetCheckResultStructureDoor(CheckResult=1)
+            case 4:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:VisitN', false)
+                EventFlowSystemActor.SetCheckResultStructureDoor(CheckResult=1)
+            case 5:
+                EventFlowSystemActor.SetCheckResultStructureDoor(CheckResult=0)
+    else:
+        EventFlowSystemActor.SetCheckResultStructureDoor(CheckResult=1)
+
+flow Sys_Door_Move():
+    switch GeneralObject.HouseOwnerLooks():
+        case `Lazy`:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Move_BO', false)
+        case `Jock`:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Move_HA', false)
+        case `Cranky`:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Move_KO', false)
+        case `Smug`:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Move_ZK', false)
+        case `Normal`:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Move_FU', false)
+        case `Peppy`:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Move_GE', false)
+        case `Snooty`:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Move_OT', false)
+        case `Sisterly`:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Move_AN', false)
+
+flow Sys_Door_Out():
+    if GeneralObject.HouseIsTent():
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Out_Tent', false)
+    else:
+        switch GeneralObject.HouseOwnerLooks():
+            case `Lazy`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Out_BO', false)
+            case `Jock`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Out_HA', false)
+            case `Cranky`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Out_KO', false)
+            case `Smug`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Out_ZK', false)
+            case `Normal`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Out_FU', false)
+            case `Peppy`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Out_GE', false)
+            case `Snooty`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Out_OT', false)
+            case `Sisterly`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Out_AN', false)
+
+flow Sys_Door_Sick():
+    if GeneralObject.HouseIsTent():
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sick_Tent', false)
+    else:
+        switch GeneralObject.HouseOwnerLooks():
+            case `Lazy`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sick_BO', false)
+            case `Jock`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sick_HA', false)
+            case `Cranky`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sick_KO', false)
+            case `Smug`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sick_ZK', false)
+            case `Normal`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sick_FU', false)
+            case `Peppy`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sick_GE', false)
+            case `Snooty`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sick_OT', false)
+            case `Sisterly`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sick_AN', false)
+
+flow Sys_Door_Sleep():
+    if GeneralObject.HouseIsTent():
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sleep_Tent', false)
+    else:
+        switch GeneralObject.HouseOwnerLooks():
+            case `Lazy`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sleep_BO', false)
+            case `Jock`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sleep_HA', false)
+            case `Cranky`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sleep_KO', false)
+            case `Smug`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sleep_ZK', false)
+            case `Normal`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sleep_FU', false)
+            case `Peppy`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sleep_GE', false)
+            case `Snooty`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sleep_OT', false)
+            case `Sisterly`:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:Sleep_AN', false)
+

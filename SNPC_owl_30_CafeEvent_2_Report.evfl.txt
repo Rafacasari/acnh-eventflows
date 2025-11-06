@@ -1,0 +1,13 @@
+flow Root():
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:011', false)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:012', false)
+            switch EventFlowSystemActor.GeneralTalkChoice2():
+                case 0, 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:013', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:014', false)
+                    System.EventFlags['cPlayer:MuseumCafeEv_4_ReportedToOwl'] = true
+                    System.EventFlags['cPlayer:Owl_HeardAboutCafeConstruction'] = true
+                    System.EventFlags['cLand:MuseumCafeConstruction_1_Confirm'] = true
+

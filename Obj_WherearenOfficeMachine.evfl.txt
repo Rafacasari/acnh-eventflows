@@ -1,0 +1,4 @@
+flow Root():
+    EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WherearenOfficeMachine:001', true)
+    EventFlowSystemActor.UIExchangePokiHandling()
+

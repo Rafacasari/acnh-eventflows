@@ -1,0 +1,337 @@
+flow AdviceAboutFtr():
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:021', false)
+    run AdviceAboutFtr_AfterHalf()
+
+flow AdviceAboutFtr_AfterHalf():
+    switch EventFlowSystemActor.RandomChoice4(4):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:024', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:024_01', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:024_02', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:024_03', false)
+
+flow AdviceAboutNatural_AfterHalf():
+    if EventFlowSystemActor.VillageScoreCheckTreeNum() >= 180:
+        if EventFlowSystemActor.RandomChoice2(2) == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:025', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:025_01', false)
+    else:
+        switch EventFlowSystemActor.RandomChoice3(3):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:025', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:025_01', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:025_02', false)
+
+flow AdviceForLife():
+    if not System.EventFlags['cPlayer:SzaIslandEvaluationHeardToday']:
+        System.EventFlags['cPlayer:SzaIslandEvaluationHeardToday'] = true
+        if System.EventFlags['cLand:SzaIslandEvaluationImprovementLifeToday']:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:021_01', false)
+            run AdviceAboutFtr_AfterHalf()
+        else:
+            run AdviceForLife()
+    elif EventFlowSystemActor.PercentChoice(60):
+        run AdviceAboutFtr()
+    else:
+        switch EventFlowSystemActor.RandomChoice4(4):
+            case 0:
+                if EventFlowSystemActor.MuseumLevel() in (`BlathersNotMovedIn`, `BlathersTent`):
+                    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:023', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:026', false)
+                else:
+                    run AdviceAboutFtr()
+            case 1:
+                if (EventFlowSystemActor.BridgeNum('cNoReserve') >= 3) and (EventFlowSystemActor.BridgeNum('cNoReserve') >= 2):
+                    run AdviceAboutFtr()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:023', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:026_01', false)
+            case 2:
+                if System.EventFlags['cLand:TailorBuilt']:
+                    run AdviceAboutFtr()
+                else:
+                    run Sub_Event183()
+            case 3:
+                if EventFlowSystemActor.ShopLevel() in (`InResServiceTent`, `NooksCrannyInitial`):
+                    run Sub_Event183()
+                else:
+                    run AdviceAboutFtr()
+
+flow AdviceForMinusPoint():
+    switch SubflowResults@4[4]:
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:032', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:033', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:034', false)
+        default:
+            return
+
+flow AdviceForNatural():
+    if System.EventFlags['cPlayer:SzaIslandEvaluationHeardToday']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:022', false)
+        run AdviceAboutNatural_AfterHalf()
+    else:
+        System.EventFlags['cPlayer:SzaIslandEvaluationHeardToday'] = true
+        if System.EventFlags['cLand:SzaIslandEvaluationImprovementNaturalToday']:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:022_01', false)
+            run AdviceAboutNatural_AfterHalf()
+        else:
+            run AdviceForNatural()
+
+flow ChkSellLand():
+    if not System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        run Evaluation2ndTime()
+    elif EventFlowSystemActor.NpcHouseNum('cConstructed') >= 7:
+        if EventFlowSystemActor.NpcHouseNum('cExist') < 8:
+            run RecommendSearchLand()
+        else:
+            run Evaluation2ndTime()
+    elif EventFlowSystemActor.NpcHouseNum('cExist') < 7:
+        run RecommendSearchLand()
+    else:
+        run Evaluation2ndTime()
+
+flow ChkTalkAboutSearchLand():
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        if EventFlowSystemActor.NpcHouseNum('cConstructed') < 7:
+            if EventFlowSystemActor.NpcHouseNum('cExist') < 7:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:801_01', false)
+        else:
+            if EventFlowSystemActor.NpcHouseNum('cExist') < 8:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:801_01', false)
+
+flow ClearTkkFirstLiveScore():
+    DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:501', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:502', false)
+    DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:503', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:504', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:505', false)
+    DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:506', false)
+    DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:507', true)
+    DynamicCast_rco.RcoStandUpChair()
+    DynamicCast_rco.TurnBody(10, 0.0)
+    DynamicCast_rco.NpcWaitTurn()
+    DynamicCast_rco.TurnNeck(11, false)
+    run Demo_Common_PhoneCall::MakingPhoneCall()
+    DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:508_01', false)
+    DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:508_02', false)
+    DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:508_03', false)
+    DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:508_04', false)
+    DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:508_05', true)
+    run Demo_Common_PhoneCall::FinishingPhoneCall()
+    DynamicCast_rco.SmartPhone(5)
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:509', false)
+    DynamicCast_rco.TurnNeck(0, false)
+    DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:510', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:511', false)
+    switch EventFlowSystemActor.EventBranch(false, 1):
+        case `None`:
+            DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:512_01', true)
+        case `FishingConvention`:
+            DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:512_02', false)
+        case `InsectConvention`:
+            DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:512_03', false)
+        case `Countdown`:
+            DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:512_04', true)
+        case `Easter`, `Fireworks`, `Halloween`, `HarvestFestival`, `XmasEve`, `Unknown9`:
+            DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:512_05', true)
+    DynamicCast_rco.SmartPhone(1)
+    DynamicCast_rco.TurnNeck(11, false)
+    DynamicCast_rco.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:513_01', false)
+    System.EventFlags['cLand:IslandEvaluationClearTkkLive'] = true
+    System.EventFlags['cLand:IslandDevQuestRunning'] = false
+    System.EventFlags['cLand:IslandDevQuestComplete'] = true
+    EventFlowSystemActor.ExitFlowchart()
+
+flow EntryMemories():
+    if SubflowResults@3[6] == 0:
+        EventFlowSystemActor.SetMemoryEventLandEvaluation()
+
+flow Evaluation2ndTime():
+    if System.EventFlags['cPlayer:SzaIslandEvaluationHeardToday']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:802', false)
+        run NoImprovement()
+    else:
+        System.EventFlags['cPlayer:SzaIslandEvaluationHeardToday'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:804', false)
+        if SubflowResults@2[5] == 0:
+            if System.EventFlags['cLand:SzaIslandEvaluationImprovementLifeToday']:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:805_01', false)
+            else:
+                run NoImprovement()
+        elif System.EventFlags['cLand:SzaIslandEvaluationImprovementNaturalToday']:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:805_02', false)
+        else:
+            run NoImprovement()
+
+flow FirstSeq():
+    if System.EventFlags['cPlayerTemp:SzaIslandEvaluationUnlockNow']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:101_02', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:101_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:102', false)
+    switch SubflowResults@5[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:002_01', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:002_02', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:002_03', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:002_04', false)
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:002_05', false)
+
+flow Get_GoldenWateringRecipe():
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:201', true)
+    run Demo_Common_PhoneCall::SendingDataWithP_Owl()
+    EventFlowSystemActor.PlayerSetCraftRecipe('', 8533)
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:202', false)
+    run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+    run SNPC_sza_00_Common::Sza_CmnSel_Again()
+    EventFlowSystemActor.ExitFlowchart()
+
+flow NoImprovement():
+    if SubflowResults@2[5] == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:803', false)
+        run AdviceAboutFtr_AfterHalf()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:803_01', false)
+        run AdviceAboutNatural_AfterHalf()
+
+flow NormalSeq():
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:000_04', false)
+    switch SubflowResults@5[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:003_01', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:003_02', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:003_03', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:003_04', false)
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:003_05', false)
+
+flow RecommendSearchLand():
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:801', false)
+    System.EventFlags['cPlayer:SzaIslandEvaluationTalkAbout1Star'] = true
+    run ChkTalkAboutSearchLand()
+
+flow Root():
+    run System_IslandEvaluationCheck::IslandEvaluationChk()
+    run System_IslandEvaluationCheck::Compare_BeforeEvaluation()
+    System.EventFlags['cPlayer:IslandEvaluationUnlockMyself'] = true
+    System.EventFlags['cPlayer:SzaHeardAboutIslandEvaluation'] = true
+    if System.EventFlags['cPlayer:SzaHeardAboutEvaluationDetail']:
+        run NormalSeq()
+        run EntryMemories()
+        run Sza_Evaluation_CmnImpression()
+    else:
+        run FirstSeq()
+        System.EventFlags['cPlayer:SzaHeardAboutEvaluationDetail'] = true
+        run Sza_Evaluation_CmnImpression()
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:000_05', false)
+    run SNPC_sza_00_Common::Sza_CmnSel_Again()
+
+local flow Sub_Event183():
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:023', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:026_02', false)
+
+local flow Sub_grp_Event11():
+    if SubflowResults@4[4] in (1, 2, 3):
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:031', false)
+        run AdviceForMinusPoint()
+
+flow Sza_Evaluation_CmnImpression():
+    if SubflowResults@3[6] in (0, 1):
+        switch SubflowResults@5[0]:
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:001_01', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:001_02', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:001_03', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:001_04', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:001_05', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:001_06', false)
+    if SubflowResults@5[0] in (0, 1, 2):
+        System.EventFlags['cPlayer:Experienced3starEvaluation'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:900_01', true)
+    if System.EventFlags['cLand:IslandDevQuestComplete']:
+        run Sza_Evaluation_NmlSeq()
+    elif SubflowResults@5[0] in (0, 1):
+        run Sza_Evaluation_NmlSeq()
+    elif System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:909', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:900_02', false)
+        run ClearTkkFirstLiveScore()
+    else:
+        run Sza_Evaluation_NmlSeq()
+
+flow Sza_Evaluation_NmlSeq():
+    EventFlowSystemActor.WaitFrame(10)
+    switch SubflowResults@5[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:901', true)
+        case 1:
+            if SubflowResults@4[1] == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:901', true)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:902', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:903', true)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:904', true)
+        case 4:
+            if EventFlowSystemActor.PercentChoice(80):
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:905', true)
+            elif EventFlowSystemActor.EnvSeason() in (`Spring`, `Summer`, `Autumn`):
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:906_02', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:906_01', false)
+    EventFlowSystemActor.SwapSpeaker('cNone', false)
+    EventFlowSystemActor.WaitFrame(10)
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:900_02', false)
+    switch SubflowResults@4[1]:
+        case 0:
+            if System.EventFlags['cPlayer:SzaIslandEvaluationTalkAbout1Star']:
+                run ChkSellLand()
+            else:
+                run RecommendSearchLand()
+        case 1:
+            run AdviceForLife()
+            run Sub_grp_Event11()
+        case 2:
+            run AdviceForNatural()
+            run Sub_grp_Event11()
+        case 3:
+            switch SubflowResults@5[0]:
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:031_01', false)
+                    run AdviceForMinusPoint()
+                case 4:
+                    if System.EventFlags['cPlayer:SzaIslandEvaluation5star1st']:
+                        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:011', false)
+                    else:
+                        System.EventFlags['cPlayer:SzaIslandEvaluation5star1st'] = true
+                        if System.EventFlags['cPlayer:Experienced3starEvaluation']:
+                            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:012', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:011', false)
+                    if (System.EventFlags['cPlayer:MainmenuRecipe']) and (not EventFlowSystemActor.PlayerHasCraftRecipe('', 8533)):
+                        run Get_GoldenWateringRecipe()
+                default:
+                    return
+

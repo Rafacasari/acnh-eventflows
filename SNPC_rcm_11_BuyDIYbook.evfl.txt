@@ -1,0 +1,172 @@
+flow Branch_ChkHarvestRecipe():
+    if EventFlowSystemActor.MultiItemSelectInclude(5605, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        if EventFlowSystemActor.PlayerHasCraftRecipe('DIYbook3', 65534):
+            run RcmDIYbookBought()
+        else:
+            run RcmDIYbookBuySel()
+            EventFlowSystemActor.PlayerSetCraftRecipe('DIYbook3', 65534)
+            run Event28()
+    elif EventFlowSystemActor.MultiItemSelectInclude(13787, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        if EventFlowSystemActor.PlayerHasCraftRecipe('HarvestFtr', 65534):
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:2003', false)
+            run SNPC_rcm_00_Common::BuyCancelNoAsk()
+        else:
+            run RcmDIYbookBuySel()
+            EventFlowSystemActor.PlayerSetCraftRecipe('HarvestFtr', 65534)
+entrypoint Event28:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:107_02', false)
+            run Event50()
+
+flow Branch_WhatIsHarvestRecipe():
+    if EventFlowSystemActor.MultiItemSelectInclude(5605, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:106_01_03', false)
+        run Event71()
+        return
+    elif EventFlowSystemActor.MultiItemSelectInclude(13787, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:2004', false)
+        run Event71()
+        return
+    elif EventFlowSystemActor.MultiItemSelectInclude(14811, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4011', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4019', false)
+        run RcmDIYbookBuySel()
+    elif EventFlowSystemActor.MultiItemSelectInclude(14816, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4012', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4019', false)
+        run RcmDIYbookBuySel()
+    else:
+        return
+
+flow ChkCookingOrDIY():
+    SubflowResults[14] = 0
+    if (EventFlowSystemActor.MultiItemSelectInclude(14811, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect')) or (EventFlowSystemActor.MultiItemSelectInclude(14816, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect')):
+        run CookingRecipeBook()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow CookingRecipeBook():
+    SubflowResults[14] = 1
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4001', false)
+    if not System.EventFlags['cPlayer:MainmenuRecipe_v2']:
+        if EventFlowSystemActor.IsMyVillage():
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4021', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4022', false)
+        run SNPC_rcm_00_Common::BuyCancelNoAsk()
+    elif EventFlowSystemActor.MultiItemSelectInclude(14811, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        if EventFlowSystemActor.PlayerHasCookingRecipe('DishShopRecipeBook', 65534):
+            run RcmDIYbookBought()
+        else:
+            run RcmDIYbookBuySel()
+            EventFlowSystemActor.PlayerSetCookingRecipe('DishShopRecipeBook', 65534)
+            run Sub_Event113()
+    elif EventFlowSystemActor.MultiItemSelectInclude(14816, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        if EventFlowSystemActor.PlayerHasCookingRecipe('DishHarvestRecipeBook', 65534):
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4020', false)
+            run SNPC_rcm_00_Common::BuyCancelNoAsk()
+        else:
+            run RcmDIYbookBuySel()
+            EventFlowSystemActor.PlayerSetCookingRecipe('DishHarvestRecipeBook', 65534)
+            run Sub_Event113()
+
+flow RcmDIYbookBought():
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:104_02', false)
+    run SNPC_rcm_00_Common::BuyCancelNoAsk()
+
+flow RcmDIYbookBuySel():
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:104', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run SNPC_rcm_00_Common::Rcm_Common_BuyCheckUI()
+            System.EventFlags['cPlayerTemp:RcmBoughtGrocery'] = true
+            EventFlowSystemActor.UIShopBuyDisappear()
+            if (not EventFlowSystemActor.NetIsConnected()) and (EventFlowSystemActor.ShopLevel() != `InResServiceTent`):
+                MainNpc.NpcMoveToPlayer()
+            Player.PlayerChangeStateDemoTalk()
+            Player.TurnBody(0, 0.0)
+            Player.PlayerWaitTurn()
+            MainNpc.SmartPhone(0)
+            if SubflowResults@2[14] == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:107_01', true)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4002', true)
+            EventFlowSystemActor.WaitFrame(15)
+            Player.SmartPhone(0)
+            fork:
+                branch:
+                    Player.SmartPhone(4)
+                branch:
+                    MainNpc.CharacterEmoticonAction('Smiling', true, '', 30, false)
+            EventFlowSystemActor.WaitFrame(20)
+            MainNpc.CharacterEmoticonAction('EmotEnd', true, '', 30, false)
+            MainNpc.SmartPhone(4)
+            EventFlowSystemActor.WaitFrame(30)
+            MainNpc.SmartPhoneSE(2, 'Phone_Sending')
+            EventFlowSystemActor.WaitFrame(30)
+            Player.SmartPhoneSE(2, 'Phone_Recieving')
+            EventFlowSystemActor.WaitFrame(15)
+            MainNpc.SmartPhone(5)
+            Player.SmartPhone(5)
+        case 1:
+            if EventFlowSystemActor.MultiItemSelectInclude(5603, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:106_01_01', false)
+entrypoint Event71:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:106_02', false)
+                run RcmDIYbookBuySel()
+            elif EventFlowSystemActor.MultiItemSelectInclude(5604, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:106_01_02', false)
+entrypoint Event71:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:106_02', false)
+                run RcmDIYbookBuySel()
+            else:
+                run Branch_WhatIsHarvestRecipe()
+        case 2:
+            run SNPC_rcm_00_Common::Rcm_Groceries_Buy_Cancel()
+
+flow Rcm_Cmn_DisableDIY():
+    if EventFlowSystemActor.IsMyVillage():
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:104_01_01', false)
+        if EventFlowSystemActor.ShopLevel() == `InResServiceTent`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:104_01_02', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:104_01_03', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:108', false)
+
+flow Root():
+    run ChkCookingOrDIY()
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:105_01', false)
+    if not System.EventFlags['cPlayer:MainmenuRecipe']:
+        run Rcm_Cmn_DisableDIY()
+        run SNPC_rcm_00_Common::BuyCancelNoAsk()
+    elif EventFlowSystemActor.MultiItemSelectInclude(5603, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        if EventFlowSystemActor.PlayerHasCraftRecipe('DIYbook1', 65534):
+            run RcmDIYbookBought()
+        else:
+            run RcmDIYbookBuySel()
+            EventFlowSystemActor.PlayerSetCraftRecipe('DIYbook1', 65534)
+            run Event28()
+    elif not EventFlowSystemActor.MultiItemSelectInclude(5604, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        run Branch_ChkHarvestRecipe()
+    elif EventFlowSystemActor.PlayerHasCraftRecipe('DIYbook2', 65534):
+        run RcmDIYbookBought()
+    else:
+        run RcmDIYbookBuySel()
+        EventFlowSystemActor.PlayerSetCraftRecipe('DIYbook2', 65534)
+        run Event28()
+
+local flow Sub_Event113():
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4003', false)
+entrypoint Event50:
+    fork:
+        branch:
+            MainNpc.SmartPhone(1)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.SmartPhone(1)
+    System.EventFlags['cPlayerTemp:RcmBoughtGrocery'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:092', false)
+    if EventFlowSystemActor.ShopLevel() != `InResServiceTent`:
+        Player.TurnBody(13, 0.0)
+        Player.PlayerWaitTurn()
+    run SNPC_rcm_00_Common::Rcm_Common_BuyAgain2()
+

@@ -1,0 +1,51 @@
+flow CarryTray():
+    run Root()
+
+flow EnterFacility():
+    MainNpc.TurnBody(10, 0.0)
+    if EventFlowSystemActor.WherearenExistFacilityName('cRestaurant'):
+        EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cSelectFacility', 0, 'cRestaurant')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:091', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:092', false)
+    if EventFlowSystemActor.IsInspectingWherearen():
+        EventFlowSystemActor.StartMeasurePlayTime('cWherearenInspect')
+
+flow ExitFacility():
+    MainNpc.TurnBody(10, 0.0)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:093', false)
+
+flow FacilityName_Chk():
+    if (EventFlowSystemActor.WherearenExistFacilityName('cRestaurant')) and (not EventFlowSystemActor.PercentChoice(80)):
+        EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cSelectFacility', 0, 'cRestaurant')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:102', false)
+        run KKFes_Chk()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow KKFes_Chk():
+    if (not EventFlowSystemActor.IsInspectingWherearen()) and (EventFlowSystemActor.WherearenKKFesStatus(false) == 2):
+        MainNpc.TurnNeck(10, true)
+        MainNpc.NpcKKFesJoinOpenMessage('TalkNNpc/B1_Bo/OneRoom/BO_Facility_KKFes:001')
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_KKFes:105', true)
+            run Demo_Common_Wherearen::ToKKFesDemoLive()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_KKFes:200', false)
+            EventFlowSystemActor.ExitFlowchart()
+
+flow Root():
+    if not EventFlowSystemActor.IsInspectingWherearen():
+        run ShareHouseMate_Chk()
+    run FacilityName_Chk()
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:101', false)
+    run KKFes_Chk()
+
+flow ShareHouseMate_Chk():
+    if EventFlowSystemActor.WherearenOrderStatus() == 1:
+        MainNpc.TurnNeck(10, false)
+        run NNPC_Spot_WherearenMainFieldVisitor::LookforHouseMate()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow StandSleep():
+    run NNPC_RestaurantCustomer::`StandSleep_2.1`()
+

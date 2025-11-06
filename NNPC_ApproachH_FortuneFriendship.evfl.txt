@@ -1,0 +1,15 @@
+flow Root():
+    System.EventFlags['cPlayer:FortuneApproachTalked'] = true
+    MainNpc.SetApproachTalkItem(4)
+    MainNpc.SetItemName(6, 0, 0)
+    MainNpc.SetDeliveryItem(6, true)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachH_FortuneFriendship:001', false)
+    if EventFlowSystemActor.ShoppingCapacity('cNpcTrade', 65534):
+        MainNpc.NpcDelivery(1, 'Keep')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachH_FortuneFriendship:003', false)
+        MainNpc.NpcDelivery(2, 'Keep')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachH_FortuneFriendship:004', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachH_FortuneFriendship:002', false)
+        MainNpc.NpcMailSendRandom('MAIL_XX_FortuneFriendship', 1, 3, 'cNone', 'cFastTomorrow', 'cReward', false)
+

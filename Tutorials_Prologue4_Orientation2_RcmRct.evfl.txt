@@ -1,0 +1,46 @@
+flow Root():
+    if System.EventFlags['cPlayer:AllowPcTentEntering']:
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:131', false)
+        else:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:121', false)
+    elif System.EventFlags['cPlayer:PrologueStartedCampfire']:
+        if EventFlowSystemActor.RandomChoice4(4) in (0, 1, 2):
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:121', false)
+        else:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:122', false)
+    elif System.EventFlags['cPlayer:PrologueForCampfire2']:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:111', false)
+    elif System.EventFlags['cPlayer:PrologueForCampfire1']:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:101', false)
+    elif System.EventFlags['cPlayer:PrologueAfterBuiltTentTalk']:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:100', false)
+    elif System.EventFlags['cPlayer:PlayerPocketUIEnable']:
+        if System.EventFlags['cLand:Prologue4BuiltPlayer']:
+            run Tutorials_Prologue_Rco::Prologue4_AfterBuiltTent()
+        else:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:002', false)
+    elif System.EventFlags['cPlayer:PrologueDone1stTalkAtPlaza']:
+        if System.EventFlags['cPlayer:PlayerProducedByPlayerMoving']:
+            if System.EventFlags['cPlayer:RcoTalkAboutMovingBelongings']:
+                MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:1001_01', false)
+            else:
+                MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:1001', false)
+            System.EventFlags['cPlayer:RcmRctTalkAboutMovingBelongings'] = true
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:1002', false)
+        else:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:001_01', false)
+        MainNpc.SetDeliveryItemAtRandom(2750, true, 'cVillageRemakePattern', 0)
+        MainNpc.NpcDelivery(1, 'Keep')
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:001_02', false)
+        MainNpc.NpcDelivery(2, '"Default"')
+        MainNpc.SetDeliveryItemAtRandom(6058, false, 'cVillageRemakePattern', 0)
+        MainNpc.NpcDelivery(1, 'Keep')
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation2_Rcm:001_03', false)
+        MainNpc.NpcDelivery(2, '"Default"')
+        System.EventFlags['cPlayer:PlayerPocketUIEnable'] = true
+        System.EventFlags['cPlayer:MainmenuMap'] = true
+        System.EventFlags['cLand:OpeningSeqBGMChangeCounter'] = 2
+    else:
+        run Tutorials_Prologue3_Orientation1::Root()
+

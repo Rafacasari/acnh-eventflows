@@ -1,0 +1,70 @@
+flow FirstVisitCustomer_Talk():
+    MainNpc.OpenMessageWindow('TalkNNpc/G3_Ot/OneRoom/OT_WherearenEvent_Once:101', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/G3_Ot/OneRoom/OT_WherearenEvent_Once:102', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/G3_Ot/OneRoom/OT_WherearenEvent_Once:105', true)
+    elif EventFlowSystemActor.WherearenExistsTempSavePhoto():
+        MainNpc.OpenMessageWindow('TalkNNpc/G3_Ot/OneRoom/OT_WherearenEvent_Once:103', true)
+        System.EventFlags['cWherearenPlayer:VisitHouseReturn'] = true
+        EventFlowSystemActor.WherearenOrderCallback('cReturnToMainIsland')
+        System.EventFlags['cPlayerTemp:WHEREAREN_OtgTalkReserve_Office'] = true
+        System.EventFlags['cWherearenPlayer:MncGenerateInOfficeTemp'] = true
+        EventFlowSystemActor.SetWherearenPlayerRemoveBinderSeq(true, true)
+        EventFlowSystemActor.SoundTriggerEmit('WherearenFade_Boat', -1)
+        EventFlowSystemActor.SystemRequestChangeStage('cWherearenOfficeReturnEntrance', 'cWherearen', 'cWherearen', 'cBlack', 1.0, 1.0)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/G3_Ot/OneRoom/OT_WherearenEvent_Once:104', true)
+
+flow HousePhoto_Done():
+    if EventFlowSystemActor.WherearenExistsTempSavePhoto():
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:012', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.MessageSuspend()
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoAppear('cJpeg_SuspendSave', 0, false, 0.0, 0.0, '')
+            EventFlowSystemActor.WaitFrame(20)
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:013', false)
+            fork:
+                branch:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:014', true)
+                branch:
+                    EventFlowSystemActor.UIWherearenIslandsMsgPhotoDisappear()
+            System.EventFlags['cWherearenPlayer:SeqHousePhotoTutorialDone'] = true
+            EventFlowSystemActor.WherearenOrderCallback('cCompleteDemoEnd')
+            run Demo_Common_Wherearen::WorkDoneReturnOffice()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:015', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:011', true)
+
+flow HousePhoto_Start():
+    MainNpc.TurnNeck(10, false)
+    SubNpc.TurnNeck(0, false)
+    Player.TurnNeck(0, false)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:001', false)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:002', false)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            EventFlowSystemActor.WaitFrame(20)
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:003', true)
+            fork:
+                branch:
+                    SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:031', true)
+                branch:
+                    EventFlowSystemActor.WaitFrame(20)
+                    Player.TurnNeck(1, false)
+                    MainNpc.TurnNeck(1, false)
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:004', true)
+            SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:032', false)
+            SubNpc.TurnNeck(10, false)
+            SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:033', true)
+            run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+            SubNpc.NpcSetVisibleAction(false)
+            MainNpc.TurnNeck(10, false)
+            Player.TurnNeck(0, false)
+            EventFlowSystemActor.WaitFrame(20)
+            run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:005', true)
+            System.EventFlags['cWherearenPlayer:Unlock_HousePhoto'] = true
+            EventFlowSystemActor.BGMPropertyControl(180)
+            EventFlowSystemActor.ReserveSystemFlowDemo('System_WherearenUIDialog', 'NoticeAboutNpcEdit', true, false, false)
+

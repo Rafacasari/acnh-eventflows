@@ -1,0 +1,78 @@
+flow FuncUpdate():
+    run SNPC_otg_01_WherearenOffice::HouseCompleteActing()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:161', false)
+    run SNPC_otg_01_WherearenOffice::SetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:162', true)
+    run SNPC_otg_01_WherearenOffice::GetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:163', false)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:164', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:165', false)
+            run Demo_Common_PhoneCall::SendingDataWithP_Otg()
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:166', false)
+            run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:167', true)
+            System.EventFlags['cPlayer:WHEREAREN_Unlock_ResortPlannerAppNetwork'] = true
+            SubflowResults[3] = 2
+            run SNPC_otg_01_WherearenOffice::OrderClose_Complete()
+            run SNPC_otg_01_WherearenOffice::Otg_ReturnHomePos()
+
+flow GetApp():
+    run SNPC_otg_01_WherearenOffice::HouseCompleteActing()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:021', true)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            fork:
+                branch:
+                    SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:022', true)
+                branch:
+                    EventFlowSystemActor.WaitFrame(15)
+                    MainNpc.TurnNeck(1, false)
+            MainNpc.TurnNeck(10, false)
+            Npc_2.CharacterEmoticonAction('FaintSmile', true, '', 0, false)
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:023', false)
+            run SNPC_otg_01_WherearenOffice::SetSalaryForEvent()
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:024', true)
+            run SNPC_otg_01_WherearenOffice::GetSalaryForEvent()
+            SubNpc.TurnNeck(10, false)
+            fork:
+                branch:
+                    SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:025', true)
+                branch:
+                    EventFlowSystemActor.WaitFrame(15)
+                    Player.TurnNeck(1, false)
+            Player.TurnNeck(0, false)
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoAppear('cJpeg_CustomerNpc', 0, false, 0.0, 0.0, '')
+            EventFlowSystemActor.WaitFrame(20)
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:026', false)
+            fork:
+                branch:
+                    MainNpc.MessageSuspend()
+                branch:
+                    EventFlowSystemActor.UIWherearenIslandsMsgPhotoDisappear()
+            SubNpc.TurnNeck(0, false)
+            SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:027', true)
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:028', true)
+            run Demo_Common_PhoneCall::SendingDataWithP_Otg()
+            EventFlowSystemActor.UIMenuDeviceAppear('cInstall', 'cWherearenPlanner')
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:029', true)
+            Player.SmartPhone(4)
+            EventFlowSystemActor.WaitFrame(12)
+            MainNpc.SmartPhone(4)
+            EventFlowSystemActor.WaitFrame(20)
+            EventFlowSystemActor.UIWherearenPhotoFirstEntryAppear()
+            EventFlowSystemActor.WaitFrame(40)
+            EventFlowSystemActor.UIWherearenPhotoFirstEntryDisappear()
+            Player.SmartPhone(5)
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:030', true)
+            run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:031', true)
+            System.EventFlags['cPlayer:WHEREAREN_Unlock_ResortPlannerApp'] = true
+            run Demo_Common_Wherearen::Demo_SetNormalPositionInOffice()
+            SubflowResults[3] = 2
+            run SNPC_otg_01_WherearenOffice::OrderClose_Complete()
+
+flow GetApp_Init():
+    MainNpc.NpcAITalkCastSetting('WherearenPrologue')
+

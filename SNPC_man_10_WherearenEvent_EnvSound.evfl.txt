@@ -1,0 +1,125 @@
+flow EnvSound01():
+    System.EventFlags['cPlayer:WHEREAREN_Unlock_EnvSound_01'] = true
+    SubflowResults[0] = 0
+    EventFlowSystemActor.CameraSetDemoParam('EnvSoundGetDemo', 'cTalk', 'Player', false, false, false, 0)
+    MainNpc.TurnNeck(11, false)
+    EventFlowSystemActor.WaitFrame(30)
+    MainNpc.NpcAISetting(9, true)
+    Player.TurnNeck(0, false)
+entrypoint Event58:
+    switch SubflowResults@3[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:011', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:021', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:031', false)
+    switch SubflowResults@3[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:012', true)
+            EventFlowSystemActor.SystemBGMVolumeFadeOut(2.0, 0, 0.0)
+            Player.TurnNeck(11, false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:022', true)
+            EventFlowSystemActor.SystemBGMVolumeFadeOut(2.0, 0, 0.0)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:032', true)
+    EventFlowSystemActor.WaitFrame(120)
+    EventFlowSystemActor.BGMPropertyControl(172)
+    switch SubflowResults@3[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:013', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:023', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:033', true)
+    EventFlowSystemActor.WaitFrame(90)
+    switch SubflowResults@3[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:014', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:024', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:034', true)
+    EventFlowSystemActor.WaitFrame(60)
+    EventFlowSystemActor.CameraSetDemoParam('EnvSoundGetDemo', 'cTalk', 'Player', false, false, false, 0)
+    MainNpc.StandUpChair()
+    MainNpc.NpcAISetting(9, true)
+    Player.TurnNeck(0, false)
+    MainNpc.TurnBody(10, 0.0)
+    Player.TurnBody(0, 0.0)
+    MainNpc.NpcWaitTurn()
+    switch SubflowResults@3[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:015', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:025', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:035', true)
+    MainNpc.NpcChangeHeadCtrlMode('cNoLook', false)
+    fork:
+        branch:
+            MainNpc.NpcRailMove(9, false, false, -1, -1, 0)
+        branch:
+            EventFlowSystemActor.WaitFrame(160)
+            run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', SoundDucking='cWorldDucking', FadeSpeed='cNormal')
+    MainNpc.NpcSetVisibleAction(false)
+    EventFlowSystemActor.CameraSetDemoParam('EnvSoundGetDemoPlayerCenter', '', 'Player', false, false, false, 0)
+    Player.TurnNeck(11, false)
+    EventFlowSystemActor.WaitFrame(30)
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+    switch SubflowResults@3[0]:
+        case 0:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:1303_01', true)
+        case 1:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:1303_02', true)
+        case 2:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:1303_03', true)
+    Player.PlayerChairStandup(0)
+    Player.TurnBody(12, 0.0)
+    Player.PlayerWaitTurn()
+    EventFlowSystemActor.CameraSetDemoParam('EnvSoundGetDemoPlayerUp', 'cDefault', 'Player', false, false, false, 0)
+    Player.CharacterEmoticonAction('IdeaBulb', true, '', 0, false)
+    switch SubflowResults@3[0]:
+        case 0:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:1304_01', true)
+        case 1:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:1304_02', true)
+        case 2:
+            Player.OpenMessageWindow('TalkSys/SYS_Player:1304_03', true)
+    System.EventFlags['cWherearenPlayer:ManGenerateInFieldTemp'] = false
+    System.EventFlags['cWherearenPlayer:ManSetAfterTalkEnvSound'] = true
+    System.EventFlags['cWherearenPlayer:ManTalkToday'] = true
+    EventFlowSystemActor.SystemBGMVolumeReset(0.0, 0, 0.0)
+    EventFlowSystemActor.BGMPropertyControl(173)
+
+flow EnvSound02():
+    System.EventFlags['cPlayer:WHEREAREN_Unlock_EnvSound_02'] = true
+    SubflowResults[0] = 1
+entrypoint Event45:
+    EventFlowSystemActor.CameraSetDemoParam('EnvSoundGetDemo', 'cTalk', 'Player', false, false, false, 0)
+    MainNpc.TurnNeck(11, false)
+    EventFlowSystemActor.WaitFrame(30)
+    run Event58()
+
+flow EnvSound03():
+    System.EventFlags['cPlayer:WHEREAREN_Unlock_EnvSound_03'] = true
+    SubflowResults[0] = 2
+    run Event45()
+
+flow EnvSound03_Swim():
+    EventFlowSystemActor.CameraSetDemoParam('EnvSoundDemoSwim', 'SoundGetDemoSwimTalk', 'Npc:man', false, false, false, 0)
+    MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:030', true)
+    EventFlowSystemActor.SystemBGMVolumeFadeOut(1.0, 0, 0.0)
+    run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', SoundDucking='cWorldDucking', FadeSpeed='cNormal')
+    EventFlowSystemActor.WaitFrame(30)
+    MainNpc.ManWarpToLog()
+    EventFlowSystemActor.CameraSetDemoParam('EnvSoundGetDemo', '', 'Player', false, false, false, 0)
+    EventFlowSystemActor.RequestRecreateFtr()
+    Player.TurnNeck(11, false)
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+    run EnvSound03()
+
+flow Root():
+    MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_02_WherearenEvent:001', true)
+

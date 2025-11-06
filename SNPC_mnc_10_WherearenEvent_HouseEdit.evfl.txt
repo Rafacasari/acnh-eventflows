@@ -1,0 +1,105 @@
+flow Done():
+    Player.TurnNeck(0, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:161', false)
+    MainNpc.TurnBody(10, 0.0)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:162', true)
+    SubNpc.TurnNeck(10, false)
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:163', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(1, false)
+    System.EventFlags['cWherearenPlayer:SeqFirstEditOngoing'] = false
+    EventFlowSystemActor.WherearenOrderCallback('cCompleteDemoEnd')
+    run Demo_Common_Wherearen::WorkDoneReturnOffice()
+
+flow Gatekeep():
+    SubflowResults[0] = 1
+    run Event8()
+
+flow Root():
+    MainNpc.NpcAISetting(9, true)
+    Player.TurnNeck(1, false)
+    SubNpc.SetNpcName(0, 0)
+    SubNpc.CharacterEmoticonAction('Shocked', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(20)
+    SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:111', true)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:112', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            SubNpc.TurnNeck(0, false)
+    SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:113', true)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:114', true)
+    SubNpc.CharacterEmoticonAction('Nodding', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(30)
+    MainNpc.CharacterEmoticonAction('BigSmile', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(10)
+    SubNpc.CharacterEmoticonAction('FaintSmile', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(20)
+    SubNpc.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+    MainNpc.TurnNeck(10, false)
+    Player.TurnNeck(0, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:115', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:116_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:118_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:119', true)
+    MainNpc.TurnNeck(1, false)
+    EventFlowSystemActor.WaitFrame(12)
+    Player.TurnNeck(1, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:123', true)
+    SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:124', false)
+    SubNpc.TurnNeck(10, false)
+    SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:125', true)
+    MainNpc.TurnNeck(10, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:126', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(0, false)
+    System.EventFlags['cWherearenPlayer:SeqHouseEditTutorialDone'] = true
+    EventFlowSystemActor.WherearenOrderCallback('cEditStart')
+    EventFlowSystemActor.UIThemeAppear('')
+
+flow Root_Init():
+    MainNpc.NpcAISetting(2, false)
+    MainNpc.NpcAISetting(3, false)
+    MainNpc.NpcAISetting(5, false)
+    MainNpc.NpcAISetting(9, false)
+    MainNpc.WherearenCustomerEntrySubCast(1, false, false, false, false, false)
+
+flow Talk():
+    if EventFlowSystemActor.WherearenEditEndTerms('cOpendAllCardboard'):
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:141', false)
+    else:
+entrypoint Event8:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:140', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:142', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:149', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:150', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:151', true)
+    else:
+        EventFlowSystemActor.MessageSuspend()
+    if SubflowResults@2[0] == 1:
+        Player.TurnBody(11, 0.0)
+        Player.TurnNeck(11, false)
+        Player.PlayerDemoMove('cNextInfoAngle', 1)
+
+flow VisitTalk_FristEdit():
+    run NNPC_Spot_WherearenGarden::EnterGarden(Main=SubNpc, Sub=MainNpc)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:101', true)
+    SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:102', true)
+    MainNpc.TurnNeck(10, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_06_WherearenTutorials:103', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(0, false)
+    System.EventFlags['cPlayerTemp:WHEREAREN_MncTalkReserve_House'] = true
+    run `00_System_StageChange`::ChangeStage(FadeColorString='cBlack', TargetStage='cWherearenHouseEditTutorialDemo', FadeOutKindString='cCircle', FadeInKindString='cCircle', FadeOutSpeed=0.0, FadeInSpeed='cNormal')
+

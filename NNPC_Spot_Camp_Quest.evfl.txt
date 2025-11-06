@@ -1,0 +1,131 @@
+local flow Sub_Event34():
+    System.EventFlags['cLand:CampQuestClear'] = true
+    MainNpc.SaveCampNpcQuestFtr()
+
+local flow Sub_Event43():
+    MainNpc.NpcDelivery(1, 'Default')
+    switch MainNpc.CheckCamperNpcMovePoint():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:209', false)
+            run Sub_Event34()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:209_02', false)
+            run Sub_Event34()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:209_03', false)
+            run Sub_Event34()
+        default:
+            return
+
+local flow Sub_Event56():
+    MainNpc.NpcDelivery(3, 'Default')
+    EventFlowSystemActor.SelectRewardItemCampGame('cVeryGood')
+    MainNpc.SetDeliveryItem(1, true)
+    MainNpc.SetItemName(14, 4, 0)
+    switch MainNpc.CheckCamperNpcMovePoint():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:202', false)
+            run Sub_Event43()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:202_02', false)
+            run Sub_Event43()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:202_03', false)
+            run Sub_Event43()
+        default:
+            return
+
+local flow Sub_Event60():
+    System.EventFlags['cLand:CampQuestInProgress'] = true
+    System.EventFlags['cPlayer:CampQuestAccept'] = true
+
+local flow Sub_grp_Event6():
+    if (not EventFlowSystemActor.PlayerHasCampCraftRecipe()) and (not System.EventFlags['cPlayer:CampQuestRecipeGet']):
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:003', false)
+        if EventFlowSystemActor.ShoppingCapacity('cItemName', 5794):
+            MainNpc.SetDeliveryItem(25, true)
+            MainNpc.NpcDelivery(1, 'Default')
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:005', false)
+            System.EventFlags['cPlayer:CampQuestRecipeGet'] = true
+            run Sub_Event60()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:004', false)
+            System.EventFlags['cPlayer:CampQuestRecipiFailed'] = true
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:002', false)
+        run Sub_Event60()
+
+flow Talk_Ftr():
+    MainNpc.SetItemName(24, 0, 0)
+    if System.EventFlags['cPlayer:CampQuestAccept']:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:301', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:302', false)
+
+flow Talk_QuestClear():
+    MainNpc.SetItemName(24, 0, 0)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:201', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        EventFlowSystemActor.UIItemSelectWindowHandling('cCamperQuest', 65534, 'Ftr', '', 'cItemSelect', false)
+        if EventFlowSystemActor.UIResultMenuDecide():
+            MainNpc.SetItemName(4, 0, 0)
+            MainNpc.SetDeliveryItem(4, true)
+            MainNpc.NpcDelivery(0, 'Keep')
+            switch MainNpc.CheckCamperNpcMovePoint():
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:205', false)
+                    run Sub_Event56()
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:206', false)
+                    run Sub_Event56()
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:207', false)
+                    run Sub_Event56()
+                default:
+                    return
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:208', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:204', false)
+
+flow Talk_QuestProgress():
+    MainNpc.SetItemName(24, 0, 0)
+    if System.EventFlags['cPlayer:CampQuestAccept']:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:101', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:102', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:103', false)
+            System.EventFlags['cPlayer:CampQuestAccept'] = false
+            System.EventFlags['cLand:CampQuestInProgress'] = false
+            System.EventFlags['cPlayer:CampQuestRejected'] = true
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:104', false)
+
+flow Talk_QuestStart():
+    MainNpc.SetItemName(24, 0, 0)
+    if System.EventFlags['cPlayer:CampQuestRejected']:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:008', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            System.EventFlags['cPlayer:CampQuestRejected'] = false
+            run Sub_grp_Event6()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:009', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:001', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Sub_grp_Event6()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:006', false)
+            System.EventFlags['cPlayer:CampQuestRejected'] = true
+
+flow Talk_QuestStart_Re():
+    MainNpc.SetItemName(24, 0, 0)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:007', false)
+    System.EventFlags['cPlayer:CampQuestRecipiFailed'] = false
+    MainNpc.SetDeliveryItem(25, true)
+    MainNpc.NpcDelivery(1, 'Default')
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Quest:005', false)
+    System.EventFlags['cLand:CampQuestInProgress'] = true
+    System.EventFlags['cPlayer:CampQuestAccept'] = true
+

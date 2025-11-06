@@ -1,0 +1,55 @@
+flow Rcm_InNormal():
+    if (EventFlowSystemActor.ShopLevel() not in (`InResServiceTent`, `NooksCrannyInitial`)) and (EventFlowSystemActor.TermEventNow('BlackFriday', false)) and (not System.EventFlags['cPlayer:NoticeBlackFridayToday']):
+        System.EventFlags['cPlayer:NoticeBlackFridayToday'] = true
+        if EventFlowSystemActor.IsMyVillage():
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:3005', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:3006', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:3007', false)
+        System.EventFlags['cPlayerTemp:RcmTalkSceneFlag'] = true
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:201', false)
+
+flow Rcm_Market1_First():
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:202', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:204', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:205', false)
+    System.EventFlags['cPlayer:RcmHeardAboutNewOpen1'] = true
+    run Event1()
+
+flow Rcm_Market2_First():
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:202', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:204', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:206', false)
+    if EventFlowSystemActor.TermEventNow('BlackFriday', false):
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:3008', false)
+        System.EventFlags['cPlayer:NoticeBlackFridayToday'] = true
+    System.EventFlags['cPlayer:RcmHeardAboutNewOpen2'] = true
+entrypoint Event1:
+    System.EventFlags['cPlayer:RcmTalked1stAfterPrologue'] = true
+    System.EventFlags['cPlayerTemp:RcmTalkSceneFlag'] = true
+
+flow Root():
+    MainNpc.SetTwinsTag()
+    SubNpc.TurnBody(10, 0.0)
+    System.EventFlags['cPlayer:RcmForcedTalkTodayFlag'] = true
+    System.EventFlags['cLandTemp:RcmEnterBalloon'] = true
+    System.EventFlags['cLandTemp:RctEnterBalloon'] = true
+    run SNPC_rcm_03_RenualOpen::Chk_RenualOpen_Talk()
+    switch SubflowResults@6[1]:
+        case 0:
+            run Rcm_InNormal()
+        case 1:
+            run SNPC_rcm_03_RenualOpen::Rcm_RenualOpen1()
+        case 2:
+            run Rcm_Market1_First()
+        case 3:
+            run SNPC_rcm_03_RenualOpen::Rcm_RenualOpen2()
+        case 4:
+            run Rcm_Market2_First()
+        case 5:
+            run SNPC_rcm_02_BeforeRenual::Rcm_BeforeRenualFor2()
+
+flow Root_Init():
+    run SNPC_rcm::EntrySubCast()
+

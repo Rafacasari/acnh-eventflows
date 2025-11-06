@@ -1,0 +1,54 @@
+flow ErrorCliffMakeBreak_CliffExistOnItem():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:101', false)
+
+flow ErrorCliffMakeBreak_ExistBridge():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:114', false)
+
+flow ErrorCliffMakeBreak_ExistNearBridge():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:116', false)
+
+flow ErrorCliffMakeBreak_ExistNearOnHill():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:108', false)
+
+flow ErrorCliffMakeBreak_ExistNearTree():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:106', false)
+
+flow ErrorCliffMakeBreak_ExistNearVine():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:117', false)
+
+flow ErrorCliffMakeBreak_ExistNearWater():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:104', false)
+
+flow ErrorCliffMakeBreak_ExistNextCliff():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:102', false)
+
+flow ErrorCliffMakeBreak_ExistStructure():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:107', false)
+
+flow ErrorCliffMakeBreak_ExistVine():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:115', false)
+
+flow ErrorCliffMakeCreate_ExistFrontFall():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:111', false)
+
+flow ErrorCliffMakeCreate_ExistNearTree():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:105', false)
+
+flow ErrorCliffMakeCreate_ExistStructure():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:103', false)
+
+flow ErrorRiverMake_ExistBackFaceFall():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:122', false)
+
+flow ErrorRiverMake_ExistBridge():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:126', false)
+
+flow ErrorRiverMake_ExistNearTree():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:121', false)
+
+flow ErrorRiverMake_ExistStructure():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:123', false)
+
+flow ErrorRiverMake_ExistVine():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:127', false)
+

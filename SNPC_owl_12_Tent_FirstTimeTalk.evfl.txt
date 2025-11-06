@@ -1,0 +1,153 @@
+flow `1P_Cmn1_Root_ABC`():
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:001', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:002', false)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:003', false)
+
+flow `2P_Cmn2_Root_A`():
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:006', false)
+    run About_Fossil_AcrossRiver()
+    if not System.EventFlags['cLand:SandBankDisable']:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:007_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:010', false)
+
+flow `2P_Com1_Root_ABC`():
+    if (System.EventFlags['cPlayer:2P_CreatedAfterOwlMoving']) and (not System.EventFlags['cLand:MuseumTentBuiltToday']):
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:015', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:001', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:021', false)
+
+flow ALL_Cmn1_Root_AB():
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:004', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:022', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:005', false)
+
+flow ALL_Cmn2_Root_A():
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:006', false)
+    run About_Fossil_AcrossRiver()
+    if System.EventFlags['cPlayer:OwlGotDiyRecipe']:
+        run Skip_SendRecipe()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:008', true)
+        run ALL_Cmn_SendRecipe()
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:009', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:010', false)
+        System.EventFlags['cLand:OwlTentExplainFor1P'] = true
+
+flow ALL_Cmn3_RootAB():
+    if System.EventFlags['cLand:OwlFoundFossil']:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:023', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:006', false)
+        run About_Fossil_AcrossRiver()
+
+flow ALL_Cmn4_RootAB():
+    if System.EventFlags['cPlayer:OwlGotDiyRecipe']:
+        run Skip_SendRecipe()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:024', true)
+        run ALL_Cmn_SendRecipe()
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:025', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:010', false)
+
+flow ALL_Cmn5_RootC():
+    if System.EventFlags['cLand:MuseumTentBuiltToday']:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:011_02', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:011_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:012', true)
+
+flow ALL_Cmn6_RootC():
+    if System.EventFlags['cPlayer:OwlGotDiyRecipe']:
+        run Skip_SendRecipe_Msg()
+    else:
+        EventFlowSystemActor.WaitFrame(10)
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:013', false)
+        run ALL_Cmn_SendRecipe()
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:014', false)
+
+flow ALL_Cmn_SendRecipe():
+    run Demo_Common_PhoneCall::SendingDataWithP_Owl()
+    run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+    EventFlowSystemActor.PlayerSetCraftRecipe('Owl001', 65534)
+    System.EventFlags['cPlayer:OwlGotDiyRecipe'] = true
+    System.EventFlags['cLand:VillageExtensionLevel2'] = true
+
+flow About_Fossil_AcrossRiver():
+    if System.EventFlags['cLand:SandBankDisable']:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:1001', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:007', false)
+
+flow Root():
+    EventFlowSystemActor.SetTagFromSystem('cEventFlag', 'cDegit', 0, 0, 'cLand:DonationAmountForMuseum')
+    System.EventFlags['cPlayer:OwlFinished1stTalk'] = true
+    System.EventFlags['cPlayer:FutaTalkedInMuseumToday'] = true
+    if not System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        if System.EventFlags['cLand:MuseumGrowupEnable1']:
+            System.EventFlags['cPlayer:FutaReadyForMuseum'] = true
+            run Root2_2P()
+        elif System.EventFlags['cLand:OwlTentExplainFor1P']:
+            run Root1_2P()
+        else:
+            run Root0_2P()
+    elif System.EventFlags['cLand:MuseumGrowupEnable1']:
+        System.EventFlags['cPlayer:FutaReadyForMuseum'] = true
+        run Root2()
+    elif System.EventFlags['cLand:OwlTentExplainFor1P']:
+        run Root1()
+    else:
+        System.EventFlags['cLand:OwlTentExplainFor1P'] = true
+        run Root0()
+
+flow Root0():
+    run `1P_Cmn1_Root_ABC`()
+    run ALL_Cmn1_Root_AB()
+    run ALL_Cmn2_Root_A()
+
+flow Root0_2P():
+    run `2P_Com1_Root_ABC`()
+    run ALL_Cmn1_Root_AB()
+    if System.EventFlags['cPlayer:MainmenuRecipe']:
+        run ALL_Cmn2_Root_A()
+    else:
+        run `2P_Cmn2_Root_A`()
+
+flow Root1():
+    run `1P_Cmn1_Root_ABC`()
+    run ALL_Cmn1_Root_AB()
+    run ALL_Cmn3_RootAB()
+    run ALL_Cmn4_RootAB()
+
+flow Root1_2P():
+    run `2P_Com1_Root_ABC`()
+    run ALL_Cmn1_Root_AB()
+    run ALL_Cmn3_RootAB()
+    if System.EventFlags['cPlayer:MainmenuRecipe']:
+        run ALL_Cmn4_RootAB()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:026', false)
+
+flow Root2():
+    run `1P_Cmn1_Root_ABC`()
+    run ALL_Cmn5_RootC()
+    run ALL_Cmn6_RootC()
+
+flow Root2_2P():
+    run `2P_Com1_Root_ABC`()
+    run ALL_Cmn5_RootC()
+    if System.EventFlags['cPlayer:MainmenuRecipe']:
+        run ALL_Cmn6_RootC()
+
+flow Skip_SendRecipe():
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:026', false)
+    run Skip_SendRecipe_Msg()
+
+flow Skip_SendRecipe_Msg():
+    System.EventFlags['cLand:OwlTentExplainFor1P'] = true
+    System.EventFlags['cLand:VillageExtensionLevel2'] = true
+

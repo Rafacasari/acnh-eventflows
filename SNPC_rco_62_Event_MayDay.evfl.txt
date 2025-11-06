@@ -1,0 +1,32 @@
+flow DIYExplain():
+    if not System.EventFlags['cPlayer:MainmenuRecipe']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_62_Event_MayDay:016', false)
+        System.EventFlags['cPlayerTemp:RecommendDIYtrialMayDay'] = true
+
+flow Root():
+    if System.EventFlags['cPlayer:MainmenuRecipe']:
+        if not System.EventFlags['cPlayer:CompleteEventMayDay']:
+            run Sub_grp_Event1()
+    else:
+        if not System.EventFlags['cPlayerTemp:RecommendDIYtrialMayDay']:
+            run Sub_grp_Event1()
+
+local flow Sub_grp_Event1():
+    if System.EventFlags['cPlayer:GetMayDayTicket']:
+        if System.EventFlags['cPlayer:UseMayDayTicket']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_62_Event_MayDay:008', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_62_Event_MayDay:009', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_62_Event_MayDay:009_01', false)
+            if System.EventFlags['cPlayer:ClearMayDayTour']:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_62_Event_MayDay:010', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_62_Event_MayDay:011', false)
+            System.EventFlags['cPlayer:CompleteEventMayDay'] = true
+            System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+            EventFlowSystemActor.ExitFlowchart()
+        elif System.EventFlags['cPlayer:DodHeardAboutMayDayTravelTicket']:
+            switch System.EventFlags['cPlayer:RcoHeardAboutMayDayTravelTicket']:
+                default:
+                    return
+

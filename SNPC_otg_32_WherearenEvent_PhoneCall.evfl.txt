@@ -1,0 +1,23 @@
+flow Preparation():
+    if not System.EventFlags['cPlayer:UnlockInterior_CeilingFurniture']:
+        System.EventFlags['cWherearenPlayer:SeqCeilingEventReady'] = true
+    elif not System.EventFlags['cWherearenPlayer:SeqCeilingEventOrRepayDone']:
+        System.EventFlags['cPlayer:RepayMileInteriorModePro'] = true
+        System.EventFlags['cWherearenPlayer:SeqCeilingEventOrRepayDone'] = true
+
+flow Root():
+    run Player_StartGamePhoneCall::PhoneIncoming()
+    Player.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:301', true)
+    run Player_StartGamePhoneCall::PhoneUnlock()
+    EventFlowSystemActor.SwapSpeaker('cOtg', true)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:302', false)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:303', false)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:304', true)
+    run Player_StartGamePhoneCall::PhoneTalkEnd1()
+    EventFlowSystemActor.SwapSpeaker('cNone', true)
+    run Player_StartGamePhoneCall::PhoneTalkEnd2()
+    System.EventFlags['cPlayer:WHEREAREN_Unlock_AccentWall'] = true
+    System.EventFlags['cPlayer:UnlockInterior_CeilingFurniture'] = true
+    System.EventFlags['cWherearenPlayer:SeqCeilingEventReady'] = false
+    System.EventFlags['cWherearenPlayer:SeqCeilingEventOrRepayDone'] = true
+

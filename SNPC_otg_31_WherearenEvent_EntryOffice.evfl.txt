@@ -1,0 +1,113 @@
+flow MncBoxChk():
+    if (not System.EventFlags['cWherearenPlayer:Unlock_MncBox']) and (System.EventFlags['cWherearenPlayer:SeqMncBoxEventReady']) and (not System.EventFlags['cWherearenPlayer:ManGenerateInFieldTemp']):
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:331', true)
+        Player.TurnNeck(1, false)
+        EventFlowSystemActor.WaitFrame(30)
+        SubNpc.TurnNeck(10, false)
+        SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:332', true)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:333', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:334', true)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:335', false)
+        MainNpc.TurnNeck(10, false)
+        fork:
+            branch:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:336', true)
+            branch:
+                EventFlowSystemActor.WaitFrame(15)
+                Player.TurnNeck(0, false)
+        SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:337', true)
+        System.EventFlags['cWherearenPlayer:ManTalkToday'] = true
+        System.EventFlags['cWherearenPlayer:Unlock_MncBox'] = true
+        EventFlowSystemActor.SetMncBoxMateriel()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow RestaurantCafeChk():
+    if (not System.EventFlags['cWherearenPlayer:OtgTalkEntranceRestaurant']) and (System.EventFlags['cWherearenPlayer:Unlock_Faclility_Restaurant']):
+        run Demo_Common_Wherearen::StoryEventChk_StartingWork()
+        if SubflowResults@9[16] in (0, 1, 2, 3, 4):
+            System.EventFlags['cWherearenPlayer:OtgTalkEntranceRestaurant'] = true
+            if System.EventFlags['cWherearenPlayer:ChoiceRestaurant']:
+                if System.EventFlags['cWherearenPlayer:CompleteAppearanceCafe']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:112_02', true)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:112', true)
+            else:
+                if System.EventFlags['cWherearenPlayer:CompleteAppearanceRestaurant']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:112_02', true)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:112_01', true)
+            EventFlowSystemActor.ExitFlowchart()
+
+flow Root():
+    run MncBoxChk()
+    run StoryEventChk()
+    run RestaurantCafeChk()
+    switch EventFlowSystemActor.WherearenKKFesStatus(false):
+        case 0, 3:
+            run Sub_grp_Event43()
+        case 1:
+            if EventFlowSystemActor.IsDayBeforeKKFes():
+                run Sub_grp_Event43()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:111_01', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:111', true)
+
+flow Root_Init():
+    if System.EventFlags['cWherearenPlayer:SeqMncBoxEventReady']:
+        MainNpc.NpcAITalkSubCastEntry('man', 1)
+
+flow Root_OfficeMachine():
+    System.EventFlags['cWherearenPlayer:SeqExchangeMachineEventReady'] = false
+    System.EventFlags['cWherearenPlayer:SeqEventReserveInOffice'] = false
+    System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = false
+    System.EventFlags['cPlayer:OtgTipsUnlockATM'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_09_WherearenEvent_Sub:041_01', false)
+    EventFlowSystemActor.SetLookAtTargetObject('cWherearenATM')
+    MainNpc.TurnNeck(13, false)
+    MainNpc.TurnBody(13, 0.0)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_09_WherearenEvent_Sub:041_02', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_09_WherearenEvent_Sub:041_03', false)
+    MainNpc.TurnNeck(10, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_09_WherearenEvent_Sub:041_04', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_09_WherearenEvent_Sub:041_05', false)
+    if EventFlowSystemActor.SavingPokiCount(1):
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_09_WherearenEvent_Sub:041_06', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_09_WherearenEvent_Sub:042', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_09_WherearenEvent_Sub:041_06', true)
+
+flow Root_ResortStudy():
+    System.EventFlags['cWherearenPlayer:SeqResortStudyEventReady'] = false
+    System.EventFlags['cWherearenPlayer:SeqEventReserveInOffice'] = false
+    System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = false
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_09_WherearenEvent_Sub:030', true)
+    run Demo_Common_PhoneCall::SendingDataWithP_Otg()
+    EventFlowSystemActor.UIMenuDeviceAppear('cInstall', 'cWherearenStudy')
+    run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_09_WherearenEvent_Sub:031', false)
+    System.EventFlags['cPlayer:WHEREAREN_Unlock_ResortStudyApp'] = true
+    EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Wherearen', 'ResortStudy', 'cNowDemoEnd', false)
+
+flow StoryEventChk():
+    if System.EventFlags['cWherearenPlayer:Prohibit_NewOrder']:
+        if System.EventFlags['cWherearenPlayer:ManGenerateInFieldTemp']:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:238', true)
+            EventFlowSystemActor.ExitFlowchart()
+        elif not System.EventFlags['cWherearenPlayer:SeqMncTalkDIYCatalog']:
+            if System.EventFlags['cWherearenPlayer:SeqMncDIYRecipeOngoing']:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:106', true)
+                EventFlowSystemActor.ExitFlowchart()
+            elif System.EventFlags['cWherearenPlayer:SeqDIYCatalogOngoing']:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:147', true)
+                EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_grp_Event43():
+    switch EventFlowSystemActor.EnvTimeZone():
+        case `05:00-07:59`, `08:00-11:59`:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:101', true)
+        case `12:00-15:59`, `16:00-18:59`:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:102', true)
+        case `19:00-23:59`, `00:00-04:59`:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:103', true)
+

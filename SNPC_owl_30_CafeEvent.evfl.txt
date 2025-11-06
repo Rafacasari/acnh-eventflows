@@ -1,0 +1,27 @@
+flow Root():
+    System.EventFlags['cPlayer:FutaTalkedInMuseumToday'] = true
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:000', true)
+        branch:
+            MainNpc@Sub.SetDefaultWaitAs('cDefault')
+    MainNpc.TurnBody(10, 0.0)
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:001', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:002', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:003', false)
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        SubflowResults[0] = 1
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:004_02', false)
+        EventFlowSystemActor.SelectRewardItemDirect(14611, 1, 'cRemakePattern0', 0)
+        EventFlowSystemActor.SystemMailSend('cOwl', 'MAIL_SNpc_owl', 1, 'cNone', 'cFastToday', 'cReward', false, true)
+    else:
+        SubflowResults[0] = 0
+        MainNpc.SetDeliveryItemAtRandom(14611, true, 'cRemakePattern0', 0)
+        MainNpc.NpcDelivery(1, 'Keep')
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:004_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:005', true)
+    if SubflowResults@2[0] == 0:
+        MainNpc.NpcDelivery(2, 'Default')
+    System.EventFlags['cPlayer:MuseumCafeEv_1_HeardExplanation'] = true
+    MainNpc.NpcRegistAIBlackBoard('IsPgeQuest', 0)
+

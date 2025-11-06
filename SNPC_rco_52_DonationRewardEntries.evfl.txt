@@ -1,0 +1,158 @@
+flow RcoDonationReward1():
+    if System.EventFlags['cPlayer:MainmenuEncyclopedia']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:111', true)
+        MainNpc.SetDeliveryItemAtRandom(4549, false, 'cVillageRemakePattern', 0)
+        MainNpc.NpcDelivery(1, 'Keep')
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:112', false)
+        MainNpc.NpcDelivery(2, 'Default')
+        EventFlowSystemActor.SetItemToPocket(4549, 5)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:011_01', false)
+        MainNpc.SmartPhone(0)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:011_01_01', true)
+        run Demo_Common_PhoneCall::SendingDataWithP()
+        System.EventFlags['cPlayer:MainmenuEncyclopedia'] = true
+        EventFlowSystemActor.UIMenuDeviceAppear('cInstall', 'cEncyclopedia')
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:011_02_01', false)
+        run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:011_03', false)
+
+flow RcoDonationReward2():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:012_01', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        if System.EventFlags['cPlayerTemp:RcoDoneDIYmeselfNow']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:012_03', false)
+        else:
+            if System.EventFlags['cPlayer:RcoDoneDIYmyself']:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:012_02', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:012_04', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:012_05', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:012_06', true)
+    MainNpc.SmartPhone(0)
+    run Demo_Common_PhoneCall::SendingDataWithP()
+    EventFlowSystemActor.WaitFrame(5)
+    run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+    if (System.EventFlags['cPlayer:PlayerProducedByPlayerMoving']) and (EventFlowSystemActor.PlayerHasCraftRecipe('RcoDonationRewardA', 65534)):
+        System.EventFlags['cLand:ShopUnlockAxe'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:121', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:122', true)
+        MainNpc.SetDeliveryItemAtRandom(3068, true, 'cVillageRemakePattern', 0)
+        MainNpc.NpcDelivery(1, 'Keep')
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:123', false)
+        MainNpc.NpcDelivery(2, 'Default')
+    else:
+        EventFlowSystemActor.PlayerSetCraftRecipe('RcoDonationRewardA', 65534)
+        System.EventFlags['cLand:ShopUnlockAxe'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:012_07', false)
+
+flow RcoDonationReward3():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:013_01', true)
+    run RcoTent_GiveSeeds()
+    MainNpc.SetItemName(14, 0, 0)
+    MainNpc.NpcDelivery(1, 'Keep')
+    if EventFlowSystemActor.ShopLevel() == `InResServiceTent`:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:013_02', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:013_03', false)
+    MainNpc.NpcDelivery(2, 'Default')
+    System.EventFlags['cPlayer:RcoGotDonationRewardFlower'] = true
+
+flow RcoDonationReward4():
+    if System.EventFlags['cPlayer:RcoGotDonationRewardFlower']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:014_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:014_02', false)
+    if (System.EventFlags['cPlayer:PlayerProducedByPlayerMoving']) and (EventFlowSystemActor.PlayerHasCraftRecipe('', 3083)):
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:141', false)
+        switch EventFlowSystemActor.GeneralTalkChoice2():
+            case 0, 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:142', true)
+                run RcoTent_GiveSeeds_Again()
+                MainNpc.SetItemName(14, 0, 0)
+                MainNpc.NpcDelivery(1, 'Keep')
+                if EventFlowSystemActor.ShopLevel() == `InResServiceTent`:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:143', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:143_01', false)
+                MainNpc.NpcDelivery(2, 'Default')
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:014_03', true)
+        run Demo_Common_PhoneCall::SendingDataOneWay()
+        EventFlowSystemActor.PlayerSetCraftRecipe('None', 3083)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:014_04', false)
+        MainNpc.SmartPhone(1)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:014_05', false)
+
+flow RcoDonationReward5():
+    run Demo_Common_PhoneCall::CallIn()
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:015_02', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:015_03', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:015_04', true)
+    run Demo_Common_PhoneCall::FinishCall()
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:015_05', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:015_06', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:015_07', false)
+    MainNpc.SetDeliveryItemAtRandom(2755, true, 'cVillageRemakePattern', 0)
+    MainNpc.NpcDelivery(1, 'Keep')
+    System.EventFlags['cPlayer:Prologue4OwlGetTent'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:015_08', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:015_09', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_04_DonationReward:015_10', false)
+    MainNpc.NpcDelivery(2, 'Default')
+
+flow RcoTent_GiveSeeds():
+    switch EventFlowSystemActor.VillageFlower('cVillageCreate'):
+        case 0:
+            EventFlowSystemActor.SetItemToPocket(3769, 5)
+            MainNpc.SetDeliveryItemAtRandom(3769, false, 'cVillageRemakePattern', 0)
+        case 1:
+            EventFlowSystemActor.SetItemToPocket(2984, 5)
+            MainNpc.SetDeliveryItemAtRandom(2984, false, 'cVillageRemakePattern', 0)
+        case 2:
+            EventFlowSystemActor.SetItemToPocket(2626, 5)
+            MainNpc.SetDeliveryItemAtRandom(2626, false, 'cVillageRemakePattern', 0)
+        case 3:
+            EventFlowSystemActor.SetItemToPocket(3745, 5)
+            MainNpc.SetDeliveryItemAtRandom(3745, false, 'cVillageRemakePattern', 0)
+        case 4:
+            EventFlowSystemActor.SetItemToPocket(2936, 5)
+            MainNpc.SetDeliveryItemAtRandom(2936, false, 'cVillageRemakePattern', 0)
+        case 5:
+            EventFlowSystemActor.SetItemToPocket(3724, 5)
+            MainNpc.SetDeliveryItemAtRandom(3724, false, 'cVillageRemakePattern', 0)
+        case 6:
+            EventFlowSystemActor.SetItemToPocket(2884, 5)
+            MainNpc.SetDeliveryItemAtRandom(2884, false, 'cVillageRemakePattern', 0)
+        case 7:
+            EventFlowSystemActor.SetItemToPocket(2912, 5)
+            MainNpc.SetDeliveryItemAtRandom(2912, false, 'cVillageRemakePattern', 0)
+
+flow RcoTent_GiveSeeds_Again():
+    switch EventFlowSystemActor.VillageFlower('cBirthday'):
+        case 0:
+            EventFlowSystemActor.SetItemToPocket(3755, 5)
+            MainNpc.SetDeliveryItemAtRandom(3755, false, 'cVillageRemakePattern', 0)
+        case 1:
+            EventFlowSystemActor.SetItemToPocket(2980, 5)
+            MainNpc.SetDeliveryItemAtRandom(2980, false, 'cVillageRemakePattern', 0)
+        case 2:
+            EventFlowSystemActor.SetItemToPocket(2629, 5)
+            MainNpc.SetDeliveryItemAtRandom(2629, false, 'cVillageRemakePattern', 0)
+        case 3:
+            EventFlowSystemActor.SetItemToPocket(3731, 5)
+            MainNpc.SetDeliveryItemAtRandom(3731, false, 'cVillageRemakePattern', 0)
+        case 4:
+            EventFlowSystemActor.SetItemToPocket(2932, 5)
+            MainNpc.SetDeliveryItemAtRandom(2932, false, 'cVillageRemakePattern', 0)
+        case 5:
+            EventFlowSystemActor.SetItemToPocket(3710, 5)
+            MainNpc.SetDeliveryItemAtRandom(3710, false, 'cVillageRemakePattern', 0)
+        case 6:
+            EventFlowSystemActor.SetItemToPocket(2880, 5)
+            MainNpc.SetDeliveryItemAtRandom(2880, false, 'cVillageRemakePattern', 0)
+        case 7:
+            EventFlowSystemActor.SetItemToPocket(2908, 5)
+            MainNpc.SetDeliveryItemAtRandom(2908, false, 'cVillageRemakePattern', 0)
+

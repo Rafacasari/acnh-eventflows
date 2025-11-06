@@ -1,0 +1,146 @@
+flow Book():
+    if EventFlowSystemActor.IsInspectingWherearen():
+        MainNpc.WherearenSetTagFacilityNpcName('cSchoolStudent', false, false, 0)
+        run FacilityName_Chk()
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_School:002', true)
+        run KKFes_Chk()
+    else:
+        run ShareHouseMate_Chk()
+        if (not System.EventFlags['cWherearenPlayer:TeacherTalkedNow']) and (not System.EventFlags['cWherearenPlayer:GetPlumeriaToday']) and (MainNpc.NpcNowPosture() == 0):
+            run StartPlumeriaEvent()
+        else:
+            MainNpc.WherearenSetTagFacilityNpcName('cSchoolStudent', false, false, 0)
+            run FacilityName_Chk()
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_School:002', true)
+            run KKFes_Chk()
+
+flow Demand_Chk():
+    if MainNpc.IsWherearenFacilityInteraction():
+        MainNpc.WherearenSetTagFacilityNpcName('cSchoolStudent', false, false, 0)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_School:201', false)
+        EventFlowSystemActor.ExitFlowchart()
+
+flow FacilityName_Chk():
+    if (EventFlowSystemActor.WherearenExistFacilityName('cSchool')) and (not EventFlowSystemActor.PercentChoice(80)):
+        EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cSelectFacility', 0, 'cSchool')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_School:004', false)
+        run KKFes_Chk()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow GivePlumeria_Chk():
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayerTemp:WHEREAREN_TeacherFlag') in (0, 1):
+        MainNpc.SetDeliveryItemAtRandom(13348, true, 'cVillageRemakePattern', 0)
+    else:
+        MainNpc.SetDeliveryItemAtRandom(13262, true, 'cVillageRemakePattern', 0)
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_School:113', false)
+        System.EventFlags['cWherearenPlayer:TeacherGiveItemFailed'] = true
+    else:
+        MainNpc.NpcDelivery(1, 'Default')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_School:107', false)
+        System.EventFlags['cWherearenPlayer:GetPlumeriaToday'] = true
+        System.EventFlags['cWherearenPlayer:TeacherGiveItemFailed'] = false
+        System.EventFlags['cPlayerTemp:WHEREAREN_TeacherFlag'] = 0
+        System.EventFlags['cWherearenPlayer:TeacherTalkedNow'] = true
+    EventFlowSystemActor.ExitFlowchart()
+
+flow KKFes_Chk():
+    if (not EventFlowSystemActor.IsInspectingWherearen()) and (EventFlowSystemActor.WherearenKKFesStatus(false) == 2):
+        MainNpc.TurnNeck(10, true)
+        MainNpc.NpcKKFesJoinOpenMessage('TalkNNpc/B1_Bo/OneRoom/BO_Facility_KKFes:001')
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_KKFes:101', true)
+            run Demo_Common_Wherearen::ToKKFesDemoLive()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_KKFes:200', false)
+            EventFlowSystemActor.ExitFlowchart()
+
+flow Root():
+    if EventFlowSystemActor.IsInspectingWherearen():
+        run Event3()
+    else:
+        run ShareHouseMate_Chk()
+        if System.EventFlags['cWherearenPlayer:TeacherTalkedNow']:
+            run Event3()
+        elif System.EventFlags['cWherearenPlayer:GetPlumeriaToday']:
+            run Event3()
+        elif MainNpc.NpcNowPosture() == 0:
+            run StartPlumeriaEvent()
+        else:
+            run Event3()
+
+flow ShareHouseMate_Chk():
+    if EventFlowSystemActor.WherearenOrderStatus() == 1:
+        MainNpc.TurnNeck(10, false)
+        run NNPC_Spot_WherearenMainFieldVisitor::LookforHouseMate()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow StandSleep():
+    run NNPC_RestaurantCustomer::`StandSleep_2.1`()
+
+flow StartPlumeriaEvent():
+    if System.EventFlags['cWherearenPlayer:TeacherGiveItemFailed']:
+        MainNpc.TurnBody(10, 0.0)
+        if EventFlowSystemActor.FlagSystemIntValue3(3, 'cPlayerTemp:WHEREAREN_TeacherFlag') in (0, 1):
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_School:115_01', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_School:115_02', false)
+        run GivePlumeria_Chk()
+    else:
+        MainNpc.TurnBody(11, 0.0)
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_School:101', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_School:102', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_School:103', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            if EventFlowSystemActor.PercentChoice(50):
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_School:106_01', false)
+                System.EventFlags['cPlayerTemp:WHEREAREN_TeacherFlag'] = 1
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_School:106_02', false)
+                System.EventFlags['cPlayerTemp:WHEREAREN_TeacherFlag'] = 2
+            run GivePlumeria_Chk()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_School:108', false)
+            System.EventFlags['cWherearenPlayer:TeacherTalkedNow'] = true
+            EventFlowSystemActor.ExitFlowchart()
+
+flow Walk():
+    if EventFlowSystemActor.IsInspectingWherearen():
+        run Demand_Chk()
+entrypoint Event3:
+        MainNpc.WherearenSetTagFacilityNpcName('cSchoolStudent', false, false, 0)
+        run FacilityName_Chk()
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_School:001', true)
+        run KKFes_Chk()
+    else:
+        run ShareHouseMate_Chk()
+        if (not System.EventFlags['cWherearenPlayer:TeacherTalkedNow']) and (not System.EventFlags['cWherearenPlayer:GetPlumeriaToday']) and (MainNpc.NpcNowPosture() == 0):
+            run StartPlumeriaEvent()
+            return
+        else:
+            run Demand_Chk()
+entrypoint Event3:
+            MainNpc.WherearenSetTagFacilityNpcName('cSchoolStudent', false, false, 0)
+            run FacilityName_Chk()
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_School:001', true)
+            run KKFes_Chk()
+
+flow WatchWindow():
+    if EventFlowSystemActor.IsInspectingWherearen():
+        MainNpc.WherearenSetTagFacilityNpcName('cSchoolStudent', false, false, 0)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_School:003', true)
+        run KKFes_Chk()
+    else:
+        run ShareHouseMate_Chk()
+        if (not System.EventFlags['cWherearenPlayer:TeacherTalkedNow']) and (not System.EventFlags['cWherearenPlayer:GetPlumeriaToday']) and (MainNpc.NpcNowPosture() == 0):
+            run StartPlumeriaEvent()
+            return
+        else:
+            MainNpc.WherearenSetTagFacilityNpcName('cSchoolStudent', false, false, 0)
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_School:003', true)
+            run KKFes_Chk()
+

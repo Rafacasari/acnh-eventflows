@@ -1,0 +1,33 @@
+flow NoticeAboutInteriorModePlus_playerHouse():
+    if (System.EventFlags['cPlayer:NoticeAboutInteriorModePlus_RoomSize']) and (not System.EventFlags['cPlayer:NoticeAboutInteriorModePlus_playerHouse']):
+        if System.EventFlags['cPlayer:SpnPhotoStudioGuideDone']:
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:5206_01', false)
+        else:
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:5206', false)
+        System.EventFlags['cPlayer:NoticeAboutInteriorModePlus_playerHouse'] = true
+        run ToPostOpenNfp()
+    else:
+        run ToPostOpenNfp()
+
+flow TipsAccentWall():
+    EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:5204', false)
+    System.EventFlags['cPlayer:HasLookMyHouseExplain_CeilingFtrAWall'] = true
+
+flow TipsChat():
+    EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:5203', false)
+    System.EventFlags['cPlayer:MainmenuChatLog'] = true
+
+flow TipsEffectCloth():
+    if (not EventFlowSystemActor.SystemCheckNowStage('cPhotoStudio')) and (not System.EventFlags['cPlayer:SpnPhotoStudioGuideDone']):
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:5205', false)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:5205_01', false)
+    System.EventFlags['cPlayer:NoticeAboutMagokoro_MainIsland'] = true
+
+flow TipsMyHouse():
+    EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:5202', false)
+
+flow ToPostOpenNfp():
+    if (EventFlowSystemActor.SystemCheckNowStage('cPhotoStudio')) and (not ((System.EventFlags['cPlayerTemp:InJuneBrideStudio']) and ((System.EventFlags['cPlayer:AlwJuneBrideDayCount'] < 6) or ((System.EventFlags['cPlayer:AlwJuneBrideDayCount'] != 7) and (System.EventFlags['cPlayer:AlwJuneBrideQuestClearFlag']))))):
+        run System_PhotoStudio_Call::PostOpenNFP()
+

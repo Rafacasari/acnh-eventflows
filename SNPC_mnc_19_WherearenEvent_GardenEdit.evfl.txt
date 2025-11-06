@@ -1,0 +1,50 @@
+flow ChkMncTalk():
+    if EventFlowSystemActor.WherearenNpcFreeQuery2('mnc', 'cOfficer'):
+        if (not System.EventFlags['cWherearenPlayer:SeqMncGardenThemeTalk']) and (EventFlowSystemActor.IsWherearenNpcOrderIncludeOutdoorMustItem()):
+            run VisitTalk_GardenTheme()
+        elif (not System.EventFlags['cWherearenPlayer:SeqMncGardenInsectTalk']) and (System.EventFlags['cWherearenPlayer:Unlock_Insect']) and (EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') >= 1) and (not EventFlowSystemActor.WherearenNpcFreeQuery2('chm', 'cCustomer')):
+            run VisitTalk_Insect()
+
+flow TalkSetting():
+    SubNpc.TurnNeck(10, false)
+    MainNpc.SetNpcName(0, 0)
+
+flow VisitTalk_GardenEdit():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:041', true)
+    run TalkSetting()
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:021', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnBody(1, 0.0)
+    SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:022', true)
+    if EventFlowSystemActor.PlayerHouseLevel() in (`Homeless`, `PlacedTent`, `BaseHouse`, `HouseExpansion1`, `BackRoom`):
+        System.EventFlags['cWherearenPlayer:NeedNoticeHouseDesign'] = true
+    System.EventFlags['cWherearenPlayer:SeqMncGardenEditTalk'] = true
+    System.EventFlags['cPlayer:OtgTipsUnlockGardenEdit'] = true
+
+flow VisitTalk_GardenTheme():
+    run TalkSetting()
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_05_WherearenEvent_Sub:021', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            Player.TurnBody(1, 0.0)
+    System.EventFlags['cWherearenPlayer:SeqMncGardenThemeTalk'] = true
+
+flow VisitTalk_Insect():
+    run TalkSetting()
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_05_WherearenEvent_Sub:031', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            Player.TurnBody(1, 0.0)
+    SubNpc.SetDeliveryItemAtRandom(583, true, 'cVillageRemakePattern', 0)
+    SubNpc.NpcDelivery(1, 'Keep')
+    SubNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_05_WherearenEvent_Sub:032', true)
+    SubNpc.NpcDelivery(2, 'Default')
+    System.EventFlags['cWherearenPlayer:SeqMncGardenInsectTalk'] = true
+

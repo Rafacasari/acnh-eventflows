@@ -1,0 +1,121 @@
+flow End():
+    if not MainNpc.EventFlags['cNpcTemp:VisitPNPCGoHomeMyself']:
+        MainNpc.EventFlags['cNpcTemp:NotAddIndoorTalkCount'] = true
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:001', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+entrypoint Event87:
+                    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                        case 0:
+                            MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:004', true, true)
+                            run Sub_Event7()
+                        case 1:
+                            MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:005', true, true)
+                            run Sub_Event7()
+                        case 2:
+                            MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:006', true, true)
+                            run Sub_Event7()
+                else:
+                    run No()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:002', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run Yes()
+                else:
+                    run No()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:003', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run Yes()
+                else:
+                    run No()
+    elif MainNpc.EventFlags['cNpcTemp:ExtendStayTimeVisitP']:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:100', true, true)
+                run Sub_Event7()
+            case 1:
+                MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:101', true, true)
+                run Sub_Event7()
+            case 2:
+                MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:102', true, true)
+                run Sub_Event7()
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:200', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:203', false)
+            System.EventFlags['cLandTemp:VisitPStayExtendTime'] = 10
+            MainNpc.EventFlags['cNpcTemp:ExtendStayTimeVisitP'] = true
+            MainNpc.SetVisitPGoHomeCheckCondition()
+        else:
+            MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:204', true, true)
+            run Sub_Event7()
+
+flow No():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:007', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:008', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_End:009', true)
+    Player.PlayerDemoMove('cNextInfoAngle', 3)
+
+flow Send_Letter():
+    switch MainNpc.VisitPLayoutTalkedRandomChoice():
+        case 1:
+            MainNpc.NpcDecideVisitPQuestReward(1, 0)
+            MainNpc.NpcMailSend('MAIL_XX_Quest_VisitP', 1, 'cNone', 'cFastTomorrow', 'cReward', false)
+        case 2:
+            MainNpc.NpcDecideVisitPQuestReward(1, 0)
+            MainNpc.NpcMailSend('MAIL_XX_Quest_VisitP', 2, 'cNone', 'cFastTomorrow', 'cReward', false)
+        case 3:
+            MainNpc.NpcDecideVisitPQuestReward(1, 0)
+            MainNpc.NpcMailSend('MAIL_XX_Quest_VisitP', 4, 'cNone', 'cFastTomorrow', 'cReward', false)
+        case 4:
+            MainNpc.NpcDecideVisitPQuestReward(1, 2)
+            MainNpc.NpcMailSend('MAIL_XX_Quest_VisitP', 5, 'cNone', 'cFastTomorrow', 'cReward', false)
+        case 5:
+            MainNpc.NpcDecideGeneralQuestReward(0, 0)
+            MainNpc.NpcMailSend('MAIL_XX_Quest_VisitP', 6, 'cNone', 'cFastTomorrow', 'cReward', false)
+        case 6:
+            MainNpc.NpcDecideVisitPQuestReward(1, 1)
+            MainNpc.NpcMailSend('MAIL_XX_Quest_VisitP', 7, 'cNone', 'cFastTomorrow', 'cReward', false)
+        case 7:
+            MainNpc.NpcDecideGeneralQuestReward(0, 0)
+            MainNpc.NpcMailSend('MAIL_XX_Quest_VisitP', 8, 'cNone', 'cFastTomorrow', 'cReward', false)
+        case 8:
+            MainNpc.NpcDecideGeneralQuestReward(0, 0)
+            MainNpc.NpcMailSend('MAIL_XX_Quest_VisitP', 9, 'cNone', 'cFastTomorrow', 'cReward', false)
+        case 9:
+            MainNpc.NpcDecideVisitPQuestReward(1, 0)
+            MainNpc.NpcMailSend('MAIL_XX_Quest_VisitP', 10, 'cNone', 'cFastTomorrow', 'cReward', false)
+        case 10:
+            MainNpc.NpcDecideVisitPQuestReward(1, 0)
+            MainNpc.NpcMailSend('MAIL_XX_Quest_VisitP', 12, 'cNone', 'cFastTomorrow', 'cReward', false)
+        default:
+            return
+
+local flow Sub_Event7():
+    run Send_Letter()
+    EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 1.0, 1.0, true)
+    MainNpc.NpcVisitQuestGoHome()
+    Player.PlayerWarp(8)
+    EventFlowSystemActor.CameraResetRoomAngle(0.0, true)
+    EventFlowSystemActor.StoreNormalCamera(true, '')
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.FadeIn(true)
+    Player.CharacterEmoticonAction('AddWaveHands', false, '', 0, false)
+    EventFlowSystemActor.WaitFrame(30)
+    MainNpc.NpcQuestControl('cFinish')
+    System.EventFlags['cLifeSupportDaily:AchieveQuest'] = true
+    System.EventFlags['cLifeSupportAchievement:AchieveVillagersQuest'] += 1
+    System.EventFlags['cLandTemp:NpcVisitPlayerHouse'] = false
+    EventFlowSystemActor.SetSharePlayChangeCondition(false)
+    System.EventFlags['cPlayerTemp:VisitPReceivedGift'] = false
+    MainNpc.NpcPlayReport('cVisitPResult', 0)
+
+flow Yes():
+    run Event87()
+

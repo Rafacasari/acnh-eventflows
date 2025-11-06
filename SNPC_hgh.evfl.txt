@@ -1,0 +1,202 @@
+flow Check():
+    run SNPC_rcm::Check_ShopEnable()
+    run Regulation()
+    System.EventFlags['cPlayerTemp:TailorChkObject'] = true
+    MainNpc.ShopCheckItemSet('CheckItemIndex', 'cTailor')
+    run Hgh_Common_TagSet()
+    EventFlowSystemActor.UIMoneyAppear()
+    run Hgh_Common_Greetings()
+    if System.EventFlags['cPlayerTemp:TailorChkObject']:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:021_04', false)
+        System.EventFlags['cPlayerTemp:TailorChkObject'] = false
+    MainNpc.TurnNeck(13, false)
+    Player.TurnNeck(13, false)
+    if MainNpc.HghFreeQuery2('cHghQueryType_HgcItem'):
+        MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:052', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:051', false)
+    run Hgh_Chk_UseTicket()
+    run Hgh_Select_BuyBell_Chk()
+
+flow Check_FittingRoom():
+    run SNPC_rcm::Check_ShopEnable()
+    run Regulation()
+    System.EventFlags['cPlayerTemp:TailorChkObject'] = true
+    run Hgh_Common_Greetings()
+    if System.EventFlags['cPlayerTemp:TailorChkObject']:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:021_02', false)
+        System.EventFlags['cPlayerTemp:TailorChkObject'] = false
+    run SNPC_hgh_20_FittingRoom::Root()
+
+flow Check_Mannequin():
+    run SNPC_rcm::Check_ShopEnable()
+    run Regulation()
+    System.EventFlags['cPlayerTemp:TailorChkObject'] = true
+    if MainNpc.CheckMannequinCamera() == 0:
+        EventFlowSystemActor.CameraSetDemoParam('Mannequin0', 'cDefault', 'CameraTag:MannequinCenter', false, false, false, 0)
+    else:
+        EventFlowSystemActor.CameraSetDemoParam('Mannequin1', 'cDefault', 'CameraTag:MannequinCenter', false, false, false, 0)
+    MainNpc.TurnNeck(13, false)
+    Player.TurnNeck(13, false)
+    run Hgh_Common_Greetings()
+    if System.EventFlags['cPlayerTemp:TailorChkObject']:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:021_03', false)
+        System.EventFlags['cPlayerTemp:TailorChkObject'] = false
+    run SNPC_hgh_30_Mannequin::Root()
+
+flow Check_MyDesign():
+    run SNPC_rcm::Check_ShopEnable()
+    System.EventFlags['cPlayerTemp:TailorChkObject'] = true
+    if MainNpc.NpcBlackBoard('CheckMyDesign', 130):
+        if MainNpc.NpcBlackBoard('CheckMyDesign', 131):
+            EventFlowSystemActor.CameraSetDemoParam('MyDesignCenter', 'cDefault', 'CameraTag:MyDesignCenter3', false, false, false, 0)
+        else:
+            EventFlowSystemActor.CameraSetDemoParam('MyDesignCenter', 'cDefault', 'CameraTag:MyDesignCenter2', false, false, false, 0)
+    else:
+        if MainNpc.NpcBlackBoard('CheckMyDesign', 129):
+            EventFlowSystemActor.CameraSetDemoParam('MyDesignCenter', 'cDefault', 'CameraTag:MyDesignCenter1', false, false, false, 0)
+        else:
+            EventFlowSystemActor.CameraSetDemoParam('MyDesignCenter', 'cDefault', 'CameraTag:MyDesignCenter0', false, false, false, 0)
+    run Hgh_Common_Greetings()
+    if System.EventFlags['cPlayerTemp:TailorChkObject']:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:021_01', false)
+        System.EventFlags['cPlayerTemp:TailorChkObject'] = false
+    System.EventFlags['cPlayer:KinuyoChkMydesginFlag'] = true
+    run SNPC_hgh_10_Mydesign::Root()
+
+flow Hgh_BuyAfter():
+    if System.EventFlags['cPlayer:KinuyoTalkInTailorFlag']:
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        System.EventFlags['cPlayer:KinuyoTalkInTailorFlag'] = true
+        Player.TurnBody(0, 0.0)
+        MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:060', false)
+        if System.EventFlags['cPlayer:KinuyoTalkBoforeFlag']:
+            if System.EventFlags['cPlayer:KinuyoTailorBuildFlag']:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:061', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:062', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:004', false)
+            EventFlowSystemActor.ExitFlowchart()
+        else:
+            System.EventFlags['cPlayer:KinuyoTalkBoforeFlag'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:063', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:006', false)
+            EventFlowSystemActor.ExitFlowchart()
+
+flow Hgh_Chk_BuyMannequin():
+    run Hgh_Common_TagSet()
+    run Hgh_Chk_UseTicket()
+    run Hgh_Select_BuyBell_Mannequin()
+
+flow Hgh_Chk_UseTicket():
+    if EventFlowSystemActor.HasKindItem('cKind', 'TailorTicket', ''):
+        if EventFlowSystemActor.ReserveRegulation() in (0, 1, 2, 3, 5, 6):
+            if EventFlowSystemActor.UICheckSelectedItemPrice('cItemSelect') < 3001:
+                run Sub_grp_Event73()
+        else:
+            if EventFlowSystemActor.UICheckSelectedItemPrice('cItemSelect') < 2501:
+                run Sub_grp_Event73()
+
+flow Hgh_Common_Buy():
+    MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:011', false)
+
+flow Hgh_Common_BuyTicket():
+    MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:014', false)
+
+flow Hgh_Common_Cancel():
+    MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:008', false)
+
+flow Hgh_Common_Greetings():
+    if System.EventFlags['cPlayerTemp:KinuyoTalkSceneFlag']:
+        System.EventFlags['cPlayerTemp:TailorChkObject'] = false
+    else:
+        System.EventFlags['cPlayerTemp:KinuyoTalkSceneFlag'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:013', false)
+        if EventFlowSystemActor.IsMyVillage():
+            run SNPC_hgh_11_In::Hgh_1stExplain()
+        else:
+            System.EventFlags['cPlayerTemp:TailorChkObject'] = false
+
+flow Hgh_Common_ItemFull():
+    MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:009', false)
+
+flow Hgh_Common_NoMoney():
+    MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:010', false)
+
+flow Hgh_Common_Process_BuyBell():
+    if not EventFlowSystemActor.ShoppingCapacity('cShopping', 65534):
+        run Hgh_Common_ItemFull()
+        EventFlowSystemActor.ExitFlowchart()
+    elif MainNpc.ShopHasBellCount(1.0):
+        MainNpc.ShopBuyDone(false, false, false, false)
+    else:
+        run Hgh_Common_NoMoney()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow Hgh_Common_TagSet():
+    EventFlowSystemActor.SetTagFromUIResult('cItemName', 0)
+    if EventFlowSystemActor.SystemCheckNowStage('cTailor'):
+        EventFlowSystemActor.SetTagFromUIResult('cTailorItemPrice', 0)
+    else:
+        EventFlowSystemActor.SetTagFromUIResult('cItemPrice', 0)
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 1, 3000, '')
+
+flow Hgh_Select_BuyBell_Chk():
+    MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:054', false)
+entrypoint Event60:
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run Hgh_Common_Process_BuyBell()
+        run Hgh_Common_Buy()
+    else:
+        run Hgh_Common_Cancel()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow Hgh_Select_BuyBell_Mannequin():
+    MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:032', false)
+    run Event60()
+
+flow Hgh_Select_BuyTicket():
+    if not System.EventFlags['cPlayerTemp:HghNoticeTicket']:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:055', false)
+        System.EventFlags['cPlayerTemp:HghNoticeTicket'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:056', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            MainNpc.ShopBuyDone(true, false, false, false)
+            run Hgh_Common_BuyTicket()
+            EventFlowSystemActor.ExitFlowchart()
+        case 1:
+            run Hgh_Common_Process_BuyBell()
+            run Hgh_Common_Buy()
+            EventFlowSystemActor.ExitFlowchart()
+        case 2:
+            run Hgh_Common_Cancel()
+            EventFlowSystemActor.ExitFlowchart()
+
+flow Regulation():
+    EventFlowSystemActor.SetExpensiveReguretion()
+
+flow Root():
+    if EventFlowSystemActor.SystemCheckNowStage('cField'):
+        run SNPC_hgh_00_Peddler::Root()
+    elif System.EventFlags['cPlayer:KinuyoForcesTalkTodayFlag']:
+        run Hgh_Common_Greetings()
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:070', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:071', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:072', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:073', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:074', false)
+    else:
+        run SNPC_hgh_11_In::Root()
+
+local flow Sub_grp_Event73():
+    if EventFlowSystemActor.ShoppingCapacity('cShoppingTC', 65534):
+        run Hgh_Select_BuyTicket()
+

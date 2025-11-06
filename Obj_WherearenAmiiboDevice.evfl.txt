@@ -1,0 +1,183 @@
+flow AskConnect():
+    if EventFlowSystemActor.CheckAmiiboNPC('cRcmAndRct'):
+        if EventFlowSystemActor.RandomChoice2(2) == 0:
+            EventFlowSystemActor.ChangeAmiiboNPC('cRcm')
+        else:
+            EventFlowSystemActor.ChangeAmiiboNPC('cRct')
+        Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:404', false)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:401', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+        run UsingAmiibo_AskRetry()
+    elif (EventFlowSystemActor.WherearenKKFesStatus(false) in (0, 1, 3)) or (not EventFlowSystemActor.CheckAmiiboNPC('cTkk')):
+        if EventFlowSystemActor.CheckAmiiboNPC('cRco'):
+            run Demo_Common_Wherearen::StoryEventChk_AfterNewBuild()
+            if SubflowResults@10[12] in (0, 1, 2, 3, 4, 5, 6, 8, 9):
+                run GoToAmiiboPhone()
+            else:
+                run Sub_Event65()
+        else:
+            run GoToAmiiboPhone()
+    else:
+        run Sub_Event65()
+
+flow Check_Abailability():
+    EventFlowSystemActor.WherearenSetTagCustomerNpcName(false, 1)
+    switch EventFlowSystemActor.WherearenOrderStatus():
+        case 0:
+            if System.EventFlags['cWherearenPlayer:Prohibit_NewOrder']:
+                Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:002', true)
+                EventFlowSystemActor.ExitFlowchart()
+        case 1:
+            SubflowResults[18] = 1
+        case 2, 3, 4, 5, 6, 7:
+            if EventFlowSystemActor.IsWherearenCutomerNpcNameWithTitle(false):
+                Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:001_02', false)
+            else:
+                Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:001_01', false)
+            EventFlowSystemActor.ExitFlowchart()
+
+flow DeletePhotoUI():
+    fork:
+        branch:
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoDisappear()
+        branch:
+            EventFlowSystemActor@sub.MessageSuspend()
+
+flow FinishUsingAmiiboReader():
+    Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:501', false)
+    EventFlowSystemActor.WaitFrame(10)
+    GeneralObject.StartAnimation('Off', 'cTrigger')
+    EventFlowSystemActor.ExitFlowchart()
+
+flow GoToAmiiboPhone():
+    run NFC_CheckResidentNNPC()
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.SoundTriggerEmit('GotoAmiiboPhone', -1)
+    if EventFlowSystemActor.CheckAmiiboNPC('cOtg'):
+        if EventFlowSystemActor.CheckAmiiboNPC('cOtgMakeUp'):
+            System.EventFlags['cWherearenPlayer:OtgWithoutMakeup'] = false
+        else:
+            System.EventFlags['cWherearenPlayer:OtgWithoutMakeup'] = true
+    EventFlowSystemActor.StartAmiiboPhone('cNormalFader', 'cNormalFader', 'cWhite', 0.5, 0.5, 'Obj_WherearenAmiiboDeviceCall')
+
+flow NFC_CheckResidentNNPC():
+    if EventFlowSystemActor.IsAmiiboNpcLiving():
+        if not EventFlowSystemActor.IsAcquaintanceAmiiboNPC():
+            Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:601', false)
+            run UsingAmiibo_AskRetry()
+        elif EventFlowSystemActor.IsAmiiboNpcSick():
+            Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:602', false)
+            run UsingAmiibo_AskRetry()
+        elif EventFlowSystemActor.IsAmiiboNpcMoveInToday():
+            Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:604', false)
+            run UsingAmiibo_AskRetry()
+        else:
+            switch EventFlowSystemActor.IsAmiiboNpcMoveOutToday():
+                case 0:
+                    if (EventFlowSystemActor.AmiiboNpcIsBirthday()) and (EventFlowSystemActor.IsHoldNpcBirthday()):
+                        Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:603', false)
+                        run UsingAmiibo_AskRetry()
+                case 1:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:605', false)
+                    run UsingAmiibo_AskRetry()
+                case 2:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:606', false)
+                    run UsingAmiibo_AskRetry()
+
+flow OtgTalk():
+    run SNPC_otg_14_WherearenEvent_Amiibo::AmiiboDeviceCamera_Direct()
+    if not System.EventFlags['cWherearenPlayer:SeqAvailableAmiiboDone']:
+        run SNPC_otg_14_WherearenEvent_Amiibo::Root_AmiiboDevice()
+    elif System.EventFlags['cWherearenPlayer:SeqEnvSoundOngoing']:
+        if System.EventFlags['cWherearenPlayer:ManGenerateInFieldTemp']:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:045', true)
+        else:
+            run SNPC_otg_30_WherearenEvent_EnvSound::FromAmiiboReader()
+    elif System.EventFlags['cWherearenPlayer:SeqDIYCatalogOngoing']:
+        run SNPC_otg_17_WherearenEvent_DIYCatalog::FromAmiiboReader()
+    else:
+        run Demo_Common_Wherearen::StoryEventChk_StartingWork()
+        if SubflowResults@9[16] == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:041', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:042', true)
+                if System.EventFlags['cWherearenPlayer:NewBuildCount'] == 7:
+                    run SNPC_otg_16_WherearenEvent_Kabetasu::Preparation()
+                EventFlowSystemActor.ChangeWherearenWorkMode(false, true)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:043', true)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_01_WherearenOffice:044', true)
+
+flow Root(NpadId: int = 0, ReadPadId: int = 0):
+    SubflowResults[19] = 2
+    run Check_Abailability()
+    if (not System.EventFlags['cWherearenPlayer:NoticeAboutAmibo_FullOpen']) and (System.EventFlags['cWherearenPlayer:Unlock_ThemeFreeEdit']) and (EventFlowSystemActor.WherearenOrderStatus() in (0, 2, 3, 4, 5, 6, 7)):
+        EventFlowSystemActor.WaitFrame(15)
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0108', false)
+        System.EventFlags['cWherearenPlayer:NoticeAboutAmibo_FullOpen'] = true
+    if SubflowResults@2[18] == 0:
+        Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:101', false)
+    else:
+        Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:102', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        EventFlowSystemActor.WaitFrame(5)
+        GeneralObject.StartAnimation('On', 'cHold')
+        EventFlowSystemActor.WaitFrame(5)
+        Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:201', false)
+        run Obj_Common_AmiiboProcess::NFC_SettingChk()
+        Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:202', false)
+        run StartAmiiboReading()
+
+flow StartAmiiboReading(NpadId: int = 0, ReadPadId: int = 0):
+    run Obj_Common_AmiiboProcess::NFC_ReadProcess()
+    if SubflowResults@2[18] == 0:
+        if EventFlowSystemActor.WherearenIsBuiltNpcForAmiibo():
+            Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:301', false)
+            run UsingAmiibo_AskRetry()
+        elif System.EventFlags['cWherearenPlayer:Unlock_ThemeFreeEdit']:
+            run AskConnect()
+        elif EventFlowSystemActor.CheckAmiiboNPC('cSNPC'):
+            Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:305', false)
+            run UsingAmiibo_AskRetry()
+        else:
+            run AskConnect()
+    elif EventFlowSystemActor.CheckAmiiboNPC('cWherearenCustomer'):
+        Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:302', false)
+        run UsingAmiibo_AskRetry()
+    elif EventFlowSystemActor.CheckAmiiboNPC('cSNPC'):
+        if EventFlowSystemActor.CheckAmiiboNPC('cRcmAndRct'):
+            Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:303_02', false)
+        else:
+            Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:303_01', false)
+        run UsingAmiibo_AskRetry()
+    elif not EventFlowSystemActor.WherearenIsBuiltNpcForAmiibo():
+        run AskConnect()
+    elif EventFlowSystemActor.WherearenAmiiboNpcFreeQuery2('cIsShareHouseNpc'):
+        run AskConnect()
+    else:
+        fork:
+            branch:
+                EventFlowSystemActor@sub.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:403', false)
+            branch:
+                EventFlowSystemActor.UIWherearenIslandsMsgPhotoAppear('cJpeg_Amiibo', 0, false, 0.0, 0.0, '')
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run DeletePhotoUI()
+            run GoToAmiiboPhone()
+        else:
+            run DeletePhotoUI()
+            run UsingAmiibo_AskRetry()
+
+local flow Sub_Event65():
+    Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:304', false)
+    run UsingAmiibo_AskRetry()
+
+flow UsingAmiibo_AskRetry():
+    Player.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:402', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run Obj_Common_AmiiboProcess::NFC_SettingChk()
+        run StartAmiiboReading()
+    else:
+        run FinishUsingAmiiboReader()
+

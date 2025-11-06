@@ -1,0 +1,567 @@
+flow AirportEnable_MovingFirstDay():
+    if not System.EventFlags['cPlayer:OdekakeFirstTalk']:
+        System.EventFlags['cPlayerTemp:DodTalkSceneFlag'] = true
+        run FirstExplain()
+    elif EventFlowSystemActor.PlayerHouseLevel() == `Homeless`:
+        if not System.EventFlags['cPlayerTemp:DodTalkSceneFlag']:
+            System.EventFlags['cPlayerTemp:DodTalkSceneFlag'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:999_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:999_02', false)
+    elif not System.EventFlags['cPlayerTemp:DodTalkSceneFlag']:
+        System.EventFlags['cPlayerTemp:DodTalkSceneFlag'] = true
+        if (System.EventFlags['cPlayer:RcoGetTvForCongratsHouse']) and (not System.EventFlags['cPlayer:DodHeardAboutMileTravelTicket']):
+            run MileTicketExplain()
+        elif (EventFlowSystemActor.TermEventNow('MayDay', false)) and (System.EventFlags['cPlayer:DodUseFirstFreeTour']):
+            if System.EventFlags['cPlayer:UseMayDayTicket']:
+                run FinishedExplainAboutMayDayTicket()
+            else:
+                System.EventFlags['cPlayer:GetMayDayTicket'] = true
+                if (System.EventFlags['cPlayer:GetMayDayTicket']) and (not System.EventFlags['cPlayer:DodHeardAboutMayDayTravelTicket']):
+                    run MileTicketExplain()
+                else:
+                    run Event200()
+        else:
+entrypoint Event200:
+            if not System.EventFlags['cPlayer:UnlockWherearen']:
+                MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:002', false)
+                run Event6()
+            elif System.EventFlags['cPlayer:DodSelectWherearen1st']:
+                run ChkEmphasizeWherearen()
+                if SubflowResults@2[4] == 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:002_01', false)
+                    run Event322()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:002_02', false)
+entrypoint Event322:
+                    switch EventFlowSystemActor.GeneralTalkChoice4():
+                        case 0:
+                            run SelectIsland()
+                        case 1:
+                            run Sub_grp_Event48()
+                        case 2:
+                            run SNPC_dod_40_Airport_Wherearen::GoToWherearen()
+                        case 3:
+                            run SNPC_dod_AirPort::EntryPoint_Cancel()
+            else:
+                run ExplainAboutWorking()
+    elif System.EventFlags['cPlayer:UnlockWherearen']:
+        run ChkEmphasizeWherearen()
+        if SubflowResults@2[4] == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:003_01', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:003_02', false)
+entrypoint Event322:
+        switch EventFlowSystemActor.GeneralTalkChoice4():
+            case 0:
+                run SelectIsland()
+            case 1:
+                run Sub_grp_Event48()
+            case 2:
+                run SNPC_dod_40_Airport_Wherearen::GoToWherearen()
+            case 3:
+                run SNPC_dod_AirPort::EntryPoint_Cancel()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:003', false)
+entrypoint Event6:
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                run SelectIsland()
+            case 1:
+                run Sub_grp_Event48()
+            case 2:
+                run SNPC_dod_AirPort::EntryPoint_Cancel()
+
+flow Airport_DestinationSel_Pisland():
+    if System.EventFlags['cPlayer:OdekakeTutorial']:
+        run SNPC_dod_AirPort::EntryPoint_Visitor()
+    else:
+        run UGCNoticeChk_Visitor()
+
+flow ChkDestination():
+    if SubflowResults@3[0] == 0:
+        if System.EventFlags['cPlayer:CommuneIslandAvailable']:
+            SubflowResults[1] = 1
+        else:
+            SubflowResults[1] = 0
+    elif System.EventFlags['cPlayer:CommuneIslandAvailable']:
+        SubflowResults[1] = 3
+    else:
+        SubflowResults[1] = 2
+
+flow ChkEmphasizeWherearen():
+    if (not System.EventFlags['cPlayer:DodSelectWherearenFromBeginning']) and (not System.EventFlags['cPlayer:WHEREAREN_VisitDone']):
+        SubflowResults[4] = 1
+    else:
+        SubflowResults[4] = 0
+
+flow ChkPMovingPFlag1554On():
+    if System.EventFlags['cPlayer:PlayerProducedByPlayerMoving']:
+        System.EventFlags['cPlayer:PlayerMovingWithPFlag555'] = true
+
+flow ChkTourTicket():
+    if System.EventFlags['cPlayer:DodUseFirstFreeTour']:
+        run Sub_grp_Event144()
+    else:
+        if System.EventFlags['cPlayer:RcoGetTvForCongratsHouse']:
+            SubflowResults[0] = 1
+        else:
+            if System.EventFlags['cPlayer:MainmenuRndDailyQuest']:
+                run Sub_grp_Event144()
+
+flow Cmn_UGC_Notification():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:091_01', true)
+    EventFlowSystemActor.WaitFrame(10)
+    MainNpc.OpenMessageWindow('Dialog/DIALOG_Msg:0802', true)
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:091_02', false)
+    System.EventFlags['cPlayer:OdekakeTutorial'] = true
+
+flow Dod_GoToCommune():
+    Player.PlayerChangeDemoState('cReserveNextSceneStartToolOff')
+    run v200_ChkCommuneExpand()
+    run v200_ChkCommuneDonguri()
+    run ChkPMovingPFlag1554On()
+    EventFlowSystemActor.SetMemoryEventPlayer('cBlancoEventPlayer:PE_Goto_CommuneIsland')
+    System.EventFlags['cPlayer:PlayerPocketUIEnableInCommuneIsland'] = true
+    System.EventFlags['cPlayer:SpnExpandEventAfterJuneBride'] = false
+    System.EventFlags['cPlayer:PooTalkAfterJuneBride'] = false
+    System.EventFlags['cPlayer:DodSingleFlightToday'] = true
+    EventFlowSystemActor.BGMPropertyControl(75)
+    EventFlowSystemActor.SoundTriggerEmit('Airplane_Takeoff_Short', -1)
+    EventFlowSystemActor.CameraReserveFirstStateCommand('Talk:doc', '', false)
+    EventFlowSystemActor.SystemRequestChangeStage('cPhotoStudioIsland', 'cDALWithLoadWait', 'cCircle', 'cBlack', 1.0, 1.0)
+
+flow Dod_Go_Sel3B():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:006_03', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run Airport_DestinationSel_Pisland()
+        case 1:
+            run GoToCommune()
+        case 2:
+            run SNPC_dod_AirPort::EntryPoint_Cancel()
+
+flow Dod_Go_Sel3B_MayDay():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1302', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run Airport_DestinationSel_Pisland()
+        case 1:
+            run MayDayTour()
+        case 2:
+            run SNPC_dod_AirPort::EntryPoint_Cancel()
+
+flow Dod_Go_Sel4B():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:006_04', false)
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            run Airport_DestinationSel_Pisland()
+        case 1:
+            run MysteryTour()
+        case 2:
+            run GoToCommune()
+        case 3:
+            run SNPC_dod_AirPort::EntryPoint_Cancel()
+
+flow Dod_Go_Sel4B_MayDay():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1302_02', false)
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            run Airport_DestinationSel_Pisland()
+        case 1:
+            run MayDayTour()
+        case 2:
+            run GoToCommune()
+        case 3:
+            run SNPC_dod_AirPort::EntryPoint_Cancel()
+
+flow Dod_Go_Sel5B_MayDay():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1302_06', false)
+    switch EventFlowSystemActor.GeneralTalkChoice5():
+        case 0:
+            run Airport_DestinationSel_Pisland()
+        case 1:
+            run MayDayTour()
+        case 2:
+            run MysteryTour()
+        case 3:
+            run GoToCommune()
+        case 4:
+            run SNPC_dod_AirPort::EntryPoint_Cancel()
+
+flow ExplainAboutMileTicket():
+    run Event104()
+
+flow ExplainAboutWorking():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1005', false)
+    run Event368()
+
+flow FinishedExplainAboutMayDayTicket():
+    run Event200()
+
+flow FirstExplain():
+    System.EventFlags['cPlayer:OdekakeFirstTalk'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:001', false)
+    if System.EventFlags['cPlayer:RcoGetTvForCongratsHouse']:
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:001_02', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:001_03', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:001_03_01', false)
+entrypoint Event212:
+        if (EventFlowSystemActor.TermEventNow('MayDay', false)) and (System.EventFlags['cPlayer:DodUseFirstFreeTour']):
+            System.EventFlags['cPlayer:GetMayDayTicket'] = true
+            if System.EventFlags['cPlayer:GetMayDayTicket']:
+                if System.EventFlags['cPlayer:DodHeardAboutMayDayTravelTicket']:
+entrypoint Event104:
+                    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:001_03_02', false)
+                    System.EventFlags['cPlayer:DodHeardAboutMileTravelTicket'] = true
+                    run Sub_grp_Event139()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1301', false)
+                    System.EventFlags['cPlayer:DodHeardAboutMayDayTravelTicket'] = true
+                    System.EventFlags['cPlayer:DodHeardAboutMileTravelTicket'] = true
+                    SubflowResults[3] = 1
+                    run Sub_grp_Event139()
+            else:
+                run ExplainAboutMileTicket()
+        else:
+            run ExplainAboutMileTicket()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:001_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:001_03', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:001_03_01', false)
+        if EventFlowSystemActor.PlayerHouseLevel() == `Homeless`:
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:001_03_03', false)
+        else:
+            run Sub_grp_Event139()
+
+flow FirstSel3B():
+    run Event6()
+
+flow FirstSel4B():
+    run Event322()
+
+flow GoToCommune():
+    if System.EventFlags['cPlayer:DodSelectCommune1st']:
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:900_02', false)
+    else:
+        System.EventFlags['cPlayer:DodSelectCommune1st'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:900_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:901', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        EventFlowSystemActor.MiniGameSilentCancel()
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:037', false)
+        if System.EventFlags['cPlayer:EquipLicenseHelmet']:
+            run SNPC_dod_AirPort::LandMakingRemove_Soloplay()
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:037_01', true)
+        run Dod_GoToCommune()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:903', false)
+
+flow GoToTourWithTicket():
+    run Event1()
+
+flow MayDayTour():
+    if System.EventFlags['cPlayer:MainmenuRecipe']:
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1303', false)
+        if System.EventFlags['cPlayer:XctGetRewardSec']:
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1309', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1304', false)
+        if Player.PlayerIsUseCoordinate():
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1308', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1305', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            EventFlowSystemActor.MiniGameSilentCancel()
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:037', false)
+            if System.EventFlags['cPlayer:EquipLicenseHelmet']:
+                run SNPC_dod_AirPort::LandMakingRemove_Soloplay()
+            EventFlowSystemActor.MessageSuspend()
+            run SNPC_dod_AirPort::EntryPoint_PreProcedure(ContinueAS=false)
+            EventFlowSystemActor.MessageLockNext(1)
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:001', false)
+            EventFlowSystemActor.SaveSimpleSave('cAll')
+            EventFlowSystemActor.MessageSuspend()
+            run SNPC_dod_AirPort::EntryPoint_PostProcedure()
+            EventFlowSystemActor.MessageUnlockNext()
+            System.EventFlags['cPlayer:UseMayDayTicket'] = true
+            System.EventFlags['cPlayer:DodSingleFlightToday'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:037_01', true)
+            EventFlowSystemActor.SelectMysteryTour(4)
+            EventFlowSystemActor.BGMPropertyControl(75)
+            EventFlowSystemActor.SoundTriggerEmit('Airplane_Takeoff_Short', -1)
+            EventFlowSystemActor.CameraReserveFirstStateCommand('Talk:doc', '', false)
+            EventFlowSystemActor.SystemRequestChangeStage('cMysteryTourIsland', 'cDALWithLoadWait', 'cCircle', 'cBlack', 1.0, 1.0)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1306', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1307', false)
+
+flow MaydayTicketExplatinAtFirstTalk():
+    if (EventFlowSystemActor.TermEventNow('MayDay', false)) and (System.EventFlags['cPlayer:DodUseFirstFreeTour']):
+        System.EventFlags['cPlayer:GetMayDayTicket'] = true
+        if System.EventFlags['cPlayer:GetMayDayTicket']:
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1301', false)
+            System.EventFlags['cPlayer:DodHeardAboutMayDayTravelTicket'] = true
+            System.EventFlags['cPlayer:DodHeardAboutMileTravelTicket'] = true
+            SubflowResults[3] = 1
+
+flow MileTicketExplain():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:011', false)
+    run Event212()
+
+flow MysteryTour():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:035', false)
+    if System.EventFlags['cPlayer:DodUseFirstFreeTour']:
+entrypoint Event1:
+        SubflowResults[2] = 1
+        run Sub_Event123()
+    elif System.EventFlags['cPlayer:RcoGetTvForCongratsHouse']:
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:035_01', false)
+        SubflowResults[2] = 0
+        run Sub_Event123()
+    else:
+        run GoToTourWithTicket()
+
+flow Mysterytour_Cancel():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:039', false)
+
+flow Mysterytour_Confirm():
+    if SubflowResults@2[2] == 0:
+        System.EventFlags['cPlayer:DodUseFirstFreeTour'] = true
+    else:
+        EventFlowSystemActor.DeleteTargetItem(5851, 1, false)
+    EventFlowSystemActor.MiniGameSilentCancel()
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:037', false)
+    if System.EventFlags['cPlayer:EquipLicenseHelmet']:
+        run SNPC_dod_AirPort::LandMakingRemove_Soloplay()
+    System.EventFlags['cPlayer:DodSingleFlightToday'] = true
+    System.EventFlags['cPlayer:GotoMysteryTour'] += 1
+    if System.EventFlags['cPlayer:GotoMysteryTour'] >= 5:
+        System.EventFlags['cPlayer:EnableGotoRareMysteryTour'] = true
+    EventFlowSystemActor.MessageSuspend()
+    run SNPC_dod_AirPort::EntryPoint_PreProcedure(ContinueAS=false)
+    EventFlowSystemActor.MessageLockNext(1)
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:001', false)
+    EventFlowSystemActor.SaveSimpleSave('cAll')
+    EventFlowSystemActor.MessageSuspend()
+    run SNPC_dod_AirPort::EntryPoint_PostProcedure()
+    EventFlowSystemActor.MessageUnlockNext()
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:037_01', true)
+    EventFlowSystemActor.SelectMysteryTour(0)
+    EventFlowSystemActor.BGMPropertyControl(75)
+    EventFlowSystemActor.SoundTriggerEmit('Airplane_Takeoff_Short', -1)
+    EventFlowSystemActor.CameraReserveFirstStateCommand('Talk:doc', '', false)
+    EventFlowSystemActor.SystemRequestChangeStage('cMysteryTourIsland', 'cDALWithLoadWait', 'cCircle', 'cBlack', 1.0, 1.0)
+
+flow Root():
+    if System.EventFlags['cLand:VillageDaysCount'] >= 1:
+        run AirportEnable_MovingFirstDay()
+    elif System.EventFlags['cLand:IslandProducedByPlayerMoving']:
+        run AirportEnable_MovingFirstDay()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:021_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:021_02', false)
+
+flow SelDestWOticket_NoSpn():
+    run Event74()
+
+flow SelDestWOticket_NoSpn_MayDay():
+    run Event289()
+
+flow SelDestinationWOticket():
+    if EventFlowSystemActor.HasTargetItem(5851, 1):
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:005_02', false)
+        run Dod_Go_Sel4B()
+    else:
+        run Dod_Go_Sel3B()
+
+flow SelDestinationWOticket_MayDay():
+    if EventFlowSystemActor.HasTargetItem(5851, 1):
+        run Dod_Go_Sel5B_MayDay()
+    else:
+        run Dod_Go_Sel4B_MayDay()
+
+flow SelectIsland():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:005', false)
+    if (EventFlowSystemActor.TermEventNow('MayDay', false)) and (System.EventFlags['cPlayer:DodUseFirstFreeTour']) and (System.EventFlags['cPlayer:GetMayDayTicket']) and (not System.EventFlags['cPlayer:UseMayDayTicket']):
+        if SubflowResults@2[3] == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1300', false)
+        if System.EventFlags['cPlayer:CommuneIslandAvailable']:
+            if System.EventFlags['cPlayer:DodUseFirstFreeTour']:
+                run SelDestinationWOticket_MayDay()
+            elif System.EventFlags['cPlayer:RcoGetTvForCongratsHouse']:
+                run Dod_Go_Sel5B_MayDay()
+            elif System.EventFlags['cPlayer:MainmenuRndDailyQuest']:
+                run SelDestinationWOticket_MayDay()
+            else:
+                run Dod_Go_Sel3B()
+        elif System.EventFlags['cPlayer:DodUseFirstFreeTour']:
+entrypoint Event289:
+            if EventFlowSystemActor.HasTargetItem(5851, 1):
+                run Sub_Event278()
+            else:
+                run Dod_Go_Sel3B_MayDay()
+        else:
+            if System.EventFlags['cPlayer:RcoGetTvForCongratsHouse']:
+                run Sub_Event278()
+            else:
+                if System.EventFlags['cPlayer:MainmenuRndDailyQuest']:
+                    run SelDestWOticket_NoSpn_MayDay()
+                else:
+                    run Dod_Go_Sel3B_MayDay()
+    else:
+        if System.EventFlags['cPlayer:CommuneIslandAvailable']:
+            if System.EventFlags['cPlayer:DodUseFirstFreeTour']:
+                run SelDestinationWOticket()
+            elif System.EventFlags['cPlayer:RcoGetTvForCongratsHouse']:
+                MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:005_01', false)
+                run Dod_Go_Sel4B()
+            elif System.EventFlags['cPlayer:MainmenuRndDailyQuest']:
+                run SelDestinationWOticket()
+            else:
+                run Dod_Go_Sel3B()
+        elif System.EventFlags['cPlayer:DodUseFirstFreeTour']:
+entrypoint Event74:
+            if EventFlowSystemActor.HasTargetItem(5851, 1):
+                MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:005_02', false)
+                run Sub_Event113()
+            else:
+                run Airport_DestinationSel_Pisland()
+        elif System.EventFlags['cPlayer:RcoGetTvForCongratsHouse']:
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:005_01', false)
+            run Sub_Event113()
+        elif System.EventFlags['cPlayer:MainmenuRndDailyQuest']:
+            run SelDestWOticket_NoSpn()
+        else:
+            run Airport_DestinationSel_Pisland()
+
+flow SelectIsland_NoRoger():
+    if (EventFlowSystemActor.TermEventNow('MayDay', false)) and (System.EventFlags['cPlayer:DodUseFirstFreeTour']) and (System.EventFlags['cPlayer:GetMayDayTicket']) and (not System.EventFlags['cPlayer:UseMayDayTicket']):
+        run ChkTourTicket()
+        run ChkDestination()
+        switch SubflowResults@4[1]:
+            case 0:
+                run Dod_Go_Sel3B_MayDay()
+            case 1:
+                run Dod_Go_Sel4B_MayDay()
+            case 2:
+                run SelDestWOticket_NoSpn_MayDay()
+            case 3:
+                run Dod_Go_Sel5B_MayDay()
+    else:
+        run ChkTourTicket()
+        run ChkDestination()
+        switch SubflowResults@4[1]:
+            case 0:
+                run Airport_DestinationSel_Pisland()
+            case 1:
+                run Dod_Go_Sel3B()
+            case 2:
+                run SelDestWOticket_NoSpn()
+            case 3:
+                run Dod_Go_Sel4B()
+
+local flow Sub_Event113():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:006_01', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run Airport_DestinationSel_Pisland()
+        case 1:
+            run MysteryTour()
+        case 2:
+            run SNPC_dod_AirPort::EntryPoint_Cancel()
+
+local flow Sub_Event123():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:036', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run Mysterytour_Confirm()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:031_01', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:031_02', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:032', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Mysterytour_Confirm()
+            else:
+                run Mysterytour_Cancel()
+        case 2:
+            run Mysterytour_Cancel()
+
+local flow Sub_Event278():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1302_04', false)
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            run Airport_DestinationSel_Pisland()
+        case 1:
+            run MayDayTour()
+        case 2:
+            run MysteryTour()
+        case 3:
+            run SNPC_dod_AirPort::EntryPoint_Cancel()
+
+local flow Sub_grp_Event139():
+    if EventFlowSystemActor.IsSharePlay(0):
+        MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:001_03_04', false)
+    else:
+        if not System.EventFlags['cPlayer:DodHeardAboutMayDayTravelTicket']:
+            run MaydayTicketExplatinAtFirstTalk()
+        if System.EventFlags['cPlayer:UnlockWherearen']:
+            if not System.EventFlags['cPlayer:DodSelectWherearen1st']:
+                MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1006', false)
+                System.EventFlags['cPlayer:DodSelectWherearenFromBeginning'] = true
+entrypoint Event368:
+                if System.EventFlags['cPlayer:WHEREAREN_OtgVisitThisIsland']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1007', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:1008', false)
+                System.EventFlags['cPlayer:DodSelectWherearen1st'] = true
+            run ChkEmphasizeWherearen()
+            if SubflowResults@2[4] == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:001_05', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:001_06', false)
+            run FirstSel4B()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:001_04', false)
+            run FirstSel3B()
+
+local flow Sub_grp_Event144():
+    if EventFlowSystemActor.HasTargetItem(5851, 1):
+        SubflowResults[0] = 2
+
+local flow Sub_grp_Event311():
+    if (System.EventFlags['cPlayer:Ttl1stmet']) and (not System.EventFlags['cPlayer:TtlTodayFirstTalkFlag']):
+        System.EventFlags['cPlayer:TtlChangeTtlB'] = true
+
+local flow Sub_grp_Event48():
+    if System.EventFlags['cPlayer:OdekakeTutorial']:
+        run SNPC_dod_AirPort::EntryPoint_Host()
+    else:
+        run UGCNoticeChk_Host()
+
+flow UGCNoticeChk_Host():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:090_02', false)
+    run Cmn_UGC_Notification()
+    run SNPC_dod_AirPort::EntryPoint_Host()
+
+flow UGCNoticeChk_Visitor():
+    MainNpc.OpenMessageWindow('TalkSNpc/dod/SP_dod_AirPort:090_01', false)
+    run Cmn_UGC_Notification()
+    run SNPC_dod_AirPort::EntryPoint_Visitor()
+
+flow v200_ChkCommuneDonguri():
+    if EventFlowSystemActor.EnvWeatherArea() == `cWeatherArea_North`:
+        if EventFlowSystemActor.EnvCheckBetweenDate(9, 1, 12, 10, 'cLastGrowUpTime'):
+            run Sub_grp_Event311()
+    else:
+        if EventFlowSystemActor.EnvCheckBetweenDate(3, 1, 6, 10, 'cLastGrowUpTime'):
+            run Sub_grp_Event311()
+
+flow v200_ChkCommuneExpand():
+    if System.EventFlags['cLand:CompleteCommuneExpandEvent']:
+        if not System.EventFlags['cPlayer:CommuneCompleteExpandEvent_Player']:
+            System.EventFlags['cPlayer:ReserveCommuneExpansion'] = true
+    else:
+        System.EventFlags['cLand:CommuneExpanded'] = false
+    if System.EventFlags['cPlayer:ReserveCommuneExpansion']:
+        System.EventFlags['cLand:CommuneExpanded'] = true
+

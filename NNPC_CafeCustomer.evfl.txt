@@ -1,0 +1,69 @@
+flow Book():
+    run Root()
+
+flow DrinkCoffee():
+    run NNPC_RestaurantCustomer::TalkChk()
+    switch SubflowResults@3[1]:
+        case 0:
+            run FacilityName_Chk()
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Cafe:102', true)
+        case 1:
+            run FacilityName_Chk()
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Cafe:102', false)
+            run NewBuildOrder()
+        case 2:
+            MainNpc.TurnNeck(10, false)
+            MainNpc.TurnBody(10, 0.0)
+            run NNPC_Spot_WherearenMainFieldVisitor::LookforHouseMate()
+
+flow DrinkTea():
+    run NNPC_RestaurantCustomer::TalkChk()
+    switch SubflowResults@3[1]:
+        case 0:
+            run FacilityName_Chk()
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Cafe:103', true)
+        case 1:
+            run FacilityName_Chk()
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Cafe:103', false)
+            run NewBuildOrder()
+        case 2:
+            MainNpc.TurnNeck(10, false)
+            MainNpc.TurnBody(10, 0.0)
+            run NNPC_Spot_WherearenMainFieldVisitor::LookforHouseMate()
+
+flow FacilityName_Chk():
+    if (EventFlowSystemActor.WherearenExistFacilityName('cCafe')) and (not EventFlowSystemActor.PercentChoice(80)):
+        EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cSelectFacility', 0, 'cCafe')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Cafe:104', false)
+        run NNPC_RestaurantCustomer::TalkChk()
+        if SubflowResults@3[1] not in (0, 2):
+            run NewBuildOrder()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow NewBuildOrder():
+    if EventFlowSystemActor.IsWherearenWorkMode():
+        MainNpc.TurnBody(10, 0.0)
+        MainNpc.TurnNeck(10, false)
+        run NNPC_Spot_WherearenMainFieldVisitor::NewBuildInFacility()
+
+flow Root():
+    run NNPC_RestaurantCustomer::TalkChk()
+    switch SubflowResults@3[1]:
+        case 0:
+            run FacilityName_Chk()
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Cafe:101', true)
+        case 1:
+            run FacilityName_Chk()
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Cafe:101', false)
+            run NewBuildOrder()
+        case 2:
+            MainNpc.TurnBody(10, 0.0)
+            MainNpc.TurnNeck(10, false)
+            run NNPC_Spot_WherearenMainFieldVisitor::LookforHouseMate()
+
+flow Sit():
+    run Root()
+
+flow StandSleep():
+    run NNPC_RestaurantCustomer::`StandSleep_2.1`()
+

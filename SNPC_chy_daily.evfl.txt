@@ -1,0 +1,240 @@
+flow Chy_ObjEntryCount():
+    if not System.EventFlags['cPlayer:ChyDaily_ObjEntry3']:
+        if System.EventFlags['cPlayer:ChyDaily_ObjEntry2']:
+            System.EventFlags['cPlayer:ChyDaily_ObjEntry3'] = true
+        elif System.EventFlags['cPlayer:ChyDaily_ObjEntry1']:
+            System.EventFlags['cPlayer:ChyDaily_ObjEntry2'] = true
+        else:
+            System.EventFlags['cPlayer:ChyDaily_ObjEntry1'] = true
+
+flow DailySell_Cancel():
+    MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:020', false)
+    MainNpc.NpcDelivery(10, 'Default')
+    EventFlowSystemActor.UIMoneyDisappear()
+    run Daily_SellCancel_Talk()
+
+flow Daily_ReqObj():
+    if System.EventFlags['cPlayer:ChyDaily_ReqObj']:
+        MainNpc.NpcDecideOrderBeforeItem('cChyInsect')
+        MainNpc.SetItemName(28, 0, 1)
+        if MainNpc.ChyIfSpecialInsect():
+            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:111', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:100', false)
+    elif System.EventFlags['cPlayer:ChyDaily_ExplainReqObj_First']:
+        run Sub_grp_Event87()
+    else:
+        System.EventFlags['cPlayer:ChyDaily_ExplainReqObj_First'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:101', false)
+entrypoint Event8:
+        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:102', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                run Sub_grp_Event87()
+            case 1:
+                run Ex_Obj2()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:110', false)
+
+flow Daily_SellCancel_Talk():
+    if EventFlowSystemActor.EnvTimeZone() in (`05:00-07:59`, `08:00-11:59`, `12:00-15:59`, `16:00-18:59`, `19:00-23:59`):
+        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:022', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:023', false)
+
+flow Daily_SellInsect(SellTotal: int = 0):
+    if EventFlowSystemActor.HasKindItem('cKind', 'Insect', ''):
+        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:016', false)
+        EventFlowSystemActor.UIItemSelectWindowHandling('cInsectSell', 65534, 'Insect', '', 'cItemSelect', false)
+        if (EventFlowSystemActor.UIResultMenuDecide()) and (EventFlowSystemActor.UIResultItemWindowNumCheck(1, 'cItemSelect')):
+            MainNpc.SetDeliveryItem(4, false)
+            MainNpc.NpcDelivery(0, 'Keep')
+            MainNpc.ShopSellCalc(SellTotal, 1.5, true, false)
+            EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 2, SellTotal, '""')
+            EventFlowSystemActor.UIMoneyAppear()
+            if EventFlowSystemActor.UIResultItemWindowNumCheck(2, 'cItemSelect'):
+                MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:025', false)
+            else:
+                EventFlowSystemActor.SetTagFromUIResult('cItemName', 0)
+                MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:024', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:027', false)
+                MainNpc.MessageSuspend()
+                MainNpc.NpcDelivery(7, 'Default')
+                MainNpc.ShopSellDone(1.5, false)
+                EventFlowSystemActor.UIMoneyDisappear()
+                if (EventFlowSystemActor.ChyWeekEndEvent() in (0, 1)) and (not System.EventFlags['cPlayer:ChyDaily_AnnounceEvent']):
+                    System.EventFlags['cPlayer:ChyDaily_AnnounceEvent'] = true
+                    MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:033', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:028', false)
+            else:
+                run DailySell_Cancel()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:021', false)
+            run Daily_SellCancel_Talk()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:011', false)
+        if EventFlowSystemActor.EnvTimeZone() in (`05:00-07:59`, `08:00-11:59`, `12:00-15:59`, `16:00-18:59`, `19:00-23:59`):
+            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:012', true)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:013', true)
+
+flow Ex_Obj2():
+    MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:103', false)
+    run Event8()
+
+flow Root(SellTotal: int = 0):
+    run Tag_Num_daily()
+    run Tag_SET_HOUR_daily()
+    EventFlowSystemActor.SetTagFromSystem('cNowCatchInsect', 'cDegit', 3, 0, '')
+    if not EventFlowSystemActor.IsMyVillage():
+        if System.EventFlags['cPlayerVisit:DC_ChyDaily_TalkFirst']:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:073', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:072', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:071', false)
+        else:
+            System.EventFlags['cPlayerVisit:DC_ChyDaily_TalkFirst'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:070', false)
+    elif System.EventFlags['cPlayer:ChyDaily_TalkFirstDay']:
+        switch EventFlowSystemActor.RandomChoice3(3):
+            case 0:
+                switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:040', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:041', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:042', false)
+            case 1:
+                switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:043', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:044', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:045', false)
+            case 2:
+                switch EventFlowSystemActor.RandomChoiceExcludePrevious4(4, true):
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:046', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:047', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:048', false)
+                    case 3:
+                        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:049', false)
+        if System.EventFlags['cPlayer:ChyDaily_ReqObj']:
+            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:014', false)
+            switch EventFlowSystemActor.GeneralTalkChoice3():
+                case 0:
+                    run Daily_SellInsect()
+                case 1:
+                    run Daily_ReqObj()
+                case 2:
+                    run TalkCancel()
+        elif System.EventFlags['cPlayer:ChyDaily_ExplainReqObj_First']:
+            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:015', false)
+            run Sub_grp_Event74(SellTotal=SellTotal)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:010', false)
+            run Sub_grp_Event4(SellTotal=SellTotal)
+    else:
+        System.EventFlags['cPlayer:ChyDaily_TalkFirstDay'] = true
+        if System.EventFlags['cPlayer:ChyDaily_TalkFirst']:
+            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:004', false)
+            if System.EventFlags['cPlayer:ChyDaily_ExplainReqObj_First']:
+                MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:006', false)
+                run Sub_grp_Event74(SellTotal=SellTotal)
+            else:
+                run Sub_Event82(SellTotal=SellTotal)
+        else:
+            System.EventFlags['cPlayer:ChyDaily_TalkFirst'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:000', false)
+            run Sub_Event82(SellTotal=SellTotal)
+
+local flow Sub_Event82(SellTotal: int):
+    MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:005', false)
+    run Sub_grp_Event4(SellTotal=SellTotal)
+
+local flow Sub_grp_Event4(SellTotal: int):
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run Daily_SellInsect()
+        case 1:
+            run Daily_ReqObj()
+        case 2:
+            run TalkCancel()
+
+local flow Sub_grp_Event74(SellTotal: int):
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run Daily_SellInsect()
+        case 1:
+            run Daily_ReqObj()
+        case 2:
+            run TalkCancel()
+
+local flow Sub_grp_Event87():
+    if MainNpc.ChyHaveThreeOrMoreSameInsect():
+        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:106', false)
+        EventFlowSystemActor.UIItemSelectWindowHandling('cInsectToyExchange', 65534, 'Insect', '', 'cItemSelect', false)
+        if EventFlowSystemActor.UIResultItemWindowNumCheck(1, 'cItemSelect'):
+            EventFlowSystemActor.SetTagFromUIResult('cItemName', 2)
+            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:107', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.MessageSuspend()
+                MainNpc.SetDeliveryItem(4, false)
+                MainNpc.NpcDelivery(0, 'Default')
+                System.EventFlags['cPlayer:ChyDaily_ReqObj'] = true
+                run Chy_ObjEntryCount()
+                MainNpc.ChySetInsectToy()
+                MainNpc.SetOrderBeforeItem('cChyInsect')
+                EventFlowSystemActor.DeleteSelectUIItem(3)
+                EventFlowSystemActor.SetTagFromUIResult('cItemName', 1)
+                if MainNpc.ChyIfSpecialInsect():
+                    EventFlowSystemActor.SystemMailSend('cChy', 'MAIL_SNpc_chy_daily', 2, 'cChyInsect', 'cFastTomorrow', 'cReward', false, false)
+                    switch MainNpc.ChyCheckSpecialInsect():
+                        case 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:150', false)
+                        case 1:
+                            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:151', false)
+                        case 2:
+                            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:152', false)
+                        case 3:
+                            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:153', false)
+                        case 4:
+                            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:154', false)
+                        case 5:
+                            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:155', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:156', false)
+                else:
+                    EventFlowSystemActor.SystemMailSend('cChy', 'MAIL_SNpc_chy_daily', 1, 'cChyInsect', 'cFastTomorrow', 'cReward', false, false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:108', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:109', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:109', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:105', false)
+
+flow Tag_Num_daily():
+    if EventFlowSystemActor.EnvSeason() in (`Spring`, `Summer`, `Autumn`):
+        EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 0, 6, 'cPlayerTemp:CatchInsectFesGetNum')
+    else:
+        EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 0, 4, 'cPlayerTemp:CatchInsectFesGetNum')
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 3, 3, 'cPlayerTemp:CatchInsectFesGetNum')
+
+flow Tag_SET_HOUR_daily():
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cHour', 0, 5, 'cPlayer:CatchInsectFesCount')
+
+flow TalkCancel():
+    if EventFlowSystemActor.EnvTimeZone() in (`05:00-07:59`, `08:00-11:59`, `12:00-15:59`, `16:00-18:59`, `19:00-23:59`):
+        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:002', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/chy/SP_chy_daily:003', false)
+

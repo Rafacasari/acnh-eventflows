@@ -1,0 +1,50 @@
+flow Root():
+    if not System.EventFlags['cLand:RcmImmQuestComplete']:
+        if MainNpc.IsSettlerQuestInducedNpc():
+            if System.EventFlags['cPlayerTemp:MysteryTourInviteFlag']:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:009', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:010', false)
+                System.EventFlags['cPlayerTemp:MysteryTourInviteFlag'] = true
+        elif System.EventFlags['cPlayerTemp:MysteryTourTalkSceneFlag']:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:004', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                if System.EventFlags['cLand:RcmImmQuestOpen']:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:006', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:007', false)
+                    switch EventFlowSystemActor.GeneralTalkChoice2():
+                        case 0, 1:
+                            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:008', false)
+                MainNpc.SetSettlerQuestInduceNpc()
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:005', false)
+                System.EventFlags['cPlayerTemp:MysteryTourTalkSceneFlag'] = true
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:001', false)
+            System.EventFlags['cPlayerTemp:MysteryTourTalkSceneFlag'] = true
+    elif MainNpc.CheckNpcMoveIn('cDefault'):
+        if System.EventFlags['cPlayerTemp:MysteryTourInviteFlag']:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:009', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:010', false)
+            System.EventFlags['cPlayerTemp:MysteryTourInviteFlag'] = true
+    elif not System.EventFlags['cPlayerTemp:MysteryTourTalkSceneFlag']:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:001', false)
+        System.EventFlags['cPlayerTemp:MysteryTourTalkSceneFlag'] = true
+    elif (System.EventFlags['cPlayerTemp:MysteryTourNotInviteFlag']) and (EventFlowSystemActor.RandomChoiceExcludePrevious4(4, true) in (0, 1, 2)):
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:009', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:004', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:007', false)
+            switch EventFlowSystemActor.GeneralTalkChoice2():
+                case 0, 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:008', false)
+                    MainNpc.NpcFixedInducement()
+                    MainNpc.MoveIntoLandForSale()
+                    System.EventFlags['cLand:InduceInMysteriTourIslandToday'] = true
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_MysteryTour:005', false)
+            System.EventFlags['cPlayerTemp:MysteryTourNotInviteFlag'] = true
+

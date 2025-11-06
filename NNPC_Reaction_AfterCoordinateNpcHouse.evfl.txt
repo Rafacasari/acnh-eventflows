@@ -1,0 +1,27 @@
+flow EndProcess():
+    MainNpc.EventFlags['cNpcMemory:TodayHeardReactTalkAboutCoordinateHouse'] = true
+    EventFlowSystemActor.ExitFlowchart()
+
+flow Root():
+    if not MainNpc.EventFlags['cNpcMemory:TodayHeardReactTalkAboutCoordinateHouse']:
+        if MainNpc.EventFlags['cNpcMemory:TodayReserveCoordinateHouseInterior']:
+            if (EventFlowSystemActor.PercentChoice(40)) and (MainNpc.EventFlags['cNpcMemory:InteriorCoordinator']):
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_AfterCoordinateNpcHouse:002', false)
+                run EndProcess()
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_AfterCoordinateNpcHouse:001', false)
+                run EndProcess()
+        elif MainNpc.EventFlags['cNpcMemory:TodayReserveCoordinateHouseExterior']:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_AfterCoordinateNpcHouse:005', false)
+            run EndProcess()
+        elif not MainNpc.EventFlags['cNpcMemory:TodayCompleteCoordinateHouseInterior']:
+            if MainNpc.EventFlags['cNpcMemory:TodayCompleteCoordinateHouseExterior']:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_AfterCoordinateNpcHouse:006', false)
+                run EndProcess()
+        elif EventFlowSystemActor.SystemCheckNowStage('cTalkingNpcHouse'):
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_AfterCoordinateNpcHouse:003', false)
+            run EndProcess()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_AfterCoordinateNpcHouse:004', false)
+            run EndProcess()
+

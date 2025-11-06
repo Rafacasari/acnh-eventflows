@@ -1,0 +1,45 @@
+flow AboutVillager_CmnCancel1():
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:015', false)
+    run SNPC_sza_00_Common::Sza_CmnSel_Again()
+
+flow AboutVillager_CmnCancel2():
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:021', false)
+    run SNPC_sza_00_Common::Sza_CmnSel_Again()
+
+flow Root():
+    if System.EventFlags['cPlayer:ShizueCmnExplanationComplaint']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:014', false)
+    else:
+        System.EventFlags['cPlayer:ShizueCmnExplanationComplaint'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:013', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:016', false)
+        EventFlowSystemActor.UIMsgCardAdrHandling('cTroubleList')
+        if EventFlowSystemActor.UIResultMenuDecide():
+            EventFlowSystemActor.SetTagFromUIResult('cSelectNpcName', 0)
+            EventFlowSystemActor.SetUISelectedNpcVillagerIndex()
+            if System.EventFlags['cLand:UnlockSzaResetHouse']:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_0_common_v2:021', false)
+                switch EventFlowSystemActor.GeneralTalkChoice4():
+                    case 0:
+                        run SNPC_sza_70_AboutVillager_01_ResetHabit::Root()
+                    case 1:
+                        run SNPC_sza_70_AboutVillager_02_ResetCloth::Root()
+                    case 2:
+                        run SNPC_sza_70_AboutVillager_03_ResetHouse::Root()
+                    case 3:
+                        run AboutVillager_CmnCancel1()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:017', false)
+                switch EventFlowSystemActor.GeneralTalkChoice3():
+                    case 0:
+                        run SNPC_sza_70_AboutVillager_01_ResetHabit::Root()
+                    case 1:
+                        run SNPC_sza_70_AboutVillager_02_ResetCloth::Root()
+                    case 2:
+                        run AboutVillager_CmnCancel1()
+        else:
+            run AboutVillager_CmnCancel1()
+    else:
+        run AboutVillager_CmnCancel1()
+

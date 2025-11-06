@@ -1,0 +1,26 @@
+flow Root():
+    if not EventFlowSystemActor.IsMyVillage():
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:416', false)
+    elif EventFlowSystemActor.NetIsConnected():
+        if EventFlowSystemActor.NetHasVisitor():
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:414', false)
+        elif EventFlowSystemActor.IsVillageGateOpened():
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:413', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:415', false)
+    elif EventFlowSystemActor.IsSharePlay(0):
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:417', false)
+    elif (not EventFlowSystemActor.SystemCheckNowStage('cKappeiIsland')) and (not EventFlowSystemActor.SystemCheckNowStage('cMysteryTourIsland')):
+        switch EventFlowSystemActor.UICheckSceneChangable(2):
+            case 0:
+                run System_WherearenResortPlanner::Setting_PlannerApp()
+                EventFlowSystemActor.SystemRequestChangeStage('cWherearenPlannerApp', 'cWherearenPlannerGo', 'cWherearenPlannerGo', 'cBlack', 1.0, 1.0)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:415', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:417', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:345', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:346', false)
+

@@ -1,0 +1,236 @@
+flow Hgc_Check_Chk():
+    if MainNpc.HgcPlayerDefaultOutfit():
+        switch SubflowResults@3[0]:
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:023', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:024', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:025', false)
+        EventFlowSystemActor.ExitFlowchart()
+    elif Player.PlayerIsUseCoordinate():
+        switch SubflowResults@3[0]:
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:035', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:036', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:037', false)
+        EventFlowSystemActor.ExitFlowchart()
+    elif System.EventFlags['cPlayer:EquipLicenseHelmet']:
+        switch SubflowResults@3[0]:
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:038_01', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:038_02', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:038_03', false)
+        EventFlowSystemActor.ExitFlowchart()
+    elif Player.PlayerOutfitMarinesuit():
+        if SubflowResults@3[0] in (0, 1):
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:167', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:168', false)
+        EventFlowSystemActor.ExitFlowchart()
+    elif (EventFlowSystemActor.PlayerIsEquipItem(7210, 4287, 8228, 4288, 8372, 8370, 8254, 8252, 'cAny', false, false)) or (EventFlowSystemActor.PlayerIsEquipItem(8368, 8251, 8367, 8369, 8253, 65534, 65534, 65534, 'cAny', false, false)) or (EventFlowSystemActor.PlayerIsEquipItem(5837, 5836, 5822, 9557, 9558, 65534, 65534, 65534, 'cAny', false, false)) or (EventFlowSystemActor.PlayerIsEquipItem(9555, 9552, 9556, 9553, 9554, 5530, 65534, 65534, 'cAny', false, false)):
+        if MainNpc.HgcIsChangeOutfit():
+            if SubflowResults@3[0] == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:160', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:161', false)
+            EventFlowSystemActor.ExitFlowchart()
+        else:
+            run Sub_Event120()
+    elif not MainNpc.HgcIsChangeOutfit():
+        if MainNpc.HgcFashionCheckResult() in (0, 1, 2):
+            run Sub_Event120()
+        else:
+            switch SubflowResults@3[0]:
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:164', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:165', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:166', false)
+            run Hgc_Chk_OK()
+            EventFlowSystemActor.ExitFlowchart()
+
+flow Hgc_Chk_OK():
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:040', false)
+        EventFlowSystemActor.WaitFrame(4)
+        if MainNpc.NpcIsEquipedHandTool(0):
+            MainNpc.RequestSimple('MaReHgcCheckRain', false)
+        else:
+            MainNpc.RequestSimple('MaReHgcCheck', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:040_01', false)
+        run hgc_Comment()
+        run Hgc_Get_Coupon()
+        EventFlowSystemActor.SetMemoryEventPlayer('cBlancoEventPlayer:PE_Hgc_CheckEnd')
+        if MainNpc.HgcFashionCheckResult() in (0, 1):
+            run Hgc_Clear()
+        else:
+            switch SubflowResults@3[0]:
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:043', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:053', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:063', false)
+            MainNpc.DecideEventReward('cKotonoReward')
+            if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+                MainNpc.MessageSuspend()
+                MainNpc.SetDeliveryItem(1, true)
+                MainNpc.SetItemName(1, 4, 0)
+                if not MainNpc.NpcIsEquipedHandTool(0):
+                    MainNpc.NpcChangeHandTool(65534, 'cNone', false)
+                MainNpc.NpcDelivery(1, '"Default"')
+                if System.EventFlags['cPlayer:KotonoKateTalkFlag']:
+                    switch SubflowResults@3[0]:
+                        case 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:049', false)
+                        case 1:
+                            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:058', false)
+                        case 2:
+                            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:068', false)
+                    if MainNpc.HgcFreeQuery2('cHgcQueryType_FirstGet'):
+                        switch SubflowResults@3[0]:
+                            case 0:
+                                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:045', false)
+                            case 1:
+                                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:055', false)
+                            case 2:
+                                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:065', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:048', false)
+                    System.EventFlags['cPlayer:KotonoKateTalkFlag'] = true
+                run Hgc_Clear()
+                if not MainNpc.NpcIsEquipedHandTool(0):
+                    MainNpc.NpcChangeHandTool(7285, 'cNone', false)
+            else:
+                switch SubflowResults@3[0]:
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:044', false)
+                        EventFlowSystemActor.SystemMailSend('cHgc', 'MAIL_SNpc_hgc', 7, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:054', false)
+                        EventFlowSystemActor.SystemMailSend('cHgc', 'MAIL_SNpc_hgc', 8, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:064', false)
+                        EventFlowSystemActor.SystemMailSend('cHgc', 'MAIL_SNpc_hgc', 9, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+                run Hgc_Clear()
+    else:
+        switch SubflowResults@3[0]:
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:029', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:030', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:031', false)
+        MainNpc.HgcThemeMessage()
+
+flow Hgc_Clear():
+    switch SubflowResults@3[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:047', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:057', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:067', false)
+    switch MainNpc.HgcFashionCheckResult():
+        case 0:
+            System.EventFlags['cPlayer:KotonoQuestCount'] += 2
+            EventFlowSystemActor.PlayReport('cHgcFashionCheckResult', 0)
+        case 1:
+            System.EventFlags['cPlayer:KotonoQuestCount'] += 3
+            EventFlowSystemActor.PlayReport('cHgcFashionCheckResult', 1)
+        case 2:
+            System.EventFlags['cPlayer:KotonoQuestCount'] += 4
+            EventFlowSystemActor.PlayReport('cHgcFashionCheckResult', 2)
+            System.EventFlags['cPlayer:KotonoQuestClearCount'] += 1
+        case 3:
+            System.EventFlags['cPlayer:KotonoQuestCount'] += 5
+            EventFlowSystemActor.PlayReport('cHgcFashionCheckResult', 3)
+            System.EventFlags['cPlayer:KotonoQuestClearCount'] += 1
+    System.EventFlags['cPlayer:KotonoQuestClearFlag'] = true
+
+flow Hgc_Get_Coupon():
+    if System.EventFlags['cPlayer:KotonoGotTicketFlag']:
+        switch SubflowResults@3[0]:
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:042', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:052', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:062', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:041', false)
+        System.EventFlags['cPlayer:KotonoGotTicketFlag'] = true
+    if MainNpc.HgcFashionCheckResult() in (0, 1, 2):
+        EventFlowSystemActor.SelectRewardItemDirect(5932, 1, 'cVillageRemakePattern', 0)
+        switch SubflowResults@3[0]:
+            case 0:
+                EventFlowSystemActor.SystemMailSend('cHgc', 'MAIL_SNpc_hgc', 1, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+            case 1:
+                EventFlowSystemActor.SystemMailSend('cHgc', 'MAIL_SNpc_hgc', 2, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+            case 2:
+                EventFlowSystemActor.SystemMailSend('cHgc', 'MAIL_SNpc_hgc', 3, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+    else:
+        EventFlowSystemActor.SelectRewardItemDirect(5932, 2, 'cVillageRemakePattern', 0)
+        switch SubflowResults@3[0]:
+            case 0:
+                EventFlowSystemActor.SystemMailSend('cHgc', 'MAIL_SNpc_hgc', 4, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+            case 1:
+                EventFlowSystemActor.SystemMailSend('cHgc', 'MAIL_SNpc_hgc', 5, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+            case 2:
+                EventFlowSystemActor.SystemMailSend('cHgc', 'MAIL_SNpc_hgc', 6, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+
+flow Hgc_Sample_Chk():
+    if not System.EventFlags['cPlayer:KotonoGotSampleFlag']:
+        MainNpc.DecideEventReward('cKotonoHint')
+        MainNpc.SetItemName(1, 0, 0)
+        if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:032', false)
+            run SNPC_hgc_00_BeforeQuest::Hgc_Get_Sample()
+            EventFlowSystemActor.ExitFlowchart()
+
+flow Root():
+    run Hgc_Sample_Chk()
+    run Hgc_Check_Chk()
+    switch SubflowResults@3[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:026', false)
+            run Hgc_Chk_OK()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:027', false)
+            run Hgc_Chk_OK()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:028', false)
+            run Hgc_Chk_OK()
+
+local flow Sub_Event120():
+    MainNpc.HgcThemeMessage()
+    EventFlowSystemActor.ExitFlowchart()
+
+flow hgc_Comment():
+    if SubflowResults@3[0] in (0, 1):
+        switch MainNpc.HgcFashionCheckResult():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:300', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:301', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:302', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:303', false)
+    else:
+        switch MainNpc.HgcFashionCheckResult():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:320', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:321', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:322', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:323', false)
+

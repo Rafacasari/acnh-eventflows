@@ -1,0 +1,145 @@
+flow Chest_NPC():
+    run Chest_OtherCheck1st()
+    EventFlowSystemActor.UIClosetLotteryHandling()
+    if EventFlowSystemActor.UIClosetItemNum() == 0:
+        Player.OpenMessageWindow('TalkFtr/FTR_Chest:002', false)
+    else:
+        EventFlowSystemActor.UIClosetBalloonAppearHandling()
+        Player.OpenMessageWindow('TalkFtr/FTR_Chest:015', false)
+        EventFlowSystemActor.UIClosetBalloonDisappear()
+
+flow Chest_Naruhodo():
+    Player.OpenMessageWindow('TalkFtr/FTR_Chest:015', false)
+
+flow Chest_OneRoom():
+    EventFlowSystemActor.SetTagFromSystem('cStartFtrName', 'cDegit', 0, 0, '')
+    if not System.EventFlags['cWherearenPlayer:FirstOfficeChestFlag']:
+        Player.OpenMessageWindow('TalkFtr/FTR_Chest:021', true)
+        EventFlowSystemActor.UIWherearenWorkCoordinateEditHandling('cFirstTime')
+        System.EventFlags['cWherearenPlayer:FirstOfficeChestFlag'] = true
+    elif EventFlowSystemActor.IsWherearenWorkMode():
+        Player.OpenMessageWindow('TalkFtr/FTR_Chest:024', true)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Chest_OneRoom_WorkCloset()
+    elif System.EventFlags['cPlayer:HasGottenToolChangeStick']:
+        if not System.EventFlags['cPlayer:Closet_Explain_ChangeStick']:
+            System.EventFlags['cPlayer:Closet_Explain_ChangeStick'] = true
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:0504', false)
+        Player.OpenMessageWindow('TalkFtr/FTR_Chest:022', true)
+        switch EventFlowSystemActor.GeneralTalkChoice4():
+            case 0:
+                run Chest_OneRoom_Closet()
+            case 1:
+                run Chest_OneRoom_WorkCloset()
+            case 2:
+                run Chest_OneRoom_Coordinate()
+            default:
+                return
+    else:
+        Player.OpenMessageWindow('TalkFtr/FTR_Chest:023', true)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                run Chest_OneRoom_Closet()
+            case 1:
+                run Chest_OneRoom_WorkCloset()
+            default:
+                return
+
+flow Chest_OneRoom_Closet():
+    run ClosetUI()
+
+flow Chest_OneRoom_Coordinate():
+    if Player.PlayerIsUseCoordinate():
+        EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_Chest:012', false)
+    elif System.EventFlags['cPlayer:EquipLicenseHelmet']:
+        EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_Chest:017', false)
+    elif Player.PlayerOutfitMarinesuit():
+        EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_Chest:020', false)
+    else:
+        EventFlowSystemActor.UICoordinateEditHandling()
+
+flow Chest_OneRoom_WorkCloset():
+    EventFlowSystemActor.UIWherearenWorkCoordinateEditHandling('cNormal')
+
+flow Chest_OtherCheck1st():
+    if not System.EventFlags['cPlayerTemp:FtrChestCheck']:
+        Player.OpenMessageWindow('TalkFtr/FTR_Chest:001', false)
+        System.EventFlags['cPlayerTemp:FtrChestCheck'] = true
+
+flow Chest_PC_Current():
+    if System.EventFlags['cPlayer:HasGottenToolChangeStick']:
+        EventFlowSystemActor.SetTagFromSystem('cStartFtrName', 'cDegit', 0, 0, '')
+        if not System.EventFlags['cPlayer:Closet_Explain_ChangeStick']:
+            System.EventFlags['cPlayer:Closet_Explain_ChangeStick'] = true
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:0504', false)
+        Player.OpenMessageWindow('TalkFtr/FTR_Chest:009', true)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                run ClosetUI()
+            case 1:
+                if not EventFlowSystemActor.NetIsConnected():
+                    run Chest_OneRoom_Coordinate()
+                elif EventFlowSystemActor.NetHasVisitor():
+                    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Telepathy:015', false)
+                else:
+                    run Chest_OneRoom_Coordinate()
+            default:
+                return
+    else:
+        EventFlowSystemActor.UIClosetCreate()
+        EventFlowSystemActor.SetTagFromSystem('cStartFtrName', 'cDegit', 0, 0, '')
+        Player.OpenMessageWindow('TalkFtr/FTR_Chest:008', true)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run ClosetUI()
+
+flow Chest_PC_Other():
+    run Chest_OtherCheck1st()
+    EventFlowSystemActor.UIClosetLotteryHandling()
+    if EventFlowSystemActor.UIIsExistCoordinateSet():
+        EventFlowSystemActor.UIClosetBalloonAppearHandling()
+        Player.OpenMessageWindow('TalkFtr/FTR_Chest:010', false)
+        EventFlowSystemActor.UIClosetBalloonDisappear()
+    elif EventFlowSystemActor.IsMyVillage():
+        switch EventFlowSystemActor.UIClosetItemNum():
+            case 0:
+                Player.OpenMessageWindow('TalkFtr/FTR_Chest:002', false)
+            case 1:
+                Player.OpenMessageWindow('TalkFtr/FTR_Chest:003', false)
+            case 2:
+                Player.OpenMessageWindow('TalkFtr/FTR_Chest:004', false)
+            case 3:
+                Player.OpenMessageWindow('TalkFtr/FTR_Chest:005', false)
+            case 4:
+                Player.OpenMessageWindow('TalkFtr/FTR_Chest:006', false)
+    else:
+        Player.OpenMessageWindow('TalkFtr/FTR_Chest:015', false)
+
+flow ClosetUI():
+    System.EventFlags['cPlayer:UseCloset'] = true
+    if Player.PlayerIsUseCoordinate():
+        EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_Chest:013', false)
+    elif System.EventFlags['cPlayer:EquipLicenseHelmet']:
+        EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_Chest:018', false)
+    elif Player.PlayerOutfitMarinesuit():
+        EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_Chest:019', false)
+    else:
+        EventFlowSystemActor.UIClosetHandling()
+
+flow Root():
+    if EventFlowSystemActor.SystemCheckNowStage('cTalkingPlayerHouse'):
+        run Chest_PC_Current()
+    else:
+        if EventFlowSystemActor.SystemCheckNowStage('cField'):
+            if EventFlowSystemActor.IsMyVillage():
+                run Chest_PC_Current()
+            else:
+                run Chest_PC_Other()
+        elif EventFlowSystemActor.SystemCheckNowStage('cWherearenOffice1'):
+            run Chest_OneRoom()
+        elif EventFlowSystemActor.SystemCheckNowStage('cAnyNpcHouse'):
+            run Chest_NPC()
+        elif EventFlowSystemActor.SystemCheckNowStage('cOtherPlayerHouse'):
+            run Chest_PC_Other()
+        else:
+            run Chest_Naruhodo()
+

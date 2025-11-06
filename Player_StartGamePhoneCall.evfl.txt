@@ -1,0 +1,389 @@
+flow AboutMayDay():
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:601', false)
+    run PhoneUnlock()
+entrypoint Event301:
+    EventFlowSystemActor.SwapSpeaker('cRco', true)
+    if SubflowResults@2[18] == 0:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:602', false)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:603', false)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:604', false)
+    if EventFlowSystemActor.EnvCheckBetweenDate(5, 7, 5, 7, 'cGrowUpTime'):
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:605', true)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:605_01', true)
+    run PhoneTalkEnd1()
+    EventFlowSystemActor.SwapSpeaker('cNone', true)
+
+flow AboutMayDay_Continued():
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1002', false)
+    run PhoneUnlock_Continue()
+    run Event301()
+
+flow AboutNpcCoordinate():
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:501', false)
+    run PhoneUnlock()
+entrypoint Event268:
+    EventFlowSystemActor.SwapSpeaker('cRco', true)
+    if SubflowResults@2[18] == 0:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:502', false)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:503', false)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:504', false)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:505', true)
+    run PhoneTalkEnd1()
+    EventFlowSystemActor.SwapSpeaker('cNone', true)
+    System.EventFlags['cPlayer:StandByCallByRcoNpcHouseCoodinate'] = false
+    System.EventFlags['cPlayer:RcoCoordinateUnlockWithPhoneCall'] = true
+
+flow AboutNpcCoordinate_Continued():
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1002', false)
+    run PhoneUnlock_Continue()
+    run Event268()
+
+flow ChkPhoneCall():
+    SubflowResults[1] = 0
+    SubflowResults[2] = 0
+    SubflowResults[3] = 0
+    SubflowResults[4] = 0
+    SubflowResults[5] = 0
+    SubflowResults[6] = 0
+    SubflowResults[7] = 0
+    SubflowResults[18] = 0
+    SubflowResults[19] = 0
+    SubflowResults[8] = 0
+    SubflowResults[9] = 0
+    if System.EventFlags['cPlayer:StandByPhoneCallPrintService']:
+        SubflowResults[2] = 1
+    if System.EventFlags['cPlayer:StandByPhoneCallSharePlay']:
+        if EventFlowSystemActor.GlobalEventNow('Countdown', 'cMainOnly', false):
+            SubflowResults[5] = 1
+        else:
+            SubflowResults[3] = 1
+            SubflowResults[18] = 1
+    if System.EventFlags['cPlayer:StandByPhoneCallPurchaseBox']:
+        SubflowResults[4] = 1
+    if System.EventFlags['cPlayer:StandByPhoneCallIslandCreater']:
+        SubflowResults[6] = 1
+        SubflowResults[18] = 1
+    if (EventFlowSystemActor.TermEventNow('JuneBride', false)) and (System.EventFlags['cPlayer:CommuneIslandAvailable']) and (System.EventFlags['cPlayer:StandByPhoneCallJuneBride']):
+        SubflowResults[7] = 1
+    if System.EventFlags['cPlayer:StandByPhoneCallOtgVisit']:
+        SubflowResults[19] = 1
+    if System.EventFlags['cPlayer:StandByCallByRcoNpcHouseCoodinate']:
+        SubflowResults[8] = 1
+    if System.EventFlags['cPlayer:StandByPhoneCallMayDayTour']:
+        SubflowResults[9] = 1
+
+flow DepositPurchaseBoxTell():
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:101', true)
+    run PhoneUnlock()
+entrypoint Event86:
+    EventFlowSystemActor.SetTagFromSystem('cBoxTransfer', 'cMoney', 0, 0, '')
+    if EventFlowSystemActor.RandomChoice2(2) == 0:
+        EventFlowSystemActor.SwapSpeaker('cRcm', true)
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_80_PhoneCall:001', false)
+        if not System.EventFlags['cPlayer:PhoneCallByRcm']:
+            EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_80_PhoneCall:002', false)
+            System.EventFlags['cPlayer:PhoneCallByRcm'] = true
+    else:
+        EventFlowSystemActor.SwapSpeaker('cRct', true)
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_80_PhoneCall:001_01', false)
+        if not System.EventFlags['cPlayer:PhoneCallByRct']:
+            EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_80_PhoneCall:002', false)
+            System.EventFlags['cPlayer:PhoneCallByRct'] = true
+    if System.EventFlags['cPlayer:DocUsePurchaseServiceFalg']:
+        if System.EventFlags['cPlayer:UsePurchaseBOXFalg']:
+            EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_80_PhoneCall:006', false)
+            EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_80_PhoneCall:004_pl', true)
+        else:
+            EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_80_PhoneCall:005', false)
+            EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_80_PhoneCall:004', true)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_80_PhoneCall:003', false)
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_80_PhoneCall:004', true)
+    System.EventFlags['cPlayer:UsePurchaseBOXFalg'] = false
+    System.EventFlags['cPlayer:DocUsePurchaseServiceFalg'] = false
+    System.EventFlags['cPlayer:StandByPhoneCallPurchaseBox'] = false
+    System.EventFlags['cPlayer:RcoTipsPurchaseBoxUsed'] = true
+    EventFlowSystemActor.ClearBoxTransfer()
+    run PhoneTalkEnd1()
+    EventFlowSystemActor.SwapSpeaker('cNone', true)
+
+flow DepositPurchaseBoxTell_Continued():
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1002', false)
+    run PhoneUnlock_Continue()
+    run Event86()
+
+flow GEvent_JuneBrideTell():
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1001', false)
+    run PhoneUnlock()
+    EventFlowSystemActor.SwapSpeaker('cSpn', true)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:001', false)
+    if System.EventFlags['cPlayer:AlwJuneBrideDayAlreadyCount'] < 1:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:014', false)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:018', false)
+    if SubflowResults@2[2] == 0:
+        if System.EventFlags['cPlayer:AlwJuneBrideDayAlreadyCount'] < 1:
+            EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:015', true)
+        else:
+            EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:019', true)
+        run PhoneTalkEnd1()
+        System.EventFlags['cPlayer:StandByPhoneCallJuneBrideSpn'] = true
+        System.EventFlags['cPlayer:StandByPhoneCallJuneBride'] = false
+        EventFlowSystemActor.SwapSpeaker('cNone', true)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:017', false)
+        System.EventFlags['cPlayer:StandByPhoneCallJuneBrideSpn'] = true
+        System.EventFlags['cPlayer:StandByPhoneCallJuneBride'] = false
+        run UnlockAmiiboPosterTell_JuneBride()
+
+flow IslandCreaterTell():
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:301', false)
+    run PhoneUnlock()
+entrypoint Event110:
+    EventFlowSystemActor.SwapSpeaker('cRco', true)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:302', false)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:303', false)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:304', false)
+    Player.SmartPhone(3)
+    Player.SmartPhone(4)
+    EventFlowSystemActor.WaitFrame(30)
+    Player.SmartPhoneSE(2, 'Phone_Recieving')
+    EventFlowSystemActor.WaitFrame(30)
+    System.EventFlags['cPlayer:MainmenuConstructLicense'] = true
+    EventFlowSystemActor.UIMenuDeviceAppear('cInstall', 'cConstructLicense')
+    EventFlowSystemActor.WaitFrame(15)
+    Player.SmartPhone(5)
+    Player.SmartPhone(2)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:305', false)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:306', true)
+    run PhoneTalkEnd1()
+    System.EventFlags['cPlayer:StandByPhoneCallIslandCreater'] = false
+    EventFlowSystemActor.SwapSpeaker('cNone', true)
+
+flow IslandCreaterTell_Continued():
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1002', false)
+    run PhoneUnlock_Continue()
+    run Event110()
+
+flow OtgComingTell():
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:401', false)
+    run PhoneUnlock()
+entrypoint Event223:
+    EventFlowSystemActor.SwapSpeaker('cRco', true)
+    if SubflowResults@2[18] == 0:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:402', false)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:402_01', false)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:403', true)
+    run PhoneTalkEnd1()
+    EventFlowSystemActor.SwapSpeaker('cNone', true)
+    run PhoneTalkEnd2()
+    System.EventFlags['cPlayer:StandByPhoneCallOtgVisit'] = false
+    System.EventFlags['cPlayer:PhoneCallByRcoWherearen'] = true
+    EventFlowSystemActor.BGMPropertyControl(170)
+    run `00_System_StageChange`::ChangeStage(FadeOutKindString='cCircle', FadeInKindString='cCircle', FadeColorString='cBlack', FadeOutSpeed=0.0, FadeInSpeed='cNormal', TargetStage='cIdrAirPort')
+
+flow OtgComingTell_Continued():
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1002', false)
+    run PhoneUnlock_Continue()
+    run Event223()
+
+flow PhoneIncoming():
+    EventFlowSystemActor.WaitFrame(30)
+    Player.SmartPhoneSE(0, 'Phone_Incoming')
+    EventFlowSystemActor.WaitFrame(30)
+
+flow PhoneTalkEnd1():
+    Player.SmartPhone(3)
+    EventFlowSystemActor.WaitFrame(1)
+    Player.SmartPhone(4)
+    EventFlowSystemActor.WaitFrame(15)
+    Player.SmartPhoneSE(2, 'Phone_Unlock')
+
+flow PhoneTalkEnd2():
+    EventFlowSystemActor.WaitFrame(15)
+    Player.SmartPhone(5)
+    Player.SmartPhone(1)
+
+flow PhoneUnlock():
+    Player.SmartPhone(0)
+    Player.SmartPhone(4)
+    EventFlowSystemActor.WaitFrame(20)
+    Player.SmartPhoneSE(1, 'Phone_Incoming')
+    Player.SmartPhoneSE(2, 'Phone_Unlock')
+    EventFlowSystemActor.WaitFrame(10)
+    Player.SmartPhone(2)
+
+flow PhoneUnlock_Continue():
+    EventFlowSystemActor.WaitFrame(15)
+    Player.SmartPhoneSE(1, 'Phone_Incoming')
+    Player.SmartPhoneSE(2, 'Phone_Unlock')
+    Player.SmartPhone(2)
+
+flow Root():
+    run ChkPhoneCall()
+    System.EventFlags['cPlayer:StandByGameStartPhoneCall'] = false
+    if SubflowResults@2[7] == 0:
+        if SubflowResults@2[2] != 0:
+            run UnlockAmiiboPosterTell()
+            SubflowResults[1] = 1
+    else:
+        run GEvent_JuneBrideTell()
+        SubflowResults[1] = 1
+    if SubflowResults@2[3] != 0:
+        if SubflowResults@2[1] == 0:
+            run UnlockSharePlayTell()
+            SubflowResults[1] = 1
+        else:
+            run UnlockSharePlayTell_Continued()
+    if SubflowResults@2[4] != 0:
+        if SubflowResults@2[1] == 0:
+            run DepositPurchaseBoxTell()
+            SubflowResults[1] = 1
+        else:
+            run DepositPurchaseBoxTell_Continued()
+    if SubflowResults@2[6] != 0:
+        if SubflowResults@2[1] == 0:
+            run IslandCreaterTell()
+            SubflowResults[1] = 1
+        else:
+            run IslandCreaterTell_Continued()
+    if SubflowResults@2[5] != 0:
+        if SubflowResults@2[1] == 0:
+            run UnlockSharePlayOn1231()
+        else:
+            run UnlockSharePlayOn1231_Continued()
+    if SubflowResults@2[8] != 0:
+        if SubflowResults@2[1] == 0:
+            run AboutNpcCoordinate()
+            SubflowResults[1] = 1
+        else:
+            run AboutNpcCoordinate_Continued()
+        SubflowResults[18] = 1
+    if SubflowResults@2[9] != 0:
+        if SubflowResults@2[1] == 0:
+            run AboutMayDay()
+            SubflowResults[1] = 1
+        else:
+            run AboutMayDay_Continued()
+        SubflowResults[18] = 1
+    if SubflowResults@2[19] == 0:
+        run PhoneTalkEnd2()
+    elif SubflowResults@2[1] == 0:
+        run OtgComingTell()
+    else:
+        run OtgComingTell_Continued()
+
+local flow Sub_Event222():
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:016', false)
+    if System.EventFlags['cPlayer:AlwJuneBrideDayAlreadyCount'] < 1:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:015', true)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:019', true)
+
+flow UnlockAmiiboPosterTell():
+    run Event36()
+
+flow UnlockAmiiboPosterTell_Airport():
+    SubflowResults[0] = 1
+entrypoint Event36:
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1001', false)
+    run PhoneUnlock()
+    EventFlowSystemActor.SwapSpeaker('cSpn', true)
+    if System.EventFlags['cPlayer:TanuportAmiiboBromideUnlock']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:011', false)
+entrypoint Event167:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:012', false)
+        if SubflowResults@2[7] == 0:
+            EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:013', true)
+        else:
+            run Sub_Event222()
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:001', false)
+entrypoint Event63:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:002', false)
+        System.EventFlags['cPlayer:TanuportAmiiboBromideUnlock'] = true
+        if System.EventFlags['cPlayer:PhotoStudioUseCantCallAmiibo']:
+            EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:002_01', false)
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:003', false)
+        if SubflowResults@2[7] == 0:
+            EventFlowSystemActor.OpenMessageWindow('TalkSNpc/spn/SP_spn_80_PhoneCall:004', true)
+        else:
+            run Sub_Event222()
+    run PhoneTalkEnd1()
+    System.EventFlags['cPlayer:StandByPhoneCallPrintService'] = false
+    EventFlowSystemActor.SwapSpeaker('cNone', true)
+    if SubflowResults@2[0] == 1:
+        run PhoneTalkEnd2()
+
+flow UnlockAmiiboPosterTell_JuneBride():
+    if System.EventFlags['cPlayer:TanuportAmiiboBromideUnlock']:
+        run Event167()
+    else:
+        run Event63()
+
+flow UnlockSharePlayOn1231():
+    Player.SmartPhone(0)
+    Player.SmartPhone(4)
+    EventFlowSystemActor.WaitFrame(20)
+entrypoint Event122:
+    Player.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:151', false)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:152', false)
+    Player.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:153', true)
+    System.EventFlags['cPlayer:MainmenuCall'] = true
+    System.EventFlags['cPlayer:StandByPhoneCallSharePlay'] = false
+
+flow UnlockSharePlayOn1231_Continued():
+    EventFlowSystemActor.WaitFrame(30)
+    run Event122()
+
+flow UnlockSharePlayTell():
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:101', true)
+    run PhoneUnlock()
+entrypoint Event9:
+    EventFlowSystemActor.SwapSpeaker('cRco', true)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:102', false)
+    if System.EventFlags['cPlayerTemp:RcoTalkSceneFlag']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:103_01', false)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:103', false)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:104', true)
+    Player.SmartPhone(3)
+    Player.SmartPhone(4)
+    EventFlowSystemActor.WaitFrame(30)
+    Player.SmartPhoneSE(2, 'Phone_Recieving')
+    EventFlowSystemActor.WaitFrame(30)
+    System.EventFlags['cPlayer:MainmenuCall'] = true
+    EventFlowSystemActor.UIMenuDeviceAppear('cInstall', 'cCallVillager')
+    EventFlowSystemActor.WaitFrame(15)
+    Player.SmartPhone(5)
+    Player.SmartPhone(2)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:105', false)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:106', false)
+    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/rco/SP_rco_20_PhoneCall:107', true)
+    run PhoneTalkEnd1()
+    System.EventFlags['cPlayer:StandByPhoneCallSharePlay'] = false
+    EventFlowSystemActor.SwapSpeaker('cNone', true)
+
+flow UnlockSharePlayTell_Continued():
+    run PhoneIncoming()
+    Player.OpenMessageWindow('TalkSys/SYS_Player:1002', false)
+    run PhoneUnlock_Continue()
+    run Event9()
+

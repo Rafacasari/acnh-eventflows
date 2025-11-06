@@ -1,0 +1,77 @@
+flow Root():
+    if (MainNpc.EventFlags['cNpcSave:PlayerNamePhrase']) and (not SubNpc.EventFlags['cNpcSave:PlayerNamePhrase']) and (not MainNpc.IsSamePhrase()):
+        MainNpc.NpcCopyPhrase()
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:201', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:202', false)
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:203', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:204', false)
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:205', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:206', false)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, false) == 0:
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:001', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:002', false)
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:003', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:004', false)
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:005', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:006', false)
+    else:
+        fork:
+            branch:
+                Player.TurnNeck(0, false)
+            branch:
+                MainNpc.TurnNeck(10, false)
+            branch:
+                SubNpc.TurnNeck(10, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:101', false)
+        fork:
+            branch:
+                Player.TurnNeck(1, false)
+            branch:
+                MainNpc.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:102', false)
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:103', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:104', false)
+        switch EventFlowSystemActor.GeneralTalkChoice4():
+            case 0:
+                MainNpc.TurnNeck(1, false)
+                SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:105', false)
+                Player.TurnNeck(0, false)
+                MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:106', false)
+                Player.TurnNeck(1, false)
+                SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:107', false)
+            case 1:
+                MainNpc.TurnNeck(1, false)
+                SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:108', false)
+                Player.TurnNeck(0, false)
+                MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:109', false)
+                Player.TurnNeck(1, false)
+                SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:110', false)
+            case 2:
+                MainNpc.TurnNeck(1, false)
+                SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:111', false)
+                Player.TurnNeck(0, false)
+                MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:112', false)
+                Player.TurnNeck(1, false)
+                SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:113', false)
+            case 3:
+                MainNpc.TurnNeck(1, false)
+                SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:114', false)
+                Player.TurnNeck(0, false)
+                MainNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:115', false)
+                Player.TurnNeck(1, false)
+                SubNpc.OpenMessageWindow('TalkNNpc/B2_Ha/Conv/HA_Conv_OT:116', false)
+

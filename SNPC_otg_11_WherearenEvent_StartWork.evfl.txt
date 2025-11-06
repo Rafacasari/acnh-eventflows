@@ -1,0 +1,76 @@
+flow Return_FirstVisitCustomer(Salary: int = 2000):
+    run SNPC_otg_01_WherearenOffice::HouseCompleteActing()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:051', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:052', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:053', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:054', true)
+    SubNpc.TurnNeck(10, false)
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:055', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            Player.TurnNeck(1, false)
+    MainNpc.TurnNeck(1, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:056', false)
+    MainNpc.TurnNeck(10, false)
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 0, Salary, '')
+    EventFlowSystemActor.UIPokiAppear()
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:057', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(0, false)
+    run Demo_Common_Wherearen::SetSalaryAsDeliveryItem()
+    MainNpc.NpcDelivery(1, 'Default')
+    EventFlowSystemActor.PokiCountDown(Salary, false)
+    EventFlowSystemActor.UIPokiDisappear()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:058', true)
+    System.EventFlags['cWherearenPlayer:SeqFirstVistCustomerOngoing'] = false
+    System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = false
+    System.EventFlags['cWherearenPlayer:Unlock_MncBridgeBoat'] = true
+    System.EventFlags['cPlayer:WHEREAREN_Unlock_ResortPlannerAppRevisit'] = true
+    run Demo_Common_Wherearen::Demo_SetNormalPositionInOffice()
+    run SNPC_otg_01_WherearenOffice::CheckWorkContinue_Sub()
+
+flow Return_FirstVisitCustomer_Init():
+    MainNpc.NpcAITalkCastSetting('WherearenPrologue')
+
+flow Root_FirstVisitCustomer():
+    EventFlowSystemActor.WherearenSetFirstCustomerInfo(0)
+    EventFlowSystemActor.WherearenResetVisitInfo()
+    if System.EventFlags['cWherearenPlayer:SeqFirstVistCustomerOngoing']:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:043', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:041', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:042', true)
+        System.EventFlags['cWherearenPlayer:SeqFirstVistCustomerOngoing'] = true
+        System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = true
+
+flow Root_TakeOder():
+    if System.EventFlags['cWherearenPlayer:SeqOtgTalkTakeOrderTutorial']:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:003', true)
+        if not System.EventFlags['cWherearenPlayer:SeqTakeOrderTutorialDone']:
+            run Sub_Event44()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:001', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:002', true)
+        System.EventFlags['cWherearenPlayer:SeqTakeOrderTutorialOngoing'] = true
+        System.EventFlags['cWherearenPlayer:SeqOtgTalkTakeOrderTutorial'] = true
+        run Sub_Event44()
+
+local flow Sub_Event44():
+    EventFlowSystemActor.BGMPropertyControl(160)
+    System.EventFlags['cPlayerTemp:WHEREAREN_MncTalkReserve_Bridge'] = true
+
+flow Talk_TakeOder():
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:011', true)
+
+flow Talk__FirstVisitCustomer():
+    EventFlowSystemActor.WherearenSetFirstCustomerInfo(0)
+    EventFlowSystemActor.WherearenResetVisitInfo()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:044', true)
+

@@ -1,0 +1,356 @@
+flow Cheers_2():
+    EventFlowSystemActor.SoundTriggerEmit('WherearenCheers', -1)
+    fork:
+        branch:
+            Player.PlayerRequestSimple('NpcSpCheersDemo', true)
+        branch:
+            MainNpc.RequestSimple('NpcSpCheersDemo', true)
+        branch:
+            SubNpc.RequestSimple('NpcSpCheersDemo', true)
+        branch:
+            Npc_2.RequestSimple('NpcSpCheersDemo', true)
+    fork:
+        branch:
+            Player.CharacterEmoticonAction('HappyFlower', true, '', 0, false)
+        branch:
+            MainNpc.CharacterEmoticonAction('Clapping', false, '', 0, false)
+        branch:
+            SubNpc.CharacterEmoticonAction('HappyDance', false, '', 0, false)
+        branch:
+            Npc_2.CharacterEmoticonAction('Smiling', false, '', 0, false)
+    EventFlowSystemActor.WaitFrame(150)
+    fork:
+        branch:
+            MainNpc.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+        branch:
+            SubNpc.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+        branch:
+            Npc_2.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+
+flow Cheers_3():
+    EventFlowSystemActor.SoundTriggerEmit('WherearenCheers', -1)
+    fork:
+        branch:
+            Player.PlayerRequestSimple('NpcSpCheersDemo', true)
+        branch:
+            MainNpc.RequestSimple('NpcSpCheersDemo', true)
+        branch:
+            SubNpc.RequestSimple('NpcSpCheersDemo', true)
+        branch:
+            Npc_2.RequestSimple('NpcSpCheersDemo', true)
+    fork:
+        branch:
+            Player.CharacterEmoticonAction('HappyFlower', true, '', 0, false)
+        branch:
+            MainNpc.CharacterEmoticonAction('HappyDance', false, '', 0, false)
+        branch:
+            SubNpc.CharacterEmoticonAction('Clapping', false, '', 0, false)
+        branch:
+            Npc_2.CharacterEmoticonAction('BigSmile', false, '', 0, false)
+    EventFlowSystemActor.WaitFrame(150)
+    fork:
+        branch:
+            MainNpc.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+        branch:
+            SubNpc.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+        branch:
+            Npc_2.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+
+flow EndParty():
+    System.EventFlags['cWherearenPlayer:IsParty'] = false
+    Player.PlayerResetOutfitAndToolForAfterParty()
+    EventFlowSystemActor.SystemRequestChangeStage('cWherearenOfficeReturn', 'cCircle', 'cCircle', 'cBlack', 1.0, 1.0)
+
+flow EndPartyTalk_2():
+    fork:
+        branch:
+            Player.CharacterEmoticonAction('RequestWillingness', false, '', 0, false)
+        branch:
+            MainNpc.CharacterEmoticonAction('OtgPretty', false, '', 0, false)
+        branch:
+            SubNpc.CharacterEmoticonAction('MncHappy', false, '', 0, false)
+        branch:
+            Npc_2.CharacterEmoticonAction('Smiling', false, '', 0, false)
+    EventFlowSystemActor.WaitFrame(60)
+    if EventFlowSystemActor.CanHearAudioMusicAtFocusPoint():
+        run `00_Demo_Fade`::FadeOut_Cmn(SoundDucking='cAllDucking', FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal')
+    else:
+        run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+    fork:
+        branch:
+            Player.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+        branch:
+            MainNpc.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+        branch:
+            SubNpc.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+        branch:
+            Npc_2.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+    run SNPC_otg_18_WherearenEvent_Party::NotLook()
+    EventFlowSystemActor.StoreNormalCamera(true, '')
+    EventFlowSystemActor.SoundDuckingOff(38)
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.AfterPartyBGMStart()
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=false)
+
+flow EndPartyTalk_3():
+    fork:
+        branch:
+            Player.CharacterEmoticonAction('RequestWillingness', false, '', 0, false)
+        branch:
+            MainNpc.CharacterEmoticonAction('OtgPretty', false, '', 0, false)
+        branch:
+            SubNpc.CharacterEmoticonAction('MncHappy', false, '', 0, false)
+        branch:
+            Npc_2.CharacterEmoticonAction('ManHappy', false, '', 0, false)
+    EventFlowSystemActor.WaitFrame(60)
+    if EventFlowSystemActor.CanHearAudioMusicAtFocusPoint():
+        run `00_Demo_Fade`::FadeOut_Cmn(SoundDucking='cAllDucking', FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal')
+    else:
+        run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+    fork:
+        branch:
+            Player.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+        branch:
+            MainNpc.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+        branch:
+            SubNpc.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+            SubNpc.NpcChangeHandTool(14654, 'cNone', true)
+        branch:
+            Npc_2.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+    run SNPC_otg_18_WherearenEvent_Party::NotLook()
+    EventFlowSystemActor.StoreNormalCamera(true, '')
+    EventFlowSystemActor.SoundDuckingOff(38)
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.AfterPartyBGMStart()
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=false)
+
+flow PatternedSet():
+    EventFlowSystemActor.SetTagFromSystem('cWherearenBuildCountPlusOne', 'cDegit', 0, 0, 'cWherearenPlayer:NewBuildCount')
+
+flow Root():
+    EventFlowSystemActor.BGMPropertyControl(186)
+    if not System.EventFlags['cWherearenPlayer:SeqParty2Done']:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:111', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:112', true)
+        Npc_2.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:113', true)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:114', true)
+        run SNPC_otg_18_WherearenEvent_Party::LookCenterInFacility()
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:115', true)
+        EventFlowSystemActor.CameraSetDemoParam('PartyCheers', 'cDefault', 'Place:EditArea', false, false, false, 0)
+        EventFlowSystemActor.SystemBGMVolumeChange(3.0, 1.0, 0, 0.0)
+        EventFlowSystemActor.WaitFrame(30)
+        run Cheers_2()
+        EventFlowSystemActor.CameraSetDemoParam('Party', 'cDefault', 'Place:EditArea', false, false, false, 0)
+        EventFlowSystemActor.SystemBGMVolumeReset(1.0, 0, 0.0)
+        EventFlowSystemActor.WaitFrame(30)
+        run SNPC_otg_18_WherearenEvent_Party::LookOtg()
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:116', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:117', false)
+        SubNpc.TurnNeck(10, false)
+        fork:
+            branch:
+                SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:118', true)
+            branch:
+                EventFlowSystemActor.WaitFrame(15)
+                Player.TurnNeck(1, false)
+        Npc_2.TurnNeck(10, false)
+        Npc_2.CharacterEmoticonAction('FaintSmile', true, '', 0, false)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:119', false)
+        fork:
+            branch:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:120', true)
+            branch:
+                EventFlowSystemActor.WaitFrame(15)
+                Player.TurnNeck(0, false)
+                SubNpc.TurnNeck(0, false)
+                EventFlowSystemActor.WaitFrame(20)
+                Npc_2.TurnNeck(0, false)
+        fork:
+            branch:
+                SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:121', true)
+            branch:
+                EventFlowSystemActor.WaitFrame(15)
+                MainNpc.TurnNeck(1, false)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:122', false)
+        switch EventFlowSystemActor.GeneralTalkChoice2():
+            case 0, 1:
+                MainNpc.TurnNeck(10, false)
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:124', true)
+                Npc_2.CharacterEmoticonAction('Smiling', true, '', 0, false)
+                SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:125', true)
+                MainNpc.TurnNeck(1, false)
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:126', true)
+                switch EventFlowSystemActor.GeneralTalkChoice2():
+                    case 0, 1:
+                        EventFlowSystemActor.WaitFrame(20)
+                        MainNpc.TurnNeck(1, false)
+                        SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:127', true)
+                        Npc_2.CharacterEmoticonAction('Nodding', true, '', 0, false)
+                        EventFlowSystemActor.WaitFrame(40)
+                        SubNpc.TurnNeck(0, false)
+                        fork:
+                            branch:
+                                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:128', false)
+                            branch:
+                                EventFlowSystemActor.WaitFrame(20)
+                                Npc_2.TurnNeck(0, false)
+                        MainNpc.TurnNeck(10, false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:129', true)
+                        SubNpc.TurnNeck(10, false)
+                        fork:
+                            branch:
+                                SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:130', true)
+                            branch:
+                                EventFlowSystemActor.WaitFrame(15)
+                                Player.TurnNeck(1, false)
+                        MainNpc.TurnNeck(1, false)
+                        Npc_2.TurnNeck(1, false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:131', false)
+                        Player.TurnNeck(0, false)
+                        MainNpc.TurnNeck(2, false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:132', true)
+                        Npc_2.CharacterEmoticonAction('Nodding', true, '', 0, false)
+                        EventFlowSystemActor.WaitFrame(40)
+                        MainNpc.TurnNeck(10, false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:133', true)
+                        System.EventFlags['cWherearenPlayer:SeqParty2Done'] = true
+                        EventFlowSystemActor.UnlockWherearenPartyItem()
+                        EventFlowSystemActor.SetMemoryEventPlayerWherearenParty(1)
+                        EventFlowSystemActor.SelectRewardItemDirect(14820, 1, 'cVillageRemakePattern', 0)
+                        EventFlowSystemActor.SystemMailSend('cMan', 'MAIL_SNpc_man', 2, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+                        run SNPC_otg_18_WherearenEvent_Party::LookCamera()
+                        EventFlowSystemActor.CameraSetDemoParam('PartyCheers', 'cDefault', 'Place:EditArea', false, false, false, 0)
+                        EventFlowSystemActor.SystemBGMVolumeChange(3.0, 1.0, 0, 0.0)
+                        EventFlowSystemActor.WaitFrame(30)
+                        run EndPartyTalk_2()
+    elif System.EventFlags['cWherearenPlayer:SeqParty3Done']:
+        run PatternedSet()
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:311', false)
+        Npc_1.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:312', false)
+        Npc_2.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:313', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:314', true)
+        run SNPC_otg_18_WherearenEvent_Party::LookCenterInFacility()
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:315', true)
+        EventFlowSystemActor.CameraSetDemoParam('PartyCheers', 'cDefault', 'Place:EditArea', false, false, false, 0)
+        EventFlowSystemActor.SystemBGMVolumeChange(3.0, 1.0, 0, 0.0)
+        EventFlowSystemActor.WaitFrame(30)
+        run Cheers_3()
+        EventFlowSystemActor.CameraSetDemoParam('Party', 'cDefault', 'Place:EditArea', false, false, false, 0)
+        EventFlowSystemActor.SystemBGMVolumeReset(1.0, 0, 0.0)
+        EventFlowSystemActor.WaitFrame(30)
+        run SNPC_otg_18_WherearenEvent_Party::LookOtg()
+        MainNpc.TurnNeck(10, false)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:316', false)
+        switch EventFlowSystemActor.RandomChoice3(3):
+            case 0:
+                run StaffReaction1()
+            case 1:
+                run StaffReaction2()
+            case 2:
+                run StaffReaction3()
+        fork:
+            branch:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:318', true)
+            branch:
+                Player.TurnNeck(0, false)
+        System.EventFlags['cWherearenPlayer:SeqPartyPatternedDone'] = true
+        EventFlowSystemActor.SetMemoryEventPlayerWherearenParty(4)
+        run SNPC_otg_18_WherearenEvent_Party::LookCamera()
+        EventFlowSystemActor.CameraSetDemoParam('PartyCheers', 'cDefault', 'Place:EditArea', false, false, false, 0)
+        EventFlowSystemActor.SystemBGMVolumeChange(3.0, 1.0, 0, 0.0)
+        EventFlowSystemActor.WaitFrame(30)
+        EventFlowSystemActor.SetOneRoomPartyItem()
+        EventFlowSystemActor.SystemMailSend('cMan', 'MAIL_SNpc_man', 4, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+        run EndPartyTalk_3()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:211', false)
+        Npc_1.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:212', false)
+        Npc_2.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:213', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:214', true)
+        run SNPC_otg_18_WherearenEvent_Party::LookCenterInFacility()
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:215', true)
+        EventFlowSystemActor.CameraSetDemoParam('PartyCheers', 'cDefault', 'Place:EditArea', false, false, false, 0)
+        EventFlowSystemActor.SystemBGMVolumeChange(3.0, 1.0, 0, 0.0)
+        EventFlowSystemActor.WaitFrame(30)
+        run Cheers_3()
+        EventFlowSystemActor.CameraSetDemoParam('Party', 'cDefault', 'Place:EditArea', false, false, false, 0)
+        EventFlowSystemActor.SystemBGMVolumeReset(1.0, 0, 0.0)
+        EventFlowSystemActor.WaitFrame(30)
+        run SNPC_otg_18_WherearenEvent_Party::LookOtg()
+        MainNpc.TurnNeck(10, false)
+        fork:
+            branch:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:216', false)
+            branch:
+                EventFlowSystemActor.WaitFrame(15)
+                Npc_1.TurnNeck(10, false)
+        fork:
+            branch:
+                Npc_1.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:217', false)
+            branch:
+                EventFlowSystemActor.WaitFrame(15)
+                Player.TurnNeck(1, false)
+                MainNpc.TurnNeck(1, false)
+        fork:
+            branch:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:218', false)
+            branch:
+                EventFlowSystemActor.WaitFrame(15)
+                Player.TurnNeck(0, false)
+        Player.TurnNeck(2, false)
+        Npc_1.TurnNeck(2, false)
+        Npc_2.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:220', false)
+        MainNpc.TurnNeck(10, false)
+        fork:
+            branch:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:221', false)
+            branch:
+                EventFlowSystemActor.WaitFrame(15)
+                Player.TurnNeck(0, false)
+                Npc_1.TurnNeck(0, false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:222', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:223', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:224', false)
+        fork:
+            branch:
+                Npc_1.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:225', true)
+            branch:
+                EventFlowSystemActor.WaitFrame(15)
+                Npc_2.CharacterEmoticonAction('Nodding', true, '', 0, false)
+        System.EventFlags['cWherearenPlayer:SeqParty3Done'] = true
+        EventFlowSystemActor.UnlockWherearenPartyItem()
+        EventFlowSystemActor.SetMemoryEventPlayerWherearenParty(2)
+        EventFlowSystemActor.SelectRewardItemDirect(14267, 1, 'cVillageRemakePattern', 0)
+        EventFlowSystemActor.SystemMailSend('cMan', 'MAIL_SNpc_man', 3, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+        run SNPC_otg_18_WherearenEvent_Party::LookCamera()
+        EventFlowSystemActor.CameraSetDemoParam('PartyCheers', 'cDefault', 'Place:EditArea', false, false, false, 0)
+        EventFlowSystemActor.SystemBGMVolumeChange(3.0, 1.0, 0, 0.0)
+        EventFlowSystemActor.WaitFrame(30)
+        run EndPartyTalk_3()
+
+flow Root_Init():
+    MainNpc.NpcAITalkCastSetting('WherearenPrologue')
+
+flow StaffReaction1():
+    fork:
+        branch:
+            Npc_1.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:317_01', false)
+        branch:
+            Player.TurnNeck(1, false)
+
+flow StaffReaction2():
+    fork:
+        branch:
+            Npc_1.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:317_02', false)
+        branch:
+            Player.TurnNeck(1, false)
+
+flow StaffReaction3():
+    fork:
+        branch:
+            Npc_2.OpenMessageWindow('TalkSNpc/otg/SP_otg_10_WherearenEvent_Party:317_03', false)
+        branch:
+            Player.TurnNeck(2, false)
+

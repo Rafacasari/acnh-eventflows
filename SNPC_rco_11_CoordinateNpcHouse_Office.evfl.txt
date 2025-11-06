@@ -1,0 +1,348 @@
+flow AfterProposalDemo():
+    EventFlowSystemActor.UIMoneyAppear()
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:017', false)
+    EventFlowSystemActor.BellCountDown(9000, true)
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.UIMoneyDisappear()
+    System.EventFlags['cLandTemp:NpcHouseCoordinateIsRetake'] = false
+    System.EventFlags['cLandTemp:NpcHouseCoordinateHouseDesignChanged'] = false
+    EventFlowSystemActor.UpdateUISelectedNpcLastTalkDate()
+    EventFlowSystemActor.StructureTranscriptNpcHouseCustom(1)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:004', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        SubflowResults[0] = 0
+        run Entry_Interior()
+    else:
+        SubflowResults[0] = 1
+        run Entry_Exterior()
+
+flow Cancel_First():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:068', false)
+    EventFlowSystemActor.UIMoneyDisappear()
+
+flow Cancel_Middle():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:062', false)
+
+flow Cancel_NotEnoughMoney():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:035', false)
+    EventFlowSystemActor.UIMoneyDisappear()
+    EventFlowSystemActor.ExitFlowchart()
+
+flow Cancel_ReturnMoney():
+    if EventFlowSystemActor.MoneyCapacity(9000, 'cMoneyBox') in (0, 1):
+        EventFlowSystemActor.UIMoneyAppear()
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:037_01_01', false)
+        EventFlowSystemActor.BellCountDown(9000, false)
+        EventFlowSystemActor.WaitFrame(30)
+        EventFlowSystemActor.UIMoneyDisappear()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:037_01_02', false)
+        EventFlowSystemActor.SavingCountDown(9000, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:037_02', false)
+    EventFlowSystemActor.ExitFlowchart()
+
+flow ChangeScene_NpcHouse():
+    System.EventFlags['cLandTemp:NpcInteriorCoordinate'] = true
+    EventFlowSystemActor.WaitFrame(15)
+    Player.PlayerToolTakeoff()
+    EventFlowSystemActor.SystemRequestChangeStage('cSelectNpcHouse', 'cCircle', 'cCircle', 'cBlack', 1.0, 1.0)
+
+flow Entry_Exterior():
+    if EventFlowSystemActor.IsOnNpcExteriorReserveFlag():
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:043', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:021', true)
+entrypoint Event92:
+    EventFlowSystemActor.UIMoneyDisappear()
+    EventFlowSystemActor.UICustomNpcHomeHandling()
+    if EventFlowSystemActor.UIResultMenuDecide():
+        System.EventFlags['cLandTemp:NpcHouseCoordinateHouseDesignChanged'] = true
+        if System.EventFlags['cLandTemp:NpcHouseCoordinateIsRetake']:
+            if EventFlowSystemActor.IsOnNpcInteriorReserveFlag():
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:044', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:044_01', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:022', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Entry_Interior()
+        else:
+            if System.EventFlags['cLandTemp:NpcHouseCoordinateIsRetake']:
+                if EventFlowSystemActor.IsOnNpcInteriorReserveFlag():
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:045', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:046', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:023', false)
+            if EventFlowSystemActor.IsOnNpcExteriorReserveFlag():
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:047', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:023_01', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:024', false)
+            EventFlowSystemActor.StructureTranscriptNpcHouseCustom(0)
+            EventFlowSystemActor.SetNpcExteriorReserveFlag(true)
+            if not System.EventFlags['cLandTemp:NpcHouseCoordinateIsRetake']:
+                System.EventFlags['cPlayer:NpcHouseCoordinateTodayCount'] += 1
+            EventFlowSystemActor.UIMoneyDisappear()
+            EventFlowSystemActor.ExitFlowchart()
+    elif (not EventFlowSystemActor.IsOnNpcExteriorReserveFlag()) and (not System.EventFlags['cLandTemp:NpcHouseCoordinateHouseDesignChanged']):
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:055', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+            run Return_HouseDesignUI()
+        elif EventFlowSystemActor.IsOnNpcInteriorReserveFlag():
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:072', false)
+            run Sub_grp_Event25()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:056', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Entry_Interior()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:061', false)
+                run Cancel_ReturnMoney()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:071', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            if EventFlowSystemActor.IsOnNpcInteriorReserveFlag():
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:072', false)
+                run Sub_grp_Event25()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:073', false)
+                run Sub_grp_Event25()
+        else:
+            run Return_HouseDesignUI()
+
+flow Entry_Interior():
+    if EventFlowSystemActor.IsOnNpcInteriorReserveFlag():
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:042', true)
+        run ChangeScene_NpcHouse()
+    else:
+        if SubflowResults@2[0] == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:020', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:020_01', true)
+        run ChangeScene_NpcHouse()
+
+flow ForceTalk_Return():
+    EventFlowSystemActor.SetTagFromSystem('cUISelectedNpcName', 'cDegit', 0, 0, '')
+    if System.EventFlags['cLandTemp:NpcHouseCoordinateIsRetake']:
+        if System.EventFlags['cLandTemp:NpcInteriorCoordinateDone']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:3111', false)
+            run Sub_Event27()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:067', false)
+            run Sub_Event27()
+    elif System.EventFlags['cLandTemp:NpcInteriorCoordinateDone']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:3101', false)
+        if System.EventFlags['cPlayer:NpcHouseCoordinateTodayCount'] <= 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:3102', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:3103', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:3104', false)
+        System.EventFlags['cPlayer:NpcHouseCoordinateTodayCount'] += 1
+        run Sub_Event27()
+    else:
+        System.EventFlags['cLandTemp:NpcInteriorCoordinate'] = false
+        System.EventFlags['cLandTemp:NpcInteriorCoordinateDone'] = false
+        System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+        EventFlowSystemActor.CancelNpcHouseEditReserve()
+        run Cancel_ReturnMoney()
+
+flow PreProposalCoordinateHouse(Type: int):
+    run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+    EventFlowSystemActor.SoundDuckingOn(71)
+    Player.PlayerChangeDemoState('cSharePlaySubHideUntilDemoEnd')
+    EventFlowSystemActor.SetupActorPosition(Type)
+    EventFlowSystemActor.CameraSetDemoParam('LandReadjust', '', 'Npc:rco', false, false, false, 0)
+    Player.TurnNeck(11, false)
+    Player.TurnBody(12, 45.0)
+    MainNpc.TurnNeck(11, false)
+    MainNpc.TurnBody(12, 0.0)
+    DynamicCast_LandReadjustNpc.TurnNeck(11, false)
+    MainNpc.SmartPhone(3)
+    MainNpc.SmartPhone(1)
+    MainNpc.NpcAISetting(4, false)
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+
+flow ProposalCoordinateHouse():
+    MainNpc.TurnNeck(1, false)
+    DynamicCast_LandReadjustNpc.SetNpcName(0, 0)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:015', false)
+    DynamicCast_LandReadjustNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Office:002', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:016', true)
+    fork:
+        branch:
+            Player.CharacterEmoticonAction('Assent', true, '', 0, false)
+            EventFlowSystemActor.WaitFrame(45)
+        branch:
+            EventFlowSystemActor@Sub1.WaitFrame(15)
+            MainNpc.CharacterEmoticonAction('FaintSmile', true, '', 0, false)
+        branch:
+            EventFlowSystemActor@Sub2.WaitFrame(10)
+            DynamicCast_LandReadjustNpc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+    run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+    EventFlowSystemActor.SoundDuckingOff(71)
+    DynamicCast_LandReadjustNpc.NpcReservrForErase()
+    MainNpc.NpcAISetting(4, true)
+    MainNpc.TurnNeck(10, false)
+    Player.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+    MainNpc.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+    Player.PlayerChairWaitImmediately(150.0, 3.0, 170.0, 'cN')
+    MainNpc.TalkCamera(true, 'cTalk', 0)
+    EventFlowSystemActor.WaitFrame(20)
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+    EventFlowSystemActor.WaitFrame(20)
+
+flow ProposalCoordinateHouse_Root(Type: int):
+    MainNpc.SmartPhone(0)
+    MainNpc.SmartPhone(4)
+    EventFlowSystemActor.WaitFrame(10)
+    MainNpc.SmartPhoneSE(2, 'Phone_Control')
+    EventFlowSystemActor.WaitFrame(10)
+    MainNpc.SmartPhone(2)
+    run PreProposalCoordinateHouse(Type=Type)
+    run ProposalCoordinateHouse()
+
+flow Return_HouseDesignUI():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:075', true)
+    run Event92()
+
+flow Root():
+    if EventFlowSystemActor.NetIsConnected():
+        if EventFlowSystemActor.IsVillageGateOpened():
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:102', false)
+        else:
+            EventFlowSystemActor.NetEndSessionVillage('cEndVillageSession', false)
+            run Sub_grp_Event89()
+    else:
+        run Sub_grp_Event89()
+
+flow Sel_Retake_Cancel():
+    run Event35()
+
+flow Sel_Retake_Exterior():
+    System.EventFlags['cLandTemp:NpcHouseCoordinateIsRetake'] = true
+    System.EventFlags['cLandTemp:NpcHouseCoordinateHouseDesignChanged'] = false
+    EventFlowSystemActor.StructureTranscriptNpcHouseCustom(1)
+    SubflowResults[0] = 1
+    run Entry_Exterior()
+
+flow Sel_Retake_Interior():
+    System.EventFlags['cLandTemp:NpcHouseCoordinateIsRetake'] = true
+    System.EventFlags['cLandTemp:NpcHouseCoordinateHouseDesignChanged'] = false
+    EventFlowSystemActor.StructureTranscriptNpcHouseCustom(1)
+    SubflowResults[0] = 0
+    run Entry_Interior()
+
+local flow Sub_Event12():
+    EventFlowSystemActor.UIMsgCardAdrHandling('cNpcRehome')
+    if EventFlowSystemActor.UIResultMenuDecide():
+        EventFlowSystemActor.SetUISelectedNpcVillagerIndex()
+        EventFlowSystemActor.SetTagFromUIResult('cSelectNpcName', 0)
+        if EventFlowSystemActor.IsSelectedNpcMoveInToday():
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:031', false)
+            EventFlowSystemActor.ExitFlowchart()
+        elif EventFlowSystemActor.IsSelectedNpcMoveOutDecided():
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:032', false)
+            EventFlowSystemActor.ExitFlowchart()
+        elif EventFlowSystemActor.IsSelectedNpcIsTent():
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:034', false)
+            EventFlowSystemActor.ExitFlowchart()
+        elif not EventFlowSystemActor.IsOnReformReserveFlag():
+            if EventFlowSystemActor.IsUISelectNpcSick():
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:034_01', false)
+                EventFlowSystemActor.ExitFlowchart()
+            elif System.EventFlags['cPlayer:NpcHouseCoordinateTodayCount'] <= 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:003', true)
+                run ProposalCoordinateHouse_Root(Type=6)
+                run AfterProposalDemo()
+            else:
+                EventFlowSystemActor.UIMoneyAppear()
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:013_01', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+                    run Cancel_First()
+                elif EventFlowSystemActor.HasBellCount(9000):
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:013_02', true)
+                    EventFlowSystemActor.UIMoneyDisappear()
+                    run ProposalCoordinateHouse_Root(Type=6)
+                    run AfterProposalDemo()
+                else:
+                    run Cancel_NotEnoughMoney()
+        elif EventFlowSystemActor.IsOnNpcInteriorReserveFlag():
+            if EventFlowSystemActor.IsOnNpcExteriorReserveFlag():
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:041', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:041_01', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:041', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:041_02', false)
+            switch EventFlowSystemActor.GeneralTalkChoice4():
+                case 0:
+                    run Sel_Retake_Interior()
+                case 1:
+                    run Sel_Retake_Exterior()
+                case 2:
+entrypoint Event35:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:036', false)
+                    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:037', false)
+                        EventFlowSystemActor.SetNpcExteriorReserveFlag(false)
+                        EventFlowSystemActor.SetNpcInteriorReserveFlag(false)
+                        System.EventFlags['cPlayer:NpcHouseCoordinateTodayCount'] += -1
+                        EventFlowSystemActor.CancelNpcHouseEditReserve()
+                        run Cancel_ReturnMoney()
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:038', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:038', false)
+        else:
+            if EventFlowSystemActor.IsOnNpcExteriorReserveFlag():
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:041', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:041_03', false)
+                switch EventFlowSystemActor.GeneralTalkChoice4():
+                    case 0:
+                        run Sel_Retake_Exterior()
+                    case 1:
+                        run Sel_Retake_Interior()
+                    case 2:
+                        run Sel_Retake_Cancel()
+                    case 3:
+                        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:038', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:033', false)
+                EventFlowSystemActor.ExitFlowchart()
+    else:
+        run Cancel_Middle()
+
+local flow Sub_Event27():
+    System.EventFlags['cLandTemp:NpcInteriorCoordinate'] = false
+    System.EventFlags['cLandTemp:NpcInteriorCoordinateDone'] = false
+    System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+
+local flow Sub_grp_Event25():
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run Entry_Interior()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:074', false)
+
+local flow Sub_grp_Event89():
+    if EventFlowSystemActor.IsSharePlay(0):
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:101', false)
+    elif Player.HasNoAcquaintance():
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:063', false)
+    elif System.EventFlags['cPlayer:NpcHouseCoordinateTodayCount'] <= 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:001', true)
+        EventFlowSystemActor.UIMoneyAppear()
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:001_01', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+            run Cancel_First()
+        elif EventFlowSystemActor.HasBellCount(9000):
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:002', true)
+            EventFlowSystemActor.UIMoneyDisappear()
+            run Sub_Event12()
+        else:
+            run Cancel_NotEnoughMoney()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:011', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_14_CoordinateNpcHouse:012', true)
+            run Sub_Event12()
+        else:
+            run Cancel_First()
+

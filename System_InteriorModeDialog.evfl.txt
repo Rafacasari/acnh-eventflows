@@ -1,0 +1,18 @@
+flow CopyFailed_LimitOver():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Telepathy:052', false)
+
+flow CopyFailed_NoSpace():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Telepathy:001', false)
+
+flow CopyFailed_NoSpace_Garden():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Telepathy:053', false)
+
+flow CopyFailed_NoSpace_Plant():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Telepathy:010', false)
+
+flow CopyFailed_NoSpace_RugFail():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Telepathy:003_01', false)
+
+flow CopyFailed_NoSpace_Wall():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Telepathy:002', false)
+

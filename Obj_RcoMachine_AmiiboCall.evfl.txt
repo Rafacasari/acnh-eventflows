@@ -1,0 +1,36 @@
+flow Root():
+    switch MainNpc.CheckNpcCharacterSize():
+        case 0:
+            EventFlowSystemActor.CameraSetDemoParam('Small', '', 'CameraTag:Root', false, false, false, 0)
+        case 1:
+            EventFlowSystemActor.CameraSetDemoParam('Normal', '', 'CameraTag:Root', false, false, false, 0)
+        case 2:
+            EventFlowSystemActor.CameraSetDemoParam('Large', '', 'CameraTag:Root', false, false, false, 0)
+        case 3:
+            EventFlowSystemActor.CameraSetDemoParam('ExtraLarge', '', 'CameraTag:Root', false, false, false, 0)
+    EventFlowSystemActor.SystemFaderRelease()
+    EventFlowSystemActor.WaitFrame(30)
+    if EventFlowSystemActor.IsAmiiboNpcLiving():
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Amiibo:301', false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Amiibo:302', false)
+        EventFlowSystemActor.MessageSuspend()
+        EventFlowSystemActor.CameraReserveFirstStateCommand('Talk:AmiiboCall', '', false)
+        EventFlowSystemActor.SoundTriggerEmit('ReturnFromAmiiboPhone', -1)
+        EventFlowSystemActor.ReturnStage('', 'cNormalFader', 'cNormalFader', 'cWhite', 0.5, 0.20000000298023224)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Amiibo:401', false)
+        if EventFlowSystemActor.AmiiboNpcIsIncludedCamperList():
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Amiibo:102', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Camp_Amiibo:202', false)
+        System.EventFlags['cLand:AmiiboCampSiteCall'] = true
+        EventFlowSystemActor.MessageSuspend()
+        MainNpc.CharacterEmoticonAction('Smiling', false, '', 0, false)
+        EventFlowSystemActor.WaitFrame(60)
+        System.EventFlags['cPlayer:CampInvite'] = true
+        EventFlowSystemActor.SetAmiiboCamperNPC()
+        EventFlowSystemActor.EventFlagOffAllLiver('cPlayer:CampFirstTalk')
+        EventFlowSystemActor.SoundTriggerEmit('ReturnFromAmiiboPhone', -1)
+        EventFlowSystemActor.CameraReserveFirstStateCommand('Talk:AmiiboCall', '', false)
+        EventFlowSystemActor.ReturnStage('', 'cNormalFader', 'cNormalFader', 'cWhite', 0.5, 0.20000000298023224)
+

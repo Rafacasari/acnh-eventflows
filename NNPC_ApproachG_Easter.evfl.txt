@@ -1,0 +1,61 @@
+flow EasterNpc_GetEgg():
+    if System.EventFlags['cPlayer:EasterNnpcRecipeCount'] < 1:
+        EventFlowSystemActor.SelectRewardItemDirect(12514, 5, 'cVillageRemakePattern', 0)
+    else:
+        EventFlowSystemActor.SelectRewardItemDirect(12513, 5, 'cVillageRemakePattern', 0)
+    MainNpc.SetItemName(1, 0, 0)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Easter:013', false)
+    if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+        MainNpc.SetDeliveryItem(1, true)
+        MainNpc.MessageSuspend()
+        MainNpc.NpcDelivery(1, 'Default')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Easter:014', false)
+        System.EventFlags['cPlayer:EasterNnpcRecipeCount'] += 1
+        MainNpc.EventFlags['cNpcMemory:EasterGetRecipeFlag'] = true
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Easter:015', false)
+        MainNpc.EventFlags['cNpcMemory:EasterCannotGetNnpcRecipeFlag'] = true
+        System.EventFlags['cPlayer:EasterCannotGetNnpcRecipeFlag'] = true
+
+flow GetEasterRecipe1():
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Easter:003', false)
+        MainNpc.EventFlags['cNpcMemory:EasterCannotGetNnpcRecipeFlag'] = true
+        System.EventFlags['cPlayer:EasterCannotGetNnpcRecipeFlag'] = true
+        MainNpc.EventFlags['cNpcMemory:EasterCannotGetNnpcIsRecipeFlag'] = true
+    else:
+        MainNpc.NpcSetRewardRecipe(12445, false)
+        MainNpc.SetDeliveryItem(1, true)
+        MainNpc.NpcDelivery(1, 'Default')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Easter:002', false)
+        System.EventFlags['cPlayer:EasterNnpcRecipeCount'] += 1
+        MainNpc.EventFlags['cNpcMemory:EasterGetRecipeFlag'] = true
+
+flow GetEasterRecipe2():
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Easter:012', false)
+        MainNpc.EventFlags['cNpcMemory:EasterCannotGetNnpcRecipeFlag'] = true
+        System.EventFlags['cPlayer:EasterCannotGetNnpcRecipeFlag'] = true
+        MainNpc.EventFlags['cNpcMemory:EasterCannotGetNnpcIsRecipeFlag'] = true
+    else:
+        MainNpc.NpcSetRewardRecipe(12447, false)
+        MainNpc.SetDeliveryItem(1, true)
+        MainNpc.NpcDelivery(1, 'Default')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Easter:011', false)
+        System.EventFlags['cPlayer:EasterNnpcRecipeCount'] += 1
+        MainNpc.EventFlags['cNpcMemory:EasterGetRecipeFlag'] = true
+
+flow Root():
+    MainNpc.SetEasterApproachVillagerIndex(0)
+    if System.EventFlags['cPlayer:EasterNnpcRecipeCount'] >= 1:
+        if EventFlowSystemActor.PlayerHasCraftRecipe('', 12447):
+            run EasterNpc_GetEgg()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Easter:010', false)
+            run GetEasterRecipe2()
+    elif EventFlowSystemActor.PlayerHasCraftRecipe('', 12445):
+        run EasterNpc_GetEgg()
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Easter:001', false)
+        run GetEasterRecipe1()
+

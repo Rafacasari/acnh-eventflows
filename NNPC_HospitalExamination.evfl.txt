@@ -1,0 +1,29 @@
+flow Consult():
+    if not EventFlowSystemActor.IsInspectingWherearen():
+        run ShareHouseMate_Chk()
+    MainNpc.WherearenSetTagFacilityNpcName('cHospitalDoctor', false, false, 1)
+    run FacilityName_Chk()
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Hospital:302', true)
+
+flow FacilityName_Chk():
+    if (EventFlowSystemActor.WherearenExistFacilityName('cHospital')) and (not EventFlowSystemActor.PercentChoice(80)):
+        EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cSelectFacility', 0, 'cHospital')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Hospital:303', false)
+        EventFlowSystemActor.ExitFlowchart()
+
+flow Root():
+    if not EventFlowSystemActor.IsInspectingWherearen():
+        run ShareHouseMate_Chk()
+    MainNpc.WherearenSetTagFacilityNpcName('cHospitalDoctor', false, false, 1)
+    run FacilityName_Chk()
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Hospital:301', true)
+
+flow ShareHouseMate_Chk():
+    if EventFlowSystemActor.WherearenOrderStatus() == 1:
+        MainNpc.TurnNeck(10, false)
+        run NNPC_Spot_WherearenMainFieldVisitor::LookforHouseMate()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow StandSleep():
+    run NNPC_RestaurantCustomer::`StandSleep_2.1`()
+

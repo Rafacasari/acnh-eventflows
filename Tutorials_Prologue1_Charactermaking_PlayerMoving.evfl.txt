@@ -1,0 +1,140 @@
+flow Cancel_Moving_CharacterMaking():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2021', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2023', false)
+        EventFlowSystemActor.MessageLockNext(3)
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:004', false)
+        EventFlowSystemActor.WaitFrame(-1)
+    else:
+        run Retry_Moving()
+
+flow Cancel_Search_Cmn():
+    EventFlowSystemActor.SaveUnregisterMoveInPlayerBuffer()
+    EventFlowSystemActor.NetMoveSessionFinalize()
+
+flow CheckNALink():
+    if (EventFlowSystemActor.NetHasPOPID(true)) and (not EventFlowSystemActor.NetIsRegisteredSameNA()):
+        EventFlowSystemActor.MessageSuspend()
+        if EventFlowSystemActor.NetIsAvailableNA():
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:9103', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:9105_01', false)
+                EventFlowSystemActor.WaitFrame(-1)
+            else:
+                run Jump_Initialize()
+        else:
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:9101', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:9102', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:9105', false)
+                    EventFlowSystemActor.WaitFrame(-1)
+                else:
+                    run Jump_Initialize()
+            else:
+                EventFlowSystemActor.NetEnsureNSA()
+                run Loop_CheckNALink()
+
+flow Jump_Initialize():
+    EventFlowSystemActor.ResetNA()
+    EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:9104', false)
+
+flow Loop_CheckNALink():
+    run CheckNALink()
+
+flow Retry_Moving():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2002', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run Return_SearchMoving()
+        case 1:
+            run Return_HowToMoving()
+        case 2:
+            run Cancel_Moving_CharacterMaking()
+
+flow Return_HowToMoving():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2007', false)
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2008', false)
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2009', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run Return_SearchMoving()
+        case 1:
+            run Return_HowToMoving()
+        case 2:
+            run Cancel_Moving_CharacterMaking()
+
+flow Return_SearchMoving():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2002_01', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        EventFlowSystemActor.MessageLockNext(2)
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Network:202', false)
+        EventFlowSystemActor.SaveRegisterMoveInPlayerBuffer()
+        EventFlowSystemActor.NetMoveSessionSearch()
+        EventFlowSystemActor.MessageSuspend()
+        EventFlowSystemActor.MessageUnlockNext()
+        if EventFlowSystemActor.MessageUseBCancel():
+            run Cancel_Search_Cmn()
+            run Cancel_Moving_CharacterMaking()
+        elif (not EventFlowSystemActor.CheckErrorType(2)) and (EventFlowSystemActor.NetMoveFoundSessionNum() != 0):
+            EventFlowSystemActor.SetTagMoveInPlayerInfo(0, 0)
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2004', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2005', false)
+                EventFlowSystemActor.MessageLockNext(1)
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Network:203', false)
+                EventFlowSystemActor.NetMoveStartWait()
+                run SaveExpansion()
+                if EventFlowSystemActor.CheckErrorType(2):
+                    run Cancel_Search_Cmn()
+                    EventFlowSystemActor.MessageSuspend()
+                    EventFlowSystemActor.MessageUnlockNext()
+                    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2025', false)
+                    run Cancel_Moving_CharacterMaking()
+                else:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Network:204', false)
+                    EventFlowSystemActor.NetMoveFinishWait()
+                    EventFlowSystemActor.MessageSuspend()
+                    EventFlowSystemActor.MessageUnlockNext()
+                    if EventFlowSystemActor.CheckErrorType(2):
+                        run Cancel_Search_Cmn()
+                        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2025', false)
+                        run Cancel_Moving_CharacterMaking()
+                    else:
+                        EventFlowSystemActor.NetMoveSessionFinalize()
+                        EventFlowSystemActor.BeginAsMovedOne(true)
+                        EventFlowSystemActor.SaveSwitchMovedOneToVillager()
+                        EventFlowSystemActor.NoticeGameStartForPlayReport()
+                        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2010', false)
+                        run CheckNALink()
+                        run Tutorials_Prologue1_Charactermaking::Continue_AfterMoving()
+            else:
+                run Cancel_Search_Cmn()
+                run Cancel_Moving_CharacterMaking()
+        else:
+            run Cancel_Search_Cmn()
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2024', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Return_SearchMoving()
+            else:
+                run Cancel_Moving_CharacterMaking()
+    else:
+        run Cancel_Moving_CharacterMaking()
+
+flow Root():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2001', false)
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2001_01', false)
+    EventFlowSystemActor.MessageSuspend()
+    MainNpc.OpenMessageWindow('Dialog/DIALOG_Msg:9112', false)
+    run Retry_Moving()
+
+flow SaveExpansion():
+    if not EventFlowSystemActor.SaveIsAbleToMoveIn():
+        EventFlowSystemActor.MessageSuspend()
+        EventFlowSystemActor.MessageUnlockNext()
+        run Cancel_Search_Cmn()
+        if EventFlowSystemActor.NetMoveMissingSaveExtension():
+            MainNpc.OpenMessageWindow('Dialog/DIALOG_Msg:9114', false)
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:2025', false)
+        run Cancel_Moving_CharacterMaking()
+

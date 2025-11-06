@@ -1,0 +1,64 @@
+flow Root():
+    EventFlowSystemActor.SoundDuckingOn(56)
+    EventFlowSystemActor.CameraSetDemoParam('WayIn', '', 'Npc:kpp', false, false, false, 0)
+    EventFlowSystemActor.KappeiTourShowerTiming(1560)
+    EventFlowSystemActor.WaitFaderSleep()
+    EventFlowSystemActor.CameraSetDemoParam('WayInEnd', 'WayIn', 'KeepFollow', false, false, false, 0)
+    if EventFlowSystemActor.KappeiTourType('cStarPiece'):
+        SubNpc.ChangeSeaWeather(420, 600, 110, 360, 0, 600)
+    else:
+        SubNpc.ChangeSeaWeather(420, 600, 110, 360, 0, 375)
+    SubNpc.SettingKppReactionPlayer('cEnable')
+    MainNpc.NpcRequestAction(4)
+    MainNpc.KppBarcarollePrepare('WayA')
+    EventFlowSystemActor.BGMPropertyControl(128)
+    MainNpc.KppBarcarolleControl('WayA')
+    if MainNpc.KppBarcarolleCancel():
+        SubflowResults[0] = 0
+        run SongCancel()
+    else:
+        SubNpc.SettingKppReactionPlayer('cDisable')
+        MainNpc.NpcRequestAction(0)
+        EventFlowSystemActor.MessageAutoPass(0, true)
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/Song/SP_kpp_Song_Way2:001', false)
+        EventFlowSystemActor.WaitFrame(30)
+        SubNpc.SettingKppReactionPlayer('cEnable')
+        MainNpc.NpcRequestAction(4)
+        MainNpc.KppBarcarollePrepare('WayB')
+        EventFlowSystemActor.BGMPropertyControl(129)
+        MainNpc.KppBarcarolleControl('WayB')
+        if MainNpc.KppBarcarolleCancel():
+            SubflowResults[0] = 1
+            run SongCancel()
+        else:
+            System.EventFlags['cPlayer:KppTakeTourTodayFlag'] = true
+            System.EventFlags['cLifeSupportAchievement:VisitKappeiTour'] += 1
+            EventFlowSystemActor.SoundDuckingOff(56)
+            EventFlowSystemActor.CameraSetDemoParam('WayOut', 'WayOut', 'KeepFollow', false, false, false, 0)
+            EventFlowSystemActor.WaitFrame(80)
+            EventFlowSystemActor.SoundTriggerEmit('Boat_Stop', -1)
+            EventFlowSystemActor.WaitFrame(60)
+            run `00_System_StageChange`::ChangeStage(FadeColorString='cBlack', TargetStage='cGoToKppTourIsland', FadeOutSpeed=0.0, FadeInSpeed='cNormal', FadeOutKindString='cNormalFader', FadeInKindString='cNormalFader')
+
+flow Root_Init():
+    MainNpc.NpcAITalkSubCastEntry('NpcPlayer', 1)
+
+flow SongCancel():
+    EventFlowSystemActor.BGMPropertyControl(130)
+    SubNpc.SettingKppReactionPlayer('cDisable')
+    MainNpc.NpcRequestAction(0)
+    EventFlowSystemActor.AcceptFlowSwitchTag()
+    fork:
+        branch:
+            EventFlowSystemActor.MessageAutoPass(0, true)
+            if SubflowResults@2[0] == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/kpp/Song/SP_kpp_Song_Cancel:001', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/kpp/Song/SP_kpp_Song_Cancel:002', false)
+        branch:
+            EventFlowSystemActor.WaitFlowSwitchTag()
+            System.EventFlags['cPlayer:KppTakeTourTodayFlag'] = true
+            System.EventFlags['cLifeSupportAchievement:VisitKappeiTour'] += 1
+            run `00_System_StageChange`::ChangeStage(FadeColorString='cBlack', TargetStage='cGoToKppTourIsland', FadeOutKindString='cCircle', FadeInKindString='cCircle', FadeInSpeed='cNormal', FadeOutSpeed=-2.0)
+    EventFlowSystemActor.SoundDuckingOff(56)
+

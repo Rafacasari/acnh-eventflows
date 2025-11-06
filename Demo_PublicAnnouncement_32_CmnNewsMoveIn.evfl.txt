@@ -1,0 +1,16 @@
+flow NewsConnectMoveIn():
+    if (SubflowResults@2[0] == 1) and (SubflowResults@2[14] == 1):
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:030', false)
+
+flow Root():
+    if SubflowResults@2[5] == 1:
+        run NewsConnectMoveIn()
+        MainNpc.SetNpcName(10, 0)
+        if SubflowResults@2[0] == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:101', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:102', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:101', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:102', false)
+        SubflowResults[14] = 1
+

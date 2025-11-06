@@ -1,0 +1,404 @@
+flow Cancel_Moving():
+    if SubflowResults@2[1] == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1023', false)
+        run SNPC_rco_92_OtherSettings::Seq_Close()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:590', false)
+        run Seq_ExitHome()
+
+flow EndwithoutBackupOtherP():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1006_01', false)
+    run Event77()
+
+flow EndwithoutSavedatabackup():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1006', false)
+entrypoint Event77:
+    EventFlowSystemActor.NetMoveSessionFinalize()
+    run Seq_ExitHome()
+
+flow HowTo_Sub1():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:2011', false)
+
+flow HowTo_Sub2():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:2012', false)
+
+flow HowTo_Sub3():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:2013', false)
+
+flow HowTo_Sub4():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:2014', false)
+
+flow MoveSeq_Move():
+    EventFlowSystemActor.SetTagMoveOutAccountName(0)
+    if not EventFlowSystemActor.NetMovePlayerHasPOPID():
+        run SkipNoticeWrongNA()
+    elif EventFlowSystemActor.NetMoveSameNSAID():
+entrypoint Event60:
+        if EventFlowSystemActor.PlayerMoveValidateDestinationIsland():
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1005', false)
+            EventFlowSystemActor.MessageSuspend()
+            if SubflowResults@2[1] == 0:
+                EventFlowSystemActor.SetTagMainPlayerName(1, 0)
+            else:
+                EventFlowSystemActor.SetTagFromUIResult('cVillagerPlayerNameD', 0)
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:9111', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                EventFlowSystemActor.NetMoveSessionFinalize()
+                run Cancel_Moving()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1005_00', false)
+                run Event67()
+        else:
+            EventFlowSystemActor.SetTagMoveOutLandName(0)
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1005_01', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+entrypoint Event67:
+                EventFlowSystemActor.MessageLockNext(2)
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Network:204', false)
+                EventFlowSystemActor.NetMoveFinishWait()
+                EventFlowSystemActor.MessageSuspend()
+                EventFlowSystemActor.MessageUnlockNext()
+                if EventFlowSystemActor.CheckErrorType(2):
+                    if SubflowResults@2[1] == 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1024', false)
+                        EventFlowSystemActor.NetMoveSessionFinalize()
+                        run SNPC_rco_92_OtherSettings::Seq_Close()
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1024_01', false)
+                        EventFlowSystemActor.NetMoveSessionFinalize()
+                        run Seq_ExitHome()
+                elif SubflowResults@2[1] != 0:
+                    if SubflowResults@2[2] == 0:
+                        run EndwithoutBackupOtherP()
+                    else:
+                        run UploadBackupAsyncTo()
+                elif SubflowResults@2[2] == 0:
+                    run EndwithoutSavedatabackup()
+                else:
+entrypoint Event229:
+                    run UploadBackUpAsync()
+                    run Seq_ExitHome()
+            else:
+                EventFlowSystemActor.NetMoveSessionFinalize()
+                run Cancel_Moving()
+    elif EventFlowSystemActor.PlayerMoveValidateDestinationIsland():
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1007', false)
+        EventFlowSystemActor.MessageSuspend()
+        if SubflowResults@2[1] == 0:
+            EventFlowSystemActor.SetTagMainPlayerName(1, 0)
+        else:
+            EventFlowSystemActor.SetTagFromUIResult('cVillagerPlayerNameD', 0)
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:9111', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            EventFlowSystemActor.NetMoveSessionFinalize()
+            run Cancel_Moving()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1007_02', false)
+            run Sub_grp_Event163()
+    else:
+        EventFlowSystemActor.SetTagMoveOutLandName(0)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1007_01', false)
+        run Sub_grp_Event163()
+
+flow MoveSeq_Notice():
+    EventFlowSystemActor.SetTagMainPlayerName(0, 0)
+    EventFlowSystemActor.SetTagMainPlayerName(1, 0)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1003', false)
+    run Return_MovingNotice()
+
+flow MoveSeq_Notice_UnlinkedP():
+    SubflowResults[1] = 1
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:504', false)
+    run Return_MovingNotice()
+
+flow MoveSeq_Procedure():
+    if SubflowResults@2[1] == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1004', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1004_00_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1004_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1004_04', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run MoveSeq_Search()
+        case 1:
+            run Return_MovingProcedure()
+        case 2:
+            run Cancel_Moving()
+
+flow MoveSeq_Search():
+    EventFlowSystemActor.MessageLockNext(2)
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Network:201', false)
+    EventFlowSystemActor.NetMoveSessionOpen()
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.MessageUnlockNext()
+    if EventFlowSystemActor.MessageUseBCancel():
+        EventFlowSystemActor.NetMoveSessionFinalize()
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1021', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Return_MovingSearch()
+        else:
+            run Cancel_Moving()
+    elif EventFlowSystemActor.CheckErrorType(2):
+        EventFlowSystemActor.NetMoveSessionFinalize()
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1022', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Return_MovingSearch()
+        else:
+            run Cancel_Moving()
+    else:
+        run MoveSeq_Move()
+
+flow MovingProcessStart():
+    run Event67()
+
+flow Moving_UnlinkedP():
+    if EventFlowSystemActor.IsUnconnectedVillageLeader():
+        if EventFlowSystemActor.IsUnconnectedPlayerVillagerGreaterThan(2):
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:501_00_00', false)
+            run Sub_Event126()
+        else:
+            run NoUnlinkedP()
+    elif EventFlowSystemActor.IsUnconnectedPlayerVillagerGreaterThan(1):
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:501_00_01', false)
+        run Sub_Event126()
+    else:
+        run NoUnlinkedP()
+
+flow NoUnlinkedP():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:552', false)
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        run Return_MainP_Multi()
+    else:
+        run Return_OtherP()
+
+flow Return_HowTo_MainP():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:2002', false)
+    run Event179()
+
+flow Return_HowTo_OtherP():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:2004', false)
+    run Event183()
+
+flow Return_MainP():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:005', false)
+    run Event9()
+
+flow Return_MainP_Multi():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:002_04', false)
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            run Moving_UnlinkedP()
+        case 1:
+            run Root_HowTo()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:004', false)
+            run Return_MainP_Multi()
+        case 3:
+            run Cancel_Moving()
+
+flow Return_MovingNotice():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1003_01', false)
+    if EventFlowSystemActor.PlayerHasOwnedMyDesign():
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1003_02', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1003_02_01', false)
+    if EventFlowSystemActor.NetHasPOPID(true):
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1003_03', false)
+    EventFlowSystemActor.MessageSuspend()
+    if (EventFlowSystemActor.BackupAgentExist()) and (not EventFlowSystemActor.SaveIsEnabledBackupSetting()) and (EventFlowSystemActor.BackupAgentIsMainPlayer()) and (not EventFlowSystemActor.SaveCompareBackupAgentNSAID()):
+        MainNpc.OpenMessageWindow('Dialog/DIALOG_Msg:9113', false)
+        SubflowResults[2] = 1
+    MainNpc.OpenMessageWindow('Dialog/DIALOG_Msg:9112', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1003_04', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run MoveSeq_Procedure()
+        case 1:
+            run Return_MovingNotice()
+        case 2:
+            run Cancel_Moving()
+
+flow Return_MovingProcedure():
+    run MoveSeq_Procedure()
+
+flow Return_MovingSearch():
+    run MoveSeq_Search()
+
+flow Return_OtherP():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:902', false)
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            if System.EventFlags['cPlayer:PlayerMovingEnable']:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1001', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1002', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    SubflowResults[1] = 0
+                    EventFlowSystemActor.SetMoveOutPlayer()
+                    run MoveSeq_Notice()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1801', false)
+                    run SNPC_rco_92_OtherSettings::Seq_Close()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1901', false)
+                switch EventFlowSystemActor.GeneralTalkChoice2():
+                    case 0, 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1902', false)
+                        run SNPC_rco_92_OtherSettings::Seq_Close()
+        case 1:
+            run Moving_UnlinkedP()
+        case 2:
+            run Root_HowTo()
+        case 3:
+            run Cancel_Moving()
+
+flow Root():
+    if System.EventFlags['cPlayer:BuiltMyHome']:
+        System.EventFlags['cPlayer:PlayerMovingEnable'] = true
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        run Root_MainP()
+    else:
+        run Root_OtherP()
+
+flow Root_HowTo():
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:2001', false)
+entrypoint Event179:
+        switch EventFlowSystemActor.GeneralTalkChoice4():
+            case 0:
+                run HowTo_Sub1()
+                run Return_HowTo_MainP()
+            case 1:
+                run HowTo_Sub2()
+                run Return_HowTo_MainP()
+            case 2:
+                run HowTo_Sub3()
+                run Return_HowTo_MainP()
+            case 3:
+                run Return_MainP_Multi()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:2003', false)
+entrypoint Event183:
+        switch EventFlowSystemActor.GeneralTalkChoice5():
+            case 0:
+                run HowTo_Sub1()
+                run Return_HowTo_OtherP()
+            case 1:
+                run HowTo_Sub2()
+                run Return_HowTo_OtherP()
+            case 2:
+                run HowTo_Sub3()
+                run Return_HowTo_OtherP()
+            case 3:
+                run HowTo_Sub4()
+                run Return_HowTo_OtherP()
+            case 4:
+                run Return_OtherP()
+
+flow Root_MainP():
+    if EventFlowSystemActor.PlayerVillagerCount(2):
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:002_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:002_02', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:002_03', false)
+        run Return_MainP_Multi()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:001', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:002', false)
+entrypoint Event9:
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:003', false)
+            run SNPC_rco_92_OtherSettings::Seq_Close()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:004', false)
+            run Return_MainP()
+
+flow Root_OtherP():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:901', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:901_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:901_02', false)
+    run Return_OtherP()
+
+flow Seq_ExitHome():
+    EventFlowSystemActor.MessageLockNext(3)
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:004', false)
+    EventFlowSystemActor.WaitFrame(-1)
+
+flow SkipNoticeWrongNA():
+    run Event60()
+
+local flow Sub_Event126():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:501_01', false)
+    EventFlowSystemActor.UIMsgCardAdrHandling('cPlayerMoving')
+    if EventFlowSystemActor.UIResultMenuDecide():
+        EventFlowSystemActor.SetTagFromUIResult('cSelectPlayerName', 0)
+        EventFlowSystemActor.SetTagFromUIResult('cVillagerPlayerNameD', 0)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:502', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:503', false)
+                EventFlowSystemActor.MessageLockNext(2)
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:013', false)
+                EventFlowSystemActor.SaveSimpleSave('cAll')
+                EventFlowSystemActor.SaveSimpleLoad('cMoveOutPlayer')
+                EventFlowSystemActor.MessageSuspend()
+                EventFlowSystemActor.MessageUnlockNext()
+                if EventFlowSystemActor.EventFlagMovePlayerBool('cPlayer:PlayerMovingEnable'):
+                    run MoveSeq_Notice_UnlinkedP()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:551', false)
+                    EventFlowSystemActor.MessageLockNext(3)
+                    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:004', false)
+                    EventFlowSystemActor.WaitFrame(-1)
+            case 1:
+                run Moving_UnlinkedP()
+            case 2:
+                run Cancel_Moving()
+    else:
+        run Cancel_Moving()
+
+local flow Sub_grp_Event163():
+    if SubflowResults@2[1] == 0:
+        if EventFlowSystemActor.NetMoveHasEnableNSAIDTarget():
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1008', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1008_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1009', false)
+    else:
+        if EventFlowSystemActor.NetMoveHasEnableNSAIDTarget():
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1011', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1011_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1012', false)
+    if EventFlowSystemActor.PlayerMoveValidateDestinationIsland():
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1010', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1010_01', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run MovingProcessStart()
+    else:
+        EventFlowSystemActor.NetMoveSessionFinalize()
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1019', false)
+        if SubflowResults@2[1] == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1020', false)
+            run SNPC_rco_92_OtherSettings::Seq_Close()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1020_01', false)
+            run Seq_ExitHome()
+
+flow UploadBackUpAsync():
+    EventFlowSystemActor.NetMoveSessionFinalize()
+    EventFlowSystemActor.MessageLockNext(2)
+    MainNpc.OpenMessageWindow('TalkSys/SYS_Save:014', false)
+    EventFlowSystemActor.SaveUploadBackup()
+    if not EventFlowSystemActor.SaveIsUploadedBackup():
+        EventFlowSystemActor.MessageSuspend()
+        EventFlowSystemActor.MessageUnlockNext()
+        MainNpc.OpenMessageWindow('TalkSys/SYS_Save:015', false)
+    if SubflowResults@2[1] == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1006', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_95_PlayerMoving:1006_01', false)
+
+flow UploadBackupAsyncTo():
+    run Event229()
+

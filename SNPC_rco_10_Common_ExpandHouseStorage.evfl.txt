@@ -1,0 +1,122 @@
+flow NotEnoughMoney():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1114', false)
+    EventFlowSystemActor.UIMoneyDisappear()
+
+flow NoticeExpandStorage_Force():
+    System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_PlayerPos()
+    run NoticeExpandStorage_Normal()
+
+flow NoticeExpandStorage_Force_Init():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_DisableTalkCamera()
+
+flow NoticeExpandStorage_Normal():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1101', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1101_01', false)
+    if System.EventFlags['cPlayer:PlayerLoanRepaying']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1101_02_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1101_02_00', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1101_03', false)
+    System.EventFlags['cPlayer:RcoStandbyNoticeStorageExpansion'] = false
+
+flow Root():
+    if System.EventFlags['cPlayer:PlayerLoanRepaying']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1115', false)
+    else:
+        if System.EventFlags['cPlayer:RcoStorageExpansionLevel']:
+            if System.EventFlags['cPlayer:RcoStorageExpansion_v200_AddLevel'] < 2:
+                EventFlowSystemActor.UIMoneyAppear()
+                if System.EventFlags['cPlayer:RcoExplainStorageExpandCostIncrease']:
+                    if System.EventFlags['cPlayer:RcoStorageExpansion_v200_AddLevel'] < 1:
+                        EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 0, 700000, '')
+                    else:
+                        EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 0, 900000, '')
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1311', false)
+                else:
+                    System.EventFlags['cPlayer:RcoExplainStorageExpandCostIncrease'] = true
+                    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 0, 700000, '')
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1313', false)
+            else:
+                EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 0, 1200000, '')
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1312', true)
+                EventFlowSystemActor.UIMoneyAppear()
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1312_01', false)
+        else:
+            EventFlowSystemActor.UIMoneyAppear()
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1111', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1113', false)
+            EventFlowSystemActor.UIMoneyDisappear()
+            if EventFlowSystemActor.OfficeLevel() == `ResServiceBuilding`:
+                run SNPC_rco_00_Common::Rco_Office_CmnSelAgain()
+        elif System.EventFlags['cPlayer:RcoStorageExpansionLevel']:
+            switch EventFlowSystemActor.FlagSystemIntValue4(4, 'cPlayer:RcoStorageExpansion_v200_AddLevel'):
+                case 0:
+                    if EventFlowSystemActor.HasBellCount(700000):
+                        EventFlowSystemActor.BellCountDown(700000, true)
+                        run Sub_Event12()
+                    else:
+                        run NotEnoughMoney()
+                case 1:
+                    if EventFlowSystemActor.HasBellCount(900000):
+                        EventFlowSystemActor.BellCountDown(900000, true)
+                        run Sub_Event12()
+                    else:
+                        run NotEnoughMoney()
+                case 2:
+                    if EventFlowSystemActor.HasBellCount(1200000):
+                        EventFlowSystemActor.BellCountDown(1200000, true)
+                        run Sub_Event12()
+                    else:
+                        run NotEnoughMoney()
+                default:
+                    return
+        elif EventFlowSystemActor.HasBellCount(500000):
+            EventFlowSystemActor.BellCountDown(500000, true)
+            run Sub_Event12()
+        else:
+            run NotEnoughMoney()
+
+local flow Sub_Event12():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1112', false)
+    EventFlowSystemActor.UIMoneyDisappear()
+    System.EventFlags['cPlayer:RcoStorageExpansionReserved'] = true
+    System.EventFlags['cPlayer:PlayerMovingReservedStorageExpand'] = false
+
+flow v200_AddNoticeExpandStorage_Force():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_PlayerPos()
+    run v200_AddNoticeExpandStorage_Normal()
+
+flow v200_AddNoticeExpandStorage_Force_Init():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_DisableTalkCamera()
+
+flow v200_AddNoticeExpandStorage_Normal():
+    if not System.EventFlags['cPlayerTemp:RcoTalkSceneFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:000', false)
+        System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1301', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1302', false)
+    System.EventFlags['cPlayer:RcoStandbyNotice_v200_AddStorage'] = false
+
+flow v200_AfterExpandStorage_Force():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_PlayerPos()
+    run v200_AfterExpandStorage_Normal()
+
+flow v200_AfterExpandStorage_Force_Init():
+    run SNPC_rco_01_Tent_1_Entries::RcoTent_Force_DisableTalkCamera()
+
+flow v200_AfterExpandStorage_Normal():
+    if not System.EventFlags['cPlayerTemp:RcoTalkSceneFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:000', false)
+        System.EventFlags['cPlayerTemp:RcoTalkSceneFlag'] = true
+    if System.EventFlags['cPlayer:PlayerMovingAfterStorageExpansion']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1351', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1321', false)
+    if EventFlowSystemActor.FlagSystemIntValue4(4, 'cPlayer:RcoStorageExpansion_v200_AddLevel') in (0, 1, 2):
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1322', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:1323', false)
+    System.EventFlags['cPlayer:RcoStandbyNotice_v200_AfterStorageExpansion'] = false
+    System.EventFlags['cPlayer:PlayerMovingAfterStorageExpansion'] = false
+

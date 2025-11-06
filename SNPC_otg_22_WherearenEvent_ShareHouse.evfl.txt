@@ -1,0 +1,202 @@
+flow CastChk():
+    if System.EventFlags['cWherearenPlayer:GenerateSecondCustomer']:
+        MainNpc.NpcAITalkSubCastEntry('-Wherearen:SecondCustomer', 3)
+        MainNpc.NpcAITalkSubCastEntry('man', 2)
+
+flow Done():
+    SubNpc.TurnNeck(0, false)
+    run SNPC_otg_01_WherearenOffice::HouseCompleteActing()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:211', true)
+    MainNpc.TurnNeck(1, false)
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:212', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            Npc_2.TurnNeck(1, false)
+    Npc_2.CharacterEmoticonAction('Smiling', true, '', 0, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:213', true)
+    Player.TurnNeck(1, false)
+    SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:214', true)
+    MainNpc.CharacterEmoticonAction('FaintSmile', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(40)
+    SubNpc.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+    MainNpc.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:215', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(0, false)
+            EventFlowSystemActor.WaitFrame(20)
+            Npc_2.TurnNeck(10, false)
+    MainNpc.TurnNeck(10, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:216', false)
+    run SNPC_otg_01_WherearenOffice::SetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:217', true)
+    run SNPC_otg_01_WherearenOffice::GetSalaryForEvent()
+    MainNpc.TurnNeck(1, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:218', true)
+    Npc_2.CharacterEmoticonAction('FaintSmile', true, '', 0, false)
+    SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:219', true)
+    MainNpc.TurnNeck(10, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:220', true)
+    System.EventFlags['cWherearenPlayer:MncGenerateInOfficeTemp'] = false
+    System.EventFlags['cWherearenPlayer:SeqShareHouseOngoing'] = false
+    System.EventFlags['cWherearenPlayer:Prohibit_SuspendEdit'] = false
+    System.EventFlags['cPlayer:OtgTipsUnlockHouseShare'] = true
+    run Demo_Common_Wherearen::Demo_SetNormalPositionInOffice()
+    SubflowResults[3] = 2
+    run SNPC_otg_01_WherearenOffice::OrderClose_Complete()
+
+flow Done_Init():
+    MainNpc.NpcAITalkCastSetting('WherearenPrologue')
+
+flow Resume_LookForHousemate():
+    EventFlowSystemActor.SetupWherearenSharehouseLookForHousemate()
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:201', true)
+    EventFlowSystemActor.RequestDuckingNextWiping()
+    System.EventFlags['cPlayerTemp:WHEREAREN_OtgTalkReserve_Office'] = false
+    EventFlowSystemActor.ChangeWherearenWorkMode(false, true)
+    run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+    EventFlowSystemActor.WherearenOrderCallback('cStart')
+    EventFlowSystemActor.WherearenOrderCallback('cStartLookForHousemate')
+    EventFlowSystemActor.SetupActorPosition(16)
+    MainNpc.NpcSetAIBlackBoard('FirstSharehouseResume', 1)
+
+flow Resume_LookForHousemateStart():
+    EventFlowSystemActor.WaitFrame(60)
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+    EventFlowSystemActor.WherearenSetTagCustomerNpcName(false, 0)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_04_WherearenEvent:202', true)
+    EventFlowSystemActor.UIThemeAppear('cSharehouse')
+
+flow Root():
+    Npc_3.SetNpcName(0, 0)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:181', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            EventFlowSystemActor.BGMPropertyControl(191)
+            EventFlowSystemActor.EmitDoorSound('cDoorEnter')
+    run Demo_Common_Wherearen::Demo_OfficeOverlookRightCamera()
+    EventFlowSystemActor.WaitFrame(15)
+    DynamicCast_mnc.TurnNeck(11, false)
+    DynamicCast_mnc.NpcAISetting(12, true)
+    fork:
+        branch:
+            DynamicCast_mnc.NpcRailMove(3, true, false, -1, -1, 1)
+            DynamicCast_mnc.TurnBody(0, 0.0)
+        branch:
+            MainNpc.TurnBody(1, 0.0)
+            EventFlowSystemActor.WaitFrame(10)
+            Player.TurnBody(1, 0.0)
+            EventFlowSystemActor.WaitFrame(20)
+            Npc_2.TurnNeck(1, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:182', true)
+    DynamicCast_mnc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:183', true)
+    Npc_3.TurnNeck(11, false)
+    Npc_3.NpcAISetting(12, true)
+    DynamicCast_mnc.TurnNeck(11, false)
+    DynamicCast_mnc.TurnBody(12, 0.0)
+    fork:
+        branch:
+            EventFlowSystemActor@Sound.EmitDoorSound('cDoorEnter')
+            EventFlowSystemActor.BGMPropertyControl(192)
+        branch:
+            EventFlowSystemActor@Sub.WaitFrame(60)
+            Npc_3.NpcEnter('Entrance', 1, 0.0)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            MainNpc.CharacterEmoticonAction('Eh', true, '', 0, false)
+            EventFlowSystemActor.WaitFrame(40)
+            DynamicCast_mnc.TurnNeck(3, false)
+            MainNpc.TurnBody(3, 0.0)
+            Player.TurnBody(3, 0.0)
+            EventFlowSystemActor.WaitFrame(20)
+            Npc_2.TurnNeck(3, false)
+    EventFlowSystemActor.SystemBGMVolumeChange(-10.0, 0.5, 0, 0.0)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:184', true)
+    Npc_3.TurnNeck(0, false)
+    Npc_3.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:061', true)
+    DynamicCast_mnc.TurnNeck(0, false)
+    fork:
+        branch:
+            DynamicCast_mnc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:185', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            MainNpc.TurnNeck(1, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:186', true)
+    EventFlowSystemActor.BGMPropertyControl(188)
+    run TalkAtCounter()
+
+flow TalkAtCounter():
+    run Demo_Common_Wherearen::Demo_OfficeSetCounterPosition()
+    EventFlowSystemActor.BGMPropertyControl(190)
+    EventFlowSystemActor.SystemBGMVolumeReset(0.10000000149011612, 0, 0.0)
+    EventFlowSystemActor.BGMPropertyControl(189)
+    Npc_3.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:062', true)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:188', true)
+    Npc_3.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:063', true)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:189', true)
+    DynamicCast_mnc.TurnNeck(0, false)
+    fork:
+        branch:
+            DynamicCast_mnc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:190', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            MainNpc.TurnNeck(1, false)
+            Player.TurnNeck(1, false)
+    DynamicCast_mnc.TurnNeck(10, false)
+    DynamicCast_mnc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:191', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        EventFlowSystemActor.WaitFrame(20)
+        DynamicCast_mnc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:192', true)
+    else:
+        DynamicCast_mnc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:193', true)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:194', true)
+    Player.TurnNeck(3, false)
+    DynamicCast_mnc.TurnNeck(3, false)
+    Npc_3.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_WherearenEvent_Once:064', true)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:195', false)
+    MainNpc.TurnNeck(1, true)
+    EventFlowSystemActor.WaitFrame(10)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:196', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            DynamicCast_mnc.TurnNeck(0, false)
+    Player.TurnNeck(1, false)
+    Npc_3.TurnNeck(1, false)
+    DynamicCast_mnc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:197', true)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:198', true)
+    DynamicCast_mnc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+    MainNpc.CharacterEmoticonAction('FaintSmile', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(40)
+    DynamicCast_mnc.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+    MainNpc.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+    DynamicCast_mnc.TurnNeck(3, false)
+    fork:
+        branch:
+            DynamicCast_mnc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:199', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            Player.TurnNeck(3, false)
+            MainNpc.TurnNeck(3, false)
+    Npc_3.CharacterEmoticonAction('Smiling', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(20)
+    EventFlowSystemActor.SystemBGMVolumeFadeOut(0.5, 0, 0.0)
+    EventFlowSystemActor.WaitFrame(15)
+    System.EventFlags['cWherearenPlayer:MncGenerateInOfficeTemp'] = false
+    System.EventFlags['cWherearenPlayer:MncEntryOfficeReserve'] = false
+    System.EventFlags['cWherearenPlayer:GenerateSecondCustomer'] = false
+    System.EventFlags['cWherearenPlayer:Unlock_ShareHouse'] = true
+    System.EventFlags['cWherearenPlayer:SeqShareHouseOngoing'] = true
+    System.EventFlags['cWherearenPlayer:Prohibit_SuspendEdit'] = true
+    Npc_3.WherearenTakeOnNpcOrder('cShareHouse', '', '', '', '')
+    EventFlowSystemActor.WherearenOrderCallback('cStart')
+    EventFlowSystemActor.BGMPropertyControl(187)
+    run NNPC_Spot_WherearenGarden::GoToShareHouseOrder()
+

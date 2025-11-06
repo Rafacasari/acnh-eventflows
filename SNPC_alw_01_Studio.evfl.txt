@@ -1,0 +1,688 @@
+flow Alw_Advice_Set_Theme():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious4(4, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:037_01', false)
+            return
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:037_02', false)
+            return
+        case 2:
+            if SubflowResults@8[0] in (0, 1, 2, 3, 4, 5):
+                run Alw_Advice_Set_Theme()
+            elif System.EventFlags['cPlayer:EnableDiyRemake']:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:037_03', false)
+                return
+            else:
+                run Alw_Advice_Set_Theme()
+        case 3:
+            run Alw_Advice_Theme()
+            return
+
+flow Alw_Advice_Shoot_Theme():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious4(4, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:036_01', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:036_02', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:036_03', false)
+        case 3:
+            run Alw_Advice_Theme()
+
+flow Alw_Advice_Theme():
+    switch SubflowResults@8[0]:
+        case 0, 2, 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:038_01', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:038_04', false)
+        case 1, 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:038_02', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:038_04', false)
+        case 5:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:038_03', false)
+        case 6, 7:
+            switch EventFlowSystemActor.CurrentJuneBrideTheme():
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:038_04', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:038_05', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:038_06', false)
+
+flow Alw_AfterClear_Flag():
+    if not System.EventFlags['cPlayer:AlwJuneBrideQuestClearFlag']:
+        System.EventFlags['cPlayer:AlwJuneBrideDayCount'] += 1
+        EventFlowSystemActor.UpdateJuneBrideDayAlreadyCount()
+    EventFlowSystemActor.ReflectFinishedJuneBrideTheme()
+    System.EventFlags['cPlayer:AlwJuneBrideTotalClearCount'] += 1
+    System.EventFlags['cPlayer:AlwJuneBrideQuestStartFlag'] = false
+    System.EventFlags['cPlayer:AlwJuneBridePleaseShootFlag'] = false
+    System.EventFlags['cPlayer:AlwJuneBridePartyTalkFlag'] = false
+    System.EventFlags['cPlayer:AlwJuneBrideBalloonFlag'] = false
+    System.EventFlags['cPlayer:PooTalkAfterJuneBride'] = true
+
+flow Alw_Camera():
+    switch SubflowResults@8[0]:
+        case 0:
+            if System.EventFlags['cPlayer:AlwJuneBridePleaseShootFlag']:
+                switch EventFlowSystemActor.CheckJuneBrideStudioTakePicture():
+                    case 0:
+                        run Alw_Advice_Shoot_Theme()
+                        EventFlowSystemActor.ExitFlowchart()
+                    case 1:
+                        if EventFlowSystemActor.RandomChoice2(2) == 0:
+                            run Alw_Advice_Shoot_Theme()
+                            EventFlowSystemActor.ExitFlowchart()
+                        else:
+                            run Alw_Advice_Set_Theme()
+                            EventFlowSystemActor.ExitFlowchart()
+                    case 2:
+                        run Alw_Shoot()
+            else:
+                EventFlowSystemActor.CalcJuneBrideScore()
+                if EventFlowSystemActor.JuneBrideScoreCheck('cFurnitureNum', 1):
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:030', false)
+                    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:031_01', false)
+                        System.EventFlags['cPlayer:AlwJuneBridePleaseShootFlag'] = true
+                        System.EventFlags['cPlayer:AlwJuneBrideBalloonFlag'] = true
+                        EventFlowSystemActor.UIGuideBalloonWeddingParty(2)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:032', false)
+                    EventFlowSystemActor.ExitFlowchart()
+                else:
+                    run Alw_Advice_Set_Theme()
+                    EventFlowSystemActor.ExitFlowchart()
+        case 1, 2, 3, 4, 6, 7:
+            if EventFlowSystemActor.CheckJuneBrideStudioTakePicture() in (0, 1):
+                EventFlowSystemActor.CalcJuneBrideScore()
+                if not EventFlowSystemActor.JuneBrideScoreCheck('cFurnitureNum', 1):
+                    run Alw_Advice_Set_Theme()
+                    EventFlowSystemActor.ExitFlowchart()
+                elif (EventFlowSystemActor.CheckCalledNpcNumNormal(1)) and (not System.EventFlags['cPlayer:AlwJuneBridePartyTalkFlag']):
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:073', false)
+                    System.EventFlags['cPlayer:AlwJuneBridePartyTalkFlag'] = true
+                    if Player.PlayerIsEquipToolTowel():
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:120', false)
+                    EventFlowSystemActor.ExitFlowchart()
+                elif System.EventFlags['cPlayer:AlwJuneBridePleaseShootFlag']:
+                    if EventFlowSystemActor.RandomChoice2(2) == 0:
+                        run Alw_Advice_Shoot_Theme()
+                        EventFlowSystemActor.ExitFlowchart()
+                    else:
+                        run Alw_Advice_Set_Theme()
+                        EventFlowSystemActor.ExitFlowchart()
+                elif EventFlowSystemActor.JuneBrideScoreCheck('cFurnitureNum', 1):
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:031_02', false)
+                    System.EventFlags['cPlayer:AlwJuneBridePleaseShootFlag'] = true
+                    EventFlowSystemActor.ExitFlowchart()
+                else:
+                    run Alw_Advice_Set_Theme()
+                    EventFlowSystemActor.ExitFlowchart()
+            elif (EventFlowSystemActor.CheckCalledNpcNumNormal(1)) and (not System.EventFlags['cPlayer:AlwJuneBridePartyTalkFlag']):
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:073', false)
+                System.EventFlags['cPlayer:AlwJuneBridePartyTalkFlag'] = true
+                if Player.PlayerIsEquipToolTowel():
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:120', false)
+                EventFlowSystemActor.ExitFlowchart()
+            else:
+                run Alw_Shoot()
+        case 5:
+            EventFlowSystemActor.CalcJuneBrideScore()
+            if not EventFlowSystemActor.JuneBrideScoreCheck('cFurnitureNum', 1):
+                run Alw_Advice_Set_Theme()
+                EventFlowSystemActor.ExitFlowchart()
+            elif not EventFlowSystemActor.CheckCalledNpcNumNormal(1):
+                if (System.EventFlags['cPlayer:AlwJuneBridePleaseShootFlag']) and (EventFlowSystemActor.PercentChoice(70)):
+                    run Alw_Advice_Set_Theme()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:072', false)
+                    System.EventFlags['cPlayer:AlwJuneBridePleaseShootFlag'] = true
+                EventFlowSystemActor.ExitFlowchart()
+            elif EventFlowSystemActor.AlwAlpIsOnBedJuneBride():
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:074', false)
+                EventFlowSystemActor.ExitFlowchart()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:070', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:071', false)
+                    run System_JuneBrideParty::PartyStart_Wipe()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:032', false)
+                EventFlowSystemActor.ExitFlowchart()
+
+flow Alw_DayChk():
+    if System.EventFlags['cPlayer:AlwJuneBrideDayCount'] == 0:
+        SubflowResults[0] = 0
+    elif System.EventFlags['cPlayer:AlwJuneBrideDayCount'] == 1:
+        SubflowResults[0] = 1
+    elif System.EventFlags['cPlayer:AlwJuneBrideDayCount'] == 2:
+        SubflowResults[0] = 2
+    elif System.EventFlags['cPlayer:AlwJuneBrideDayCount'] == 3:
+        SubflowResults[0] = 3
+    elif System.EventFlags['cPlayer:AlwJuneBrideDayCount'] == 4:
+        SubflowResults[0] = 4
+    elif System.EventFlags['cPlayer:AlwJuneBrideDayCount'] == 5:
+        SubflowResults[0] = 5
+    elif System.EventFlags['cPlayer:AlwJuneBrideDayCount'] != 6:
+        SubflowResults[0] = 7
+    else:
+        SubflowResults[0] = 6
+
+flow Alw_End_day2_5():
+    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:013', false)
+    System.EventFlags['cPlayer:AlwJuneBrideBalloonFlag'] = true
+    EventFlowSystemActor.UIGuideBalloonWeddingParty(2)
+
+flow Alw_GetItem():
+    if SubflowResults@8[0] in (0, 1, 2, 3, 4, 5):
+        MainNpc.DecideEventReward('cEventRewardSymbol00')
+        MainNpc.SetItemName(1, 0, 0)
+        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:050', false)
+        if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+            MainNpc.SetDeliveryItem(1, true)
+            if MainNpc.NpcIsSitting() in (0, 1, 2, 3, 5):
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:059', false)
+                MainNpc.SetEventRewardToPlayerBaggage('cFree')
+                System.EventFlags['cPlayerTemp:AlwJuneBrideSitDownFlag'] = true
+            else:
+                MainNpc.NpcChangeHandTool(65534, 'cPutAway', false)
+                EventFlowSystemActor.WaitFrame(5)
+                EventFlowSystemActor.MessageSuspend()
+                MainNpc.NpcDelivery(1, 'Default')
+                if not System.EventFlags['cLandTemp:JuneBrideCeremonyDemoAfterNow']:
+                    System.EventFlags['cPlayerTemp:AlwJuneBrideBouquetFlag'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:052', false)
+            if SubflowResults@8[0] == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:053', false)
+                if not System.EventFlags['cPlayer:AlwJuneBrideExchangeTalkFlag']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:053_01', false)
+                    System.EventFlags['cPlayer:AlwJuneBrideExchangeTalkFlag'] = true
+            run Alw_LoveCrystalNum()
+            if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+                run Sub_Event70()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:051', false)
+                EventFlowSystemActor.SystemMailSend('cAlw_Alp', 'MAIL_SNpc_alw_JuneBride', 2, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:051', false)
+            EventFlowSystemActor.SystemMailSend('cAlw_Alp', 'MAIL_SNpc_alw_JuneBride', 1, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:052', false)
+            if SubflowResults@8[0] == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:053', false)
+                if not System.EventFlags['cPlayer:AlwJuneBrideExchangeTalkFlag']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:053_01', false)
+                    System.EventFlags['cPlayer:AlwJuneBrideExchangeTalkFlag'] = true
+            run Alw_LoveCrystalNum()
+            if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+                run Sub_Event70()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:054', false)
+                EventFlowSystemActor.SystemMailSend('cAlw_Alp', 'MAIL_SNpc_alw_JuneBride', 2, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+    elif not System.EventFlags['cPlayer:AlwJuneBrideQuestClearFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:055', false)
+        run Alw_LoveCrystalNum()
+        if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+            MainNpc.SetDeliveryItem(1, true)
+            if MainNpc.NpcIsSitting() in (0, 1, 2, 3, 5):
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:059', false)
+                MainNpc.SetEventRewardToPlayerBaggage('cFree')
+                System.EventFlags['cPlayerTemp:AlwJuneBrideSitDownFlag'] = true
+            else:
+                MainNpc.NpcChangeHandTool(65534, 'cPutAway', false)
+                EventFlowSystemActor.WaitFrame(5)
+                EventFlowSystemActor.MessageSuspend()
+                MainNpc.NpcDelivery(1, 'Default')
+                if not System.EventFlags['cLandTemp:JuneBrideCeremonyDemoAfterNow']:
+                    System.EventFlags['cPlayerTemp:AlwJuneBrideBouquetFlag'] = true
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:051', false)
+            EventFlowSystemActor.SystemMailSend('cAlw_Alp', 'MAIL_SNpc_alw_JuneBride', 2, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+
+flow Alw_LoveCrystalNum():
+    EventFlowSystemActor.SetMemoryEventPlayer('cBlancoEventPlayer:PE_JuneBride_GetHeartPiece')
+    if System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 1:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 1, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 2:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 2, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 3:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 3, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 4:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 4, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 5:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 5, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 6:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 6, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 7:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 7, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 8:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 8, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 9:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 9, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 10:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 10, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 11:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 11, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 12:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 12, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 13:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 13, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 14:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 14, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 15:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 15, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] == 16:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 16, 'cVillageRemakePattern', 0)
+    elif System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] != 17:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 18, 'cVillageRemakePattern', 0)
+    else:
+        EventFlowSystemActor.SelectRewardItemDirect(12546, 17, 'cVillageRemakePattern', 0)
+
+flow Alw_NewFtr():
+    if SubflowResults@8[0] in (0, 1, 2, 3, 5, 6, 7):
+        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:016_pl', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:016', false)
+
+flow Alw_NotThemeStart():
+    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:022', false)
+    run Event411()
+
+flow Alw_ScoreCount():
+    System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] = 0
+    if SubflowResults@8[0] in (0, 1, 2, 3, 4, 5):
+        if EventFlowSystemActor.JuneBrideScoreCheck('cHHAScore', 17000):
+            if EventFlowSystemActor.JuneBrideScoreCheck('cHHAScore', 23000):
+                System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 4
+            else:
+                System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 3
+        else:
+            System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 1
+        if EventFlowSystemActor.JuneBrideScoreCheck('cFurnitureNum', 8):
+            SubflowResults[2] = 0
+            if EventFlowSystemActor.JuneBrideScoreCheck('cThemeColorRatio', 70):
+                SubflowResults[3] = 0
+                if EventFlowSystemActor.JuneBrideScoreCheck('cThemeColorRatio', 90):
+                    System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 4
+                else:
+                    System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 3
+            else:
+                run Sub_Event372()
+        else:
+            SubflowResults[2] = 1
+            run Sub_Event372()
+        if EventFlowSystemActor.JuneBrideScoreCheck('cThemeSituationRatio', 8):
+            SubflowResults[4] = 0
+            if EventFlowSystemActor.JuneBrideScoreCheck('cThemeSituationRatio', 12):
+                System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 4
+            else:
+                System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 3
+        else:
+            SubflowResults[4] = 1
+            System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 1
+        if System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] < 4:
+            if SubflowResults@8[0] in (0, 1, 2):
+                SubflowResults[1] = 1
+            else:
+                SubflowResults[1] = 2
+        else:
+            if System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] < 10:
+                SubflowResults[1] = 1
+            else:
+                SubflowResults[1] = 0
+        System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 2
+    else:
+        if EventFlowSystemActor.JuneBrideScoreCheck('cHHAScore', 17000):
+            if EventFlowSystemActor.JuneBrideScoreCheck('cHHAScore', 23000):
+                System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 5
+            else:
+                System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 3
+        else:
+            System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 1
+        if EventFlowSystemActor.JuneBrideScoreCheck('cFurnitureNum', 8):
+            SubflowResults[2] = 0
+            if EventFlowSystemActor.JuneBrideScoreCheck('cThemeColorRatio', 70):
+                SubflowResults[3] = 0
+                if EventFlowSystemActor.JuneBrideScoreCheck('cThemeColorRatio', 90):
+                    System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 5
+                else:
+                    System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 3
+            else:
+                run Sub_Event234()
+        else:
+            SubflowResults[2] = 1
+            run Sub_Event234()
+        if EventFlowSystemActor.JuneBrideScoreCheck('cThemeSituationRatio', 8):
+            SubflowResults[4] = 0
+            if EventFlowSystemActor.JuneBrideScoreCheck('cThemeSituationRatio', 12):
+                System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 5
+            else:
+                System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 3
+        else:
+            SubflowResults[4] = 1
+            System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 0
+        if System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] < 5:
+            SubflowResults[1] = 2
+        else:
+            if System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] < 11:
+                SubflowResults[1] = 1
+            else:
+                SubflowResults[1] = 0
+        System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 3
+
+flow Alw_Shoot():
+    SubNpc.TurnBody(10, 0.0)
+    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:033', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:034', false)
+        run Alw_ScoreCount()
+        switch SubflowResults@3[1]:
+            case 0:
+                SubNpc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:043', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:042', false)
+                run Sub_grp_Event237()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:041', false)
+                run Sub_grp_Event237()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:032', false)
+        EventFlowSystemActor.ExitFlowchart()
+
+flow Alw_Start():
+    System.EventFlags['cPlayer:AlwJuneBrideQuestStartFlag'] = true
+    System.EventFlags['cPlayer:AlwJuneBrideBalloonFlag'] = true
+    switch SubflowResults@8[0]:
+        case 0:
+            SubNpc.TurnBody(10, 0.0)
+            run Alw_Start_day1()
+            run Alw_day135_Ceremony()
+            run Alw_day1_6_Cute()
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:012', false)
+        case 1:
+            SubNpc.TurnBody(10, 0.0)
+            run Alw_Start_day2_5()
+            run Alw_day24_Reception()
+            if System.EventFlags['cPlayer:AlwJuneBrideDayAlreadyCount'] == 1:
+                run Alw_NewFtr()
+            run Alw_day1_6_Cute()
+            run Alw_End_day2_5()
+        case 2:
+            SubNpc.TurnBody(10, 0.0)
+            run Alw_Start_day2_5()
+            run Alw_day135_Ceremony()
+            if System.EventFlags['cPlayer:AlwJuneBrideDayAlreadyCount'] == 2:
+                run Alw_NewFtr()
+            run Alw_day1_6_Cute()
+            run Alw_End_day2_5()
+        case 3:
+            SubNpc.TurnBody(10, 0.0)
+            run Alw_Start_day2_5()
+            run Alw_day24_Reception()
+            if System.EventFlags['cPlayer:AlwJuneBrideDayAlreadyCount'] == 3:
+                run Alw_NewFtr()
+            run Alw_day1_6_Cute()
+            run Alw_End_day2_5()
+        case 4:
+            SubNpc.TurnBody(10, 0.0)
+            run Alw_Start_day2_5()
+            run Alw_day135_Ceremony()
+            if System.EventFlags['cPlayer:AlwJuneBrideDayAlreadyCount'] == 4:
+                run Alw_NewFtr()
+            run Alw_day1_6_Cute()
+            run Alw_End_day2_5()
+        case 5:
+            SubNpc.TurnBody(10, 0.0)
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:017', false)
+            switch EventFlowSystemActor.GeneralTalkChoice2():
+                case 0, 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:018', false)
+                    if System.EventFlags['cPlayer:AlwJuneBrideDayAlreadyCount'] == 5:
+                        run Alw_NewFtr()
+                    run Alw_day1_6_Cute()
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:019', false)
+                    if Player.PlayerIsEquipToolTowel():
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:120', false)
+                    System.EventFlags['cPlayer:AlwJuneBridePartyTalkFlag'] = true
+                    System.EventFlags['cPlayer:AlwJuneBrideBalloonFlag'] = true
+                    EventFlowSystemActor.UIGuideBalloonWeddingParty(1)
+        case 6:
+            if System.EventFlags['cPlayer:AlwJuneBrideQuestClearFlag']:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:100', false)
+                if EventFlowSystemActor.EnvCheckBetweenDate(6, 30, 6, 30, 'cLastGrowUpTime'):
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:109_01', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:108', false)
+                System.EventFlags['cPlayer:AlwJuneBrideQuestStartFlag'] = false
+                System.EventFlags['cPlayer:AlwJuneBrideBalloonFlag'] = false
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:020', false)
+                if (EventFlowSystemActor.CurrentJuneBrideTheme() != 0) and (System.EventFlags['cPlayer:EnableDiyRemake']):
+                    if System.EventFlags['cPlayer:AlwJuneBrideRemakeOpenFlag']:
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:020_01', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:022_02', false)
+                    else:
+                        System.EventFlags['cPlayer:AlwJuneBrideRemakeOpenFlag'] = true
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:020_01', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:021', false)
+                    run Alw_ThemeStart()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:020_02', false)
+entrypoint Event411:
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:011', false)
+                    System.EventFlags['cPlayer:AlwJuneBrideNoRemake1stFlag'] = true
+                    run Alw_End_day2_5()
+        case 7:
+            if System.EventFlags['cPlayer:AlwJuneBrideQuestClearFlag']:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:023', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    if (System.EventFlags['cPlayer:EnableDiyRemake']) and (not System.EventFlags['cPlayer:AlwJuneBrideNoRemake1stFlag']):
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:025', false)
+                        EventFlowSystemActor.DecideNextJuneBrideTheme()
+                        switch EventFlowSystemActor.CurrentJuneBrideTheme():
+                            case 0:
+                                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:cute', false)
+                            case 1:
+                                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:chic', false)
+                            case 2:
+                                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:garden', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:026', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:025_01', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:027', false)
+                    System.EventFlags['cPlayer:JuneBridePlacementDataClearFlag'] = true
+                    EventFlowSystemActor.MessageSuspend()
+                    EventFlowSystemActor.SystemRequestChangeStage('cJuneBrideStudio', 'cHeartWipe', 'cHeartWipe', 'cBlack', 1.0, 1.0)
+                    System.EventFlags['cPlayer:AlwJuneBrideBalloonFlag'] = true
+                    EventFlowSystemActor.UIGuideBalloonWeddingParty(2)
+                else:
+                    if EventFlowSystemActor.EnvCheckBetweenDate(6, 30, 6, 30, 'cLastGrowUpTime'):
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:024_01', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:024', false)
+                    System.EventFlags['cPlayer:AlwJuneBrideQuestStartFlag'] = false
+                    System.EventFlags['cPlayer:AlwJuneBrideBalloonFlag'] = false
+            elif not System.EventFlags['cPlayer:EnableDiyRemake']:
+                run Alw_NotThemeStart()
+            elif System.EventFlags['cPlayer:AlwJuneBrideRemakeOpenFlag']:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:022', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:022_02', false)
+                run Alw_ThemeStart()
+            elif EventFlowSystemActor.CurrentJuneBrideTheme() == 0:
+                run Alw_NotThemeStart()
+            else:
+                System.EventFlags['cPlayer:AlwJuneBrideRemakeOpenFlag'] = true
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:020_01', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:021', false)
+                run Alw_ThemeStart()
+
+flow Alw_Start_day1():
+    if System.EventFlags['cPlayer:AlwJuneBrideTalkBeforeFlag']:
+        EventFlowSystemActor.BGMPropertyControl(95)
+        System.EventFlags['cPlayer:JuneBrideBGMHasUnlocked'] = true
+        fork:
+            branch:
+                SubNpc.CharacterEmoticonAction('FaintSmile', true, '', 0, true)
+            branch:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:005', false)
+        if System.EventFlags['cPlayer:AlwJuneBrideDayAlreadyCount'] < 1:
+            run Sub_Event408()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:005_01', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:005_02', false)
+                run Sub_Event408()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:005_02', false)
+                run Alw_day135_Ceremony()
+                run Alw_day1_6_Cute()
+                System.EventFlags['cPlayer:AlwJuneBridePleaseShootFlag'] = true
+                run Alw_End_day2_5()
+                EventFlowSystemActor.ExitFlowchart()
+    else:
+        System.EventFlags['cPlayer:AlwJuneBrideTalkBeforeFlag'] = true
+        System.EventFlags['cPlayer:AlpJuneBrideTalkBeforeFlag'] = true
+        EventFlowSystemActor.BGMPropertyControl(95)
+        System.EventFlags['cPlayer:JuneBrideBGMHasUnlocked'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:001', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:002', false)
+        SubNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:003', false)
+        fork:
+            branch:
+                SubNpc.CharacterEmoticonAction('FaintSmile', true, '', 0, true)
+            branch:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:004', false)
+        run Sub_Event408()
+
+flow Alw_Start_day2_5():
+    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:014', false)
+
+flow Alw_ThanksMsg():
+    if (not System.EventFlags['cPlayer:AlwJuneBrideQuestClearFlag']) and (not System.EventFlags['cLandTemp:RemakeJuneBrideTalkTimeAfterNow']):
+        if EventFlowSystemActor.EnvCheckBetweenDate(6, 30, 6, 30, 'cLastGrowUpTime'):
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:056', false)
+            if not System.EventFlags['cPlayer:AlwJuneBrideLastDayTalkFlag']:
+                MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:109_01', false)
+                System.EventFlags['cPlayer:AlwJuneBrideLastDayTalkFlag'] = true
+        else:
+            switch SubflowResults@8[0]:
+                case 0:
+                    run Sub_Event83()
+                case 1:
+                    if System.EventFlags['cPlayer:AlwJuneBrideQuestClearFlag']:
+                        run Sub_Event83()
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:058', false)
+                case 2, 3, 4, 5, 6, 7:
+                    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:058', false)
+    else:
+        if EventFlowSystemActor.EnvCheckBetweenDate(6, 30, 6, 30, 'cLastGrowUpTime'):
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:109_01', false)
+            System.EventFlags['cPlayer:AlwJuneBrideLastDayTalkFlag'] = true
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:108', false)
+    System.EventFlags['cPlayer:AlwJuneBrideQuestClearFlag'] = true
+    if System.EventFlags['cPlayerTemp:AlwJuneBrideBouquetFlag']:
+        MainNpc.NpcChangeHandTool(12732, 'cNone', false)
+        System.EventFlags['cPlayerTemp:AlwJuneBrideBouquetFlag'] = false
+
+flow Alw_ThemeStart():
+    switch EventFlowSystemActor.CurrentJuneBrideTheme():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:cute', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:chic', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:garden', false)
+    run Alw_End_day2_5()
+
+flow Alw_day135_Ceremony():
+    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:015_01', false)
+
+flow Alw_day1_6_Cute():
+    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:011', false)
+
+flow Alw_day24_Reception():
+    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:015_02', false)
+
+flow Root():
+    run Alw_DayChk()
+    if (System.EventFlags['cPlayer:AlwJuneBrideQuestClearFlag']) and (SubflowResults@8[0] in (0, 1, 2, 3, 4, 5)):
+        run Alw_ThanksMsg()
+    elif System.EventFlags['cPlayer:AlwJuneBrideQuestStartFlag']:
+        run Alw_Camera()
+        run Alw_AfterClear_Flag()
+        run Alw_GetItem()
+        run Alw_ThanksMsg()
+        EventFlowSystemActor.UIGuideBalloonWeddingParty(0)
+    else:
+        run Alw_Start()
+
+flow Root_Init():
+    if (EventFlowSystemActor.TermEventNow('JuneBride', false)) and (System.EventFlags['cPlayer:CommuneIslandAvailable']):
+        MainNpc.NpcAITalkSubCastEntry('alp', 1)
+
+local flow Sub_Event234():
+    SubflowResults[3] = 1
+    System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 0
+
+local flow Sub_Event372():
+    SubflowResults[3] = 1
+    System.EventFlags['cPlayerTemp:AlwJuneBrideDayScoreCount'] += 1
+
+local flow Sub_Event408():
+    SubNpc.CharacterEmoticonAction('EmotEnd', true, '', 0, true)
+    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:006', false)
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:007', false)
+        branch:
+            MainNpc.CharacterEmoticonAction('FaintSmile', true, '', 0, true)
+    fork:
+        branch:
+            SubNpc.CharacterEmoticonAction('FaintSmile', true, '', 0, true)
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:008', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:010_01', false)
+    fork:
+        branch:
+            SubNpc.CharacterEmoticonAction('SmugFace', true, '', 0, false)
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:010_02', false)
+    fork:
+        branch:
+            SubNpc.CharacterEmoticonAction('FaintSmile', true, '', 0, false)
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:010_03', false)
+
+local flow Sub_Event70():
+    MainNpc.SetDeliveryItem(1, true)
+    if MainNpc.NpcIsSitting() in (0, 1, 2, 3, 5):
+        MainNpc.SetEventRewardToPlayerBaggage('cFree')
+        if System.EventFlags['cPlayerTemp:AlwJuneBrideSitDownFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:060', false)
+            System.EventFlags['cPlayerTemp:AlwJuneBrideSitDownFlag'] = true
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:059', false)
+    else:
+        EventFlowSystemActor.MessageSuspend()
+        if System.EventFlags['cPlayerTemp:AlwJuneBrideSitDownFlag']:
+            MainNpc.NpcDelivery(1, 'Default')
+        else:
+            MainNpc.NpcChangeHandTool(65534, 'cPutAway', false)
+            EventFlowSystemActor.WaitFrame(10)
+            MainNpc.NpcDelivery(1, 'Default')
+            EventFlowSystemActor.WaitFrame(10)
+
+local flow Sub_Event83():
+    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:056', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:057', false)
+
+local flow Sub_grp_Event237():
+    if SubflowResults@2[2] != 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:044', false)
+    elif (SubflowResults@2[3] != 0) and ((SubflowResults@2[4] == 0) or (EventFlowSystemActor.RandomChoice2(2) != 0)):
+        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:045', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/alw/GEvent/SP_alw_GEvent_JuneBride:046', false)
+

@@ -1,0 +1,158 @@
+flow CheckSelFIXLadderRecipe(ItemPrice: int):
+    if EventFlowSystemActor.MultiItemSelectInclude(12327, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        SubflowResults[1] = 5
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_03_05', false)
+        run Sub_Event64(ItemPrice=ItemPrice)
+    elif EventFlowSystemActor.MultiItemSelectInclude(14863, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        SubflowResults[1] = 6
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_10_01', false)
+        run Sub_Event64(ItemPrice=ItemPrice)
+    else:
+        SubflowResults[1] = 7
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_11_01', false)
+        run Sub_Event64(ItemPrice=ItemPrice)
+
+flow Rco_BuyDiyRecipeMastered():
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_02', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run SNPC_rcm_00_Common::Rcm_Common_BuyCheckUI()
+        run Event76()
+    else:
+        run SNPC_rcm_00_Common::Rcm_Groceries_Buy_Cancel()
+
+flow Rco_BuyDiyRecipeNoMastered():
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:104', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run SNPC_rcm_00_Common::Rcm_Common_BuyCheckUI()
+entrypoint Event76:
+            switch SubflowResults@8[1]:
+                case 0, 1, 2, 3, 4, 5:
+                    switch SubflowResults@6[1]:
+                        case 0:
+                            MainNpc.NpcSetRewardRecipe(3083, false)
+                        case 1:
+                            MainNpc.NpcSetRewardRecipe(3082, false)
+                        case 2:
+                            MainNpc.NpcSetRewardRecipe(4703, false)
+                        case 3:
+                            MainNpc.NpcSetRewardRecipe(2822, false)
+                        case 4:
+                            MainNpc.NpcSetRewardRecipe(3068, false)
+                        case 5:
+                            MainNpc.NpcSetRewardRecipe(2615, false)
+                case 6:
+                    MainNpc.NpcSetRewardRecipe(13530, false)
+                case 7:
+                    MainNpc.NpcSetRewardRecipe(2578, false)
+            MainNpc.NpcSetQuestRewardToPlayerBaggage('cFree')
+            System.EventFlags['cPlayerTemp:RcmBoughtGrocery'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:092', false)
+            if EventFlowSystemActor.ShopLevel() != `InResServiceTent`:
+                Player.TurnBody(13, 0.0)
+            run SNPC_rcm_00_Common::Rcm_Common_BuyAgain()
+        case 1:
+            switch SubflowResults@8[1]:
+                case 0, 1, 2, 3, 4, 5:
+                    switch SubflowResults@6[1]:
+                        case 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_04_01', false)
+                            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_04_02', false)
+                        case 1:
+                            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_05_01', false)
+                            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_05_02', false)
+                        case 2:
+                            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_06_01', false)
+                            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_06_02', false)
+                        case 3:
+                            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_07_01', false)
+                            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_07_02', false)
+                        case 4:
+                            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_08_01', false)
+                            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_08_02', false)
+                        case 5:
+                            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_09_01', false)
+                            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_09_02', false)
+                case 6:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_10_01', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_10_02', false)
+                case 7:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_11_01', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_11_02', false)
+            run Rco_BuyDiyRecipeNoMastered()
+        case 2:
+            run SNPC_rcm_00_Common::Rcm_Groceries_Buy_Cancel()
+
+flow Root(ItemPrice: int = 0):
+    if EventFlowSystemActor.MultiItemSelectInclude(9048, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        SubflowResults[1] = 0
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_03', false)
+        run Sub_Event64(ItemPrice=ItemPrice)
+    elif EventFlowSystemActor.MultiItemSelectInclude(9047, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        SubflowResults[1] = 1
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_03_01', false)
+        run Sub_Event64(ItemPrice=ItemPrice)
+    elif EventFlowSystemActor.MultiItemSelectInclude(9046, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        SubflowResults[1] = 2
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_03_02', false)
+        run Sub_Event64(ItemPrice=ItemPrice)
+    elif EventFlowSystemActor.MultiItemSelectInclude(10309, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        SubflowResults[1] = 3
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_03_03', false)
+        run Sub_Event64(ItemPrice=ItemPrice)
+    elif EventFlowSystemActor.MultiItemSelectInclude(12294, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        SubflowResults[1] = 4
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:110_03_04', false)
+        run Sub_Event64(ItemPrice=ItemPrice)
+    else:
+        run CheckSelFIXLadderRecipe(ItemPrice=ItemPrice)
+
+local flow Sub_Event64(ItemPrice: int):
+    if System.EventFlags['cPlayer:MainmenuRecipe']:
+        switch SubflowResults@8[1]:
+            case 0, 1, 2, 3, 4, 5:
+                switch SubflowResults@6[1]:
+                    case 0:
+                        if EventFlowSystemActor.PlayerHasCraftRecipe('None', 3083):
+                            run Rco_BuyDiyRecipeMastered()
+                        else:
+                            run Rco_BuyDiyRecipeNoMastered()
+                    case 1:
+                        if EventFlowSystemActor.PlayerHasCraftRecipe('None', 3082):
+                            run Rco_BuyDiyRecipeMastered()
+                        else:
+                            run Rco_BuyDiyRecipeNoMastered()
+                    case 2:
+                        if EventFlowSystemActor.PlayerHasCraftRecipe('None', 4703):
+                            run Rco_BuyDiyRecipeMastered()
+                        else:
+                            run Rco_BuyDiyRecipeNoMastered()
+                    case 3:
+                        if EventFlowSystemActor.PlayerHasCraftRecipe('None', 2822):
+                            run Rco_BuyDiyRecipeMastered()
+                        else:
+                            run Rco_BuyDiyRecipeNoMastered()
+                    case 4:
+                        if EventFlowSystemActor.PlayerHasCraftRecipe('None', 3068):
+                            run Rco_BuyDiyRecipeMastered()
+                        else:
+                            run Rco_BuyDiyRecipeNoMastered()
+                    case 5:
+                        if EventFlowSystemActor.PlayerHasCraftRecipe('None', 2615):
+                            run Rco_BuyDiyRecipeMastered()
+                        else:
+                            run Rco_BuyDiyRecipeNoMastered()
+            case 6:
+                if EventFlowSystemActor.PlayerHasCraftRecipe('None', 13530):
+                    run Rco_BuyDiyRecipeMastered()
+                else:
+                    run Rco_BuyDiyRecipeNoMastered()
+            case 7:
+                if EventFlowSystemActor.PlayerHasCraftRecipe('None', 2578):
+                    run Rco_BuyDiyRecipeMastered()
+                else:
+                    run Rco_BuyDiyRecipeNoMastered()
+    else:
+        run SNPC_rcm_11_BuyDIYbook::Rcm_Cmn_DisableDIY()
+        run SNPC_rcm_00_Common::BuyCancelNoAsk()
+

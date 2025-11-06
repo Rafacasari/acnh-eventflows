@@ -1,0 +1,6 @@
+flow OpenErrorOtherIsland():
+    MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:301', false)
+
+flow OpenErrorSwimming():
+    MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:302', false)
+

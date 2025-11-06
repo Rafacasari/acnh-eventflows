@@ -1,0 +1,33 @@
+flow EnterUI_Commune():
+    Player.PlayerWorkbenchThinking()
+    EventFlowSystemActor.UIAtmHandling(0)
+    if (System.EventFlags['cPlayer:PlayerLoanRepaying']) and (EventFlowSystemActor.PlayerHasLoan()):
+        EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Once', 'Get_FinishLoan', 'cNowDemoEnd', false)
+
+flow EnterUI_Visitor():
+    Player.PlayerWorkbenchThinking()
+    EventFlowSystemActor.UIAtmHandling(1)
+
+flow Root():
+    EventFlowSystemActor.WaitFrame(5)
+    if (EventFlowSystemActor.NetIsDreaming()) or (EventFlowSystemActor.SystemCheckNowStage('cCheckStageSymbol00')):
+        Player.OpenMessageWindow('TalkFtr/FTR_ATM:001', false)
+    elif EventFlowSystemActor.SystemCheckNowStage('cPhotoStudioIsland'):
+        if not System.EventFlags['cPlayer:CommuneATMChkToday']:
+            Player.OpenMessageWindow('TalkFtr/FTR_ATM:004', false)
+            System.EventFlags['cPlayer:CommuneATMChkToday'] = true
+        run EnterUI_Commune()
+    elif EventFlowSystemActor.IsMyVillage():
+        if EventFlowSystemActor.PlayerHouseLevel() == `Homeless`:
+            Player.OpenMessageWindow('TalkFtr/FTR_ATM:003', false)
+        else:
+            run EnterUI_Commune()
+    elif not System.EventFlags['cPlayer:PlayerLoanRepaying']:
+        run EnterUI_Visitor()
+    elif System.EventFlags['cPlayerVisit:NoticeATMOtherIsland']:
+        run EnterUI_Visitor()
+    else:
+        Player.OpenMessageWindow('TalkFtr/FTR_ATM:002', false)
+        System.EventFlags['cPlayerVisit:NoticeATMOtherIsland'] = true
+        run EnterUI_Visitor()
+

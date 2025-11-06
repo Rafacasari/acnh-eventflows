@@ -1,0 +1,34 @@
+flow Root():
+    switch MainNpc.CheckVisitPLayout():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_Layout:001', false)
+            MainNpc.SetTalkedRoomStateBit('cExistNotEnteredRoom')
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_Layout:002', false)
+            MainNpc.SetTalkedRoomStateBit('cExistKeepOutRoom')
+        case 2:
+            MainNpc.SetItemName(19, 0, 0)
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_Layout:004', false)
+            MainNpc.SetTalkedRoomStateBit('cExistToWallFtr')
+        case 3:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_Layout:005', false)
+            MainNpc.SetTalkedRoomStateBit('cNotExistDefaultFtr')
+        case 4:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_Layout:006', false)
+            MainNpc.SetTalkedRoomStateBit('cAllExistDefaultFtr')
+        case 5:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_Layout:007', false)
+            MainNpc.SetTalkedRoomStateBit('cNotExistWallFtr')
+        case 6:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_Layout:008', false)
+            MainNpc.SetTalkedRoomStateBit('cExistManyNotSaleItem')
+        case 7:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_Layout:009', false)
+            MainNpc.SetTalkedRoomStateBit('cExistManyExecutiveItem')
+        case 8:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_Layout:010', false)
+            MainNpc.SetTalkedRoomStateBit('cExistManySpace')
+        case 9:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitP_Layout:012', false)
+            MainNpc.SetTalkedRoomStateBit('cOther')
+

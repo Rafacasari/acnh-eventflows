@@ -1,0 +1,102 @@
+flow RctCongratMyHome_PlayerMoving():
+    System.EventFlags['cPlayer:RctOutsideHintToday'] = true
+    System.EventFlags['cPlayer:RctHintCongratsMyhome'] = true
+    if System.EventFlags['cPlayer:PlayerProducedByPlayerMoving']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:061_05', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:061_04_01', false)
+    if System.EventFlags['cLand:RcmShopMaterialComplete']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:061_04_03', false)
+        System.EventFlags['cPlayer:RctTnx4CollectingMaterials2'] = true
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:061_04_02', false)
+    EventFlowSystemActor.ExitFlowchart()
+
+flow RctCongratMyhome():
+    switch EventFlowSystemActor.PlayerHouseLevel():
+        case `BaseHouse`:
+            if not System.EventFlags['cPlayer:RctHintCongratsMyhome']:
+                run RctCongratMyHome_PlayerMoving()
+        case `HouseExpansion1`, `BackRoom`, `LeftRoom`, `RightRoom`, `SecondFloor`, `Basement`:
+            if (not System.EventFlags['cPlayer:RctHintCongratsMyhome']) and (System.EventFlags['cPlayer:PlayerProducedByPlayerMoving']):
+                run RctCongratMyHome_PlayerMoving()
+        default:
+            return
+
+flow RctHintCmn():
+    if (System.EventFlags['cLand:MuseumBuilt']) and (EventFlowSystemActor.PercentChoice(70)):
+        MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:052', false)
+    elif (not System.EventFlags['cLand:TodayCreateVillage']) and (not EventFlowSystemActor.PercentChoice(80)):
+        MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:051', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:050', false)
+
+flow Root():
+    if not EventFlowSystemActor.IsMyVillage():
+        MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:009', false)
+    elif System.EventFlags['cPlayer:RctTalkBeforeFalg']:
+        run RctCongratMyhome()
+        if System.EventFlags['cPlayer:RctOutsideHintToday']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:003_02', false)
+        else:
+            System.EventFlags['cPlayer:RctOutsideHintToday'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:003_01', false)
+        if System.EventFlags['cPlayer:DecideShopArea']:
+            if System.EventFlags['cPlayer:RctTnx4ConfirmingStorePlace']:
+                run RctHintCmn()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:061_03', false)
+                System.EventFlags['cPlayer:RctTnx4ConfirmingStorePlace'] = true
+        elif System.EventFlags['cLand:RcmShopMaterialComplete']:
+            if System.EventFlags['cPlayer:Prologue4RcmGetTent']:
+                if System.EventFlags['cPlayer:RctTnx4CollectingMaterials2']:
+                    run RctHintCmn()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:061_02', false)
+                    System.EventFlags['cPlayer:RctTnx4CollectingMaterials2'] = true
+            else:
+                run RctHintCmn()
+        elif System.EventFlags['cPlayer:RcmTookQuestReq']:
+            if System.EventFlags['cPlayer:RctTnx4CollectingMaterials']:
+                run RctHintCmn()
+            else:
+                System.EventFlags['cPlayer:RctTnx4CollectingMaterials'] = true
+                MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:061_01', false)
+        elif System.EventFlags['cPlayer:RcoTalked1stAfterPrologue']:
+            if System.EventFlags['cPlayer:MainmenuRecipe']:
+                run RctHintCmn()
+            else:
+                run Sub_grp_Event7()
+        else:
+            if EventFlowSystemActor.RandomChoice2(2) == 0:
+                run Sub_grp_Event7()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:011', false)
+    else:
+        System.EventFlags['cPlayer:RctTalkBeforeFalg'] = true
+        System.EventFlags['cPlayer:RctOutsideHintToday'] = true
+        if System.EventFlags['cLand:TodayCreateVillage']:
+            if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+                MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:001_01', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:001_02', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:001_02', false)
+        if System.EventFlags['cLand:Prologue4BuiltShop']:
+            if System.EventFlags['cPlayer:DecideShopArea']:
+                MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:001_05', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:001_06', false)
+        elif EventFlowSystemActor.SystemCheckNowStage('cIdrTanukichi'):
+            MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:001_04', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:001_03', false)
+
+local flow Sub_grp_Event7():
+    if not EventFlowSystemActor.SystemCheckNowStage('cIdrTanukichi'):
+        MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:012', false)
+    elif System.EventFlags['cPlayer:RcoDIYtrialOngoing']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:013_02', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rct/SP_rct:013_01', false)
+

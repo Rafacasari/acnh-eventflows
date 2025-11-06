@@ -1,0 +1,58 @@
+flow EntryPoint_EditNPC():
+    run EntryPoint_EditPlayer()
+
+flow EntryPoint_EditPlayer():
+    EventFlowSystemActor.UIMoneyDisappear()
+    EventFlowSystemActor.UIMsgCardEditTextHandling('')
+    if not EventFlowSystemActor.UIResultMenuDecide():
+        run Obj_MessageCardRack::EntryPoint_EditCancel()
+    elif EventFlowSystemActor.HasFreeInPostOffice('cToVillagePlayer'):
+        EventFlowSystemActor.UIMoneyAppear()
+        EventFlowSystemActor.SaveSetFromUIResult('cMsgCard')
+        if EventFlowSystemActor.HasBellCount(200):
+            DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:500', true)
+            EventFlowSystemActor.BellCountDown(-200, false)
+            EventFlowSystemActor.DropIntoPostOffice('cSaveMailUserInfo')
+            DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:501', false)
+            EventFlowSystemActor.UIMoneyDisappear()
+        else:
+            DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:510', false)
+            EventFlowSystemActor.UIMoneyDisappear()
+            run Obj_MessageCardRack::EntryPoint_EditKeepByNoMoney()
+    else:
+        run Obj_MessageCardRack::EntryPoint_StockFull()
+
+flow EntryPoint_SendVillage():
+    EventFlowSystemActor.UIMoneyDisappear()
+    DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:200', false)
+    EventFlowSystemActor.UIMsgCardAdrHandling('cResident')
+    if not EventFlowSystemActor.UIResultMenuDecide():
+        run Obj_MessageCardRack::EntryPoint_CancelNega()
+    elif EventFlowSystemActor.UIIsAdrSelect():
+        if EventFlowSystemActor.HasFreeInPostOffice('cToVillagePlayer'):
+            EventFlowSystemActor.SetTagFromUIResult('cSelectPlayerName', 0)
+            DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:210_01', false)
+            run Sub_grp_Event48()
+        else:
+            run Obj_MessageCardRack::EntryPoint_StockFull()
+    elif EventFlowSystemActor.HasFreeInPostOffice('cToNpc'):
+        EventFlowSystemActor.SetTagFromUIResult('cSelectNpcName', 0)
+        DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:210_02', false)
+        run Sub_grp_Event48()
+    else:
+        run Obj_MessageCardRack::EntryPoint_StockFull()
+
+local flow Sub_grp_Event48():
+    if EventFlowSystemActor.ExistUnfinishMail():
+        EventFlowSystemActor.ChangeAddressUnfinishMail()
+        DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:220_02', false)
+        run EntryPoint_EditPlayer()
+    else:
+        DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:220_01', false)
+        EventFlowSystemActor.UIMoneyDisappear()
+        EventFlowSystemActor.UIMsgCardSelectHandling()
+        if EventFlowSystemActor.UIResultMenuDecide():
+            run EntryPoint_EditPlayer()
+        else:
+            run Obj_MessageCardRack::EntryPoint_CancelNega()
+

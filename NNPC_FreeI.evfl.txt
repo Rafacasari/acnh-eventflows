@@ -1,0 +1,26 @@
+flow Present_Chk():
+    System.EventFlags['cPlayerTemp:FreeISelectCount'] = 0
+    if (not System.EventFlags['cPlayer:TalkFreeIPresentTodayAnyone']) and (not System.EventFlags['cPlayerTemp:TalkClothesPNow']) and (not Player.PlayerOutfitMarinesuit()) and (MainNpc.NpcHasFreeMessage('cFreeIPresent')):
+        run ReSelect()
+
+flow ReSelect():
+    MainNpc.DecideFreeIType()
+    MainNpc.DecideFreeIReward()
+    if MainNpc.NpcIsRewardDecided():
+        MainNpc.SetItemName(27, 6, 0)
+        MainNpc.SetItemName(27, 0, 0)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeI_Present:001', false)
+        MainNpc.NpcOpenFreeMessage('cFreeIPresent')
+        EventFlowSystemActor.MessageSuspend()
+        MainNpc.SetDeliveryItem(27, true)
+        MainNpc.NpcDelivery(1, '"Default"')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeI_Present:002', false)
+        System.EventFlags['cPlayer:TalkFreeIPresentTodayAnyone'] = true
+        System.EventFlags['cPlayerTemp:TalkPresentNow'] = true
+        MainNpc.RegistToReleaseItemList(2)
+        MainNpc.AddMemoryEventPlayerForNpc('Present_FromNNPC')
+        EventFlowSystemActor.ExitFlowchart()
+    elif System.EventFlags['cPlayerTemp:FreeISelectCount'] < 5:
+        System.EventFlags['cPlayerTemp:FreeISelectCount'] += 1
+        run ReSelect()
+

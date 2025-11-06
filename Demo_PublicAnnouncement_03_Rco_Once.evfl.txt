@@ -1,0 +1,109 @@
+flow TownNews_Heard1stTime():
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:002_00', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:002_02', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:002_03', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:002_04', true)
+    EventFlowSystemActor.WaitFrame(20)
+    run Demo_PublicAnnouncement_00_Cmn::Root()
+
+flow TownNews_OnThe2ndDay():
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:001_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:001_02', true)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:001_03', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:001_04', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:001_05', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:001_06', false)
+    if System.EventFlags['cLand:IslandProducedByPlayerMoving']:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:001_07_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:001_07', false)
+    if System.EventFlags['cLand:MuseumTentBuiltToday']:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:001_08', false)
+        run Demo_PublicAnnouncement_33_CmnNewsFacilities::MuseumTentToday()
+        System.EventFlags['cPlayer:AnnouncementOwlMovedIn'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:901', true)
+
+flow TownNews_Rco_HouseBuild():
+    EventFlowSystemActor.WaitFrame(4)
+    MainNpc.SmartPhoneSE(0, 'Phone_Incoming')
+    EventFlowSystemActor.WaitFrame(3)
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.WaitFrame(20)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:201', true)
+    MainNpc.SmartPhone(0)
+    MainNpc.SmartPhoneSE(1, 'Phone_Incoming')
+    MainNpc.SmartPhoneSE(2, 'Phone_Unlock')
+    MainNpc.TurnBody(12, 20.0)
+    MainNpc.NpcWaitTurn()
+    EventFlowSystemActor.WaitFrame(5)
+    MainNpc.SmartPhone(2)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:202_01', true)
+    MainNpc.SmartPhone(3)
+    EventFlowSystemActor.WaitFrame(5)
+    MainNpc.TurnBody(12, 0.0)
+    MainNpc.NpcWaitTurn()
+    EventFlowSystemActor.WaitFrame(4)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:203', true)
+    MainNpc.TurnBody(12, 20.0)
+    MainNpc.NpcWaitTurn()
+    EventFlowSystemActor.WaitFrame(5)
+    MainNpc.SmartPhone(2)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:204_01', true)
+    System.EventFlags['cLand:RcmImmQuestOpen'] = true
+    System.EventFlags['cLand:PAnnounceRcoCalling'] = true
+    MainNpc.MessageSuspend()
+    fork:
+        branch:
+            MainNpc.NpcMoveDirection(150.0, 22.0, 0, false, false)
+        branch:
+            EventFlowSystemActor.WaitFrame(50)
+            EventFlowSystemActor.SoundDuckingOn(34)
+            EventFlowSystemActor.FadeOut('cCircle', '', 'cBlack', 0.5, 0.5, true)
+
+flow TownNews_Rco_OfficeOpen():
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:163_01', true)
+    MainNpc.TurnBody(12, -90.0)
+    MainNpc.NpcWaitTurn()
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:163_01_01', true)
+    fork:
+        branch:
+            SubNpc.NpcMoveDirection(90.0, 43.0, 1, false, false)
+            SubNpc.TurnBody(12, 0.0)
+        branch:
+            EventFlowSystemActor.WaitFrame(30)
+            MainNpc.NpcMoveDirection(90.0, 8.0, 0, false, false)
+            MainNpc.TurnBody(12, 0.0)
+    EventFlowSystemActor.WaitFrame(10)
+    SubNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:163_02', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:163_03', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:163_04', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:163_05', true)
+    SubNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:163_06', true)
+    MainNpc.TurnNeck(11, false)
+    MainNpc.TurnBody(12, 0.0)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:163_07', false)
+    if System.EventFlags['cPlayer:PAnnounceExplainCeremony']:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:163_08_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:163_08_02', false)
+        System.EventFlags['cPlayer:PAnnounceExplainCeremony'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:163_09', false)
+    EventFlowSystemActor.MessageSuspend()
+    System.EventFlags['cPlayer:TownNewsHeardTownHallOpenFlag'] = true
+    if not System.EventFlags['cPlayer:RcoOfficeBuiltLetter']:
+        run Demo_PublicAnnouncement_Process::PostRcoLetter105()
+
+flow TownNews_Rco_OfficeRenual():
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:162', false)
+    System.EventFlags['cLand:EnableBuildTownOffice'] = true
+    System.EventFlags['cPlayer:PAnnounceHeardOfficeRenual'] = true
+
+flow TownNews_Rco_RemakeWorkshop():
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:211', false)
+    if System.EventFlags['cPlayer:MainmenuRecipe']:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:212_01', false)
+        System.EventFlags['cPlayer:PAnnouceHeardRemakeWsNewsToday'] = true
+        System.EventFlags['cPlayer:RcoEnableRemakeTrial'] = true
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_10_Rco_Once:212_02', false)
+

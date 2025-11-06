@@ -1,0 +1,166 @@
+flow Chk_RenualOpen_Talk():
+    switch EventFlowSystemActor.ShopLevel():
+        case `NooksCrannyInitial`:
+            if not System.EventFlags['cPlayer:RcmTalked1stAfterPrologue']:
+                System.EventFlags['cPlayer:RcmTalked1stAfterPrologue'] = true
+                SubflowResults[1] = 2
+            elif not System.EventFlags['cPlayer:RcmHeardAboutNewOpen1']:
+                SubflowResults[1] = 1
+            elif (System.EventFlags['cLand:MarketRemodelingFlag2']) and (not System.EventFlags['cPlayer:RcmHeardAboutRenual']):
+                SubflowResults[1] = 5
+        case `NooksCrannyUpgraded`:
+            if not System.EventFlags['cPlayer:RcmTalked1stAfterPrologue']:
+                System.EventFlags['cPlayer:RcmTalked1stAfterPrologue'] = true
+                SubflowResults[1] = 4
+            elif not System.EventFlags['cPlayer:RcmHeardAboutNewOpen2']:
+                SubflowResults[1] = 3
+        default:
+            return
+
+flow Rcm_RenualOpen1():
+    if System.EventFlags['cPlayer:RcmHeardAboutNewOpen1']:
+        System.EventFlags['cPlayer:TwinTurnipExplanation'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:061_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:061_02', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:061_03', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:061_04', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:061_05', false)
+        run SNPC_rcm_00_Common::AfterNewServiceExlpain()
+    else:
+        System.EventFlags['cPlayer:RcmHeardAboutNewOpen1'] = true
+        if System.EventFlags['cLand:MarketOpen1stDay1']:
+            if System.EventFlags['cPlayer:RcmTookQuestReq']:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:051', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:051_01', false)
+        else:
+            if System.EventFlags['cPlayer:RcmTookQuestReq']:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:052', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:052_01', false)
+        if System.EventFlags['cPlayerTemp:RcmShopshelfCheck']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:053_02', false)
+            run SNPC_rcm_00_Common::Rcm_OpenShoppingUI_EX()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:053_01_01', false)
+            if System.EventFlags['cPlayerTemp:RcmViaItemCheck']:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:053_01_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:053_01_02', false)
+
+flow Rcm_RenualOpen1_ConvHgh():
+    MainNpc.TurnBody(1, 0.0)
+    Npc_2.TurnBody(1, 0.0)
+    EventFlowSystemActor.CameraSetDemoParam('RenualOpen1_ConvHgh', 'cTalk', 'Npc:rcm', false, false, true, 0)
+    Player.TurnBody(1, 0.0)
+    System.EventFlags['cPlayer:RcmForcedTalkTodayFlag'] = true
+    System.EventFlags['cLandTemp:RcmEnterBalloon'] = true
+    System.EventFlags['cLandTemp:RctEnterBalloon'] = true
+    SubNpc.NpcChangeNameStatus(1)
+    EventFlowSystemActor.WaitFrame(30)
+    SubNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:201', false)
+    if System.EventFlags['cLand:VillageDaysCount'] <= 7:
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:202', false)
+        if EventFlowSystemActor.MuseumLevel() == `BlathersNotMovedIn`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:203_01', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:203', false)
+    else:
+        if System.EventFlags['cLand:VillageDaysCount'] <= 30:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:202_01', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:202_02', false)
+    SubNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:204', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:205', false)
+    SubNpc.NpcChangeNameStatus(0)
+    SubNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:206', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:207', false)
+    SubNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:208', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:209', false)
+    SubNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:210', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:211', true)
+    SubNpc.TurnNeck(11, false)
+    SubNpc.NpcRailMove(3, false, false, 0, 1, 1)
+    MainNpc.TurnBody(1, 0.0)
+    SubNpc.TurnBody(10, 0.0)
+    SubNpc.CharacterEmoticonAction('Greeting', false, '', 0, false)
+    EventFlowSystemActor.WaitFrame(40)
+    SubNpc.TurnBody(11, 0.0)
+    Player.CharacterEmoticonAction('EmotEnd', false, '', 0, false)
+    SubNpc.NpcRailMove(3, false, false, 1, 2, 1)
+    fork:
+        branch:
+            MainNpc.TurnBody(10, 0.0)
+            MainNpc.NpcWaitTurn()
+        branch:
+            Npc_2.NpcRailMove(5, false, false, 1, 2, 1)
+            Npc_2.TurnBody(10, 0.0)
+            Npc_2.NpcWaitTurn()
+    SubNpc.NpcSetVisibleAction(false)
+    EventFlowSystemActor.WaitFrame(10)
+    Player.TurnBody(0, 0.0)
+    fork:
+        branch:
+            MainNpc.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+        branch:
+            Npc_2.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(20)
+    if System.EventFlags['cPlayer:RcmHeardAboutNewOpen1']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:212_01', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:212', false)
+        if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:213', false)
+            run Sub_Event53()
+        else:
+            if System.EventFlags['cPlayer:RcmTalked1stAfterPrologue']:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:213_01', false)
+                run Sub_Event53()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:213_02', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:214', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:214_01', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:215_01', true)
+                System.EventFlags['cPlayer:RcmTalked1stAfterPrologue'] = true
+        System.EventFlags['cPlayer:RcmHeardAboutNewOpen1'] = true
+    System.EventFlags['cPlayer:KinuyoMetShopFlag'] = true
+    System.EventFlags['cLand:CountTailorBuild'] += 1
+    System.EventFlags['cLand:HghStayMarket'] = false
+    System.EventFlags['cPlayerTemp:RcmTalkSceneFlag'] = true
+    System.EventFlags['cLandTemp:HghStayMarketNow'] = false
+    System.EventFlags['cLand:EnableHghStayField'] = true
+    if EventFlowSystemActor.NetIsConnected():
+        EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 1.0, 1.0, true)
+        MainNpc.NpcAISetPosByRail(6, 0, true, -80.0)
+        Npc_2.NpcAISetPosByRail(6, 1, true, 0.0)
+        EventFlowSystemActor.CameraSetDemoParam('cStrcCommon', 'cDefault', '', false, true, true, 0)
+        EventFlowSystemActor.WaitFrame(30)
+        EventFlowSystemActor.FadeIn(true)
+
+flow Rcm_RenualOpen1_ConvHgh_Prepare():
+    Player.PlayerMoveToTarget(false, 161.0, 180.0, 0.0, 0.0, false, '')
+    EventFlowSystemActor.SetNpcAIBlackBoardByLabel('rcm', 'DemoSpeak', 1, 1)
+
+flow Rcm_RenualOpen2():
+    System.EventFlags['cPlayer:RcmHeardAboutNewOpen2'] = true
+    if System.EventFlags['cLand:MarketOpen1stDay2']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:151', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:151_01', false)
+    if EventFlowSystemActor.TermEventNow('BlackFriday', false):
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:3008', false)
+        System.EventFlags['cPlayerTemp:RcmTalkSceneFlag'] = true
+        System.EventFlags['cPlayer:NoticeBlackFridayToday'] = true
+    if System.EventFlags['cPlayerTemp:RcmViaItemCheck']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:002_03', false)
+    elif System.EventFlags['cPlayerTemp:RcmShopshelfCheck']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:152_02', false)
+        run SNPC_rcm_00_Common::Rcm_OpenShoppingUI_EX()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_10_Renual:002_02', false)
+
+local flow Sub_Event53():
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:214', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:214_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_20_Market:215', true)
+

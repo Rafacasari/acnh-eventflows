@@ -1,0 +1,52 @@
+flow PreEv_AfterXmas():
+    System.EventFlags['cPlayer:AnnounceChristmasEve'] = true
+    if EventFlowSystemActor.EnvHourCompare(0, 0, true, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:008_10_09', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:008_10_10', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:008_10_11', false)
+
+flow PreEv_Easter():
+    System.EventFlags['cPlayer:PAnnouncePreEaster'] = true
+    System.EventFlags['cPlayer:AnnounceEasterReady'] = true
+    if SubflowResults@2[0] == 0:
+        if EventFlowSystemActor.CheckNearEvent(1, 1, 'Easter', false):
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:041_02', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:041_01', false)
+    elif EventFlowSystemActor.CheckNearEvent(1, 1, 'Easter', false):
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:008_01_02', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:008_01_01', false)
+
+flow PreEv_Snow():
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:005', false)
+
+flow PreEv_Xmas():
+    System.EventFlags['cPlayer:AnnouncePreChristmas'] = true
+    if EventFlowSystemActor.TermEventNow('XmasReady1', false):
+        if EventFlowSystemActor.EnvCheckBetweenDate(12, 1, 12, 1, 'cGrowUpTime'):
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:008_10_05', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:008_10_06', false)
+    elif EventFlowSystemActor.EnvCheckBetweenDate(12, 15, 12, 15, 'cGrowUpTime'):
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:008_10_07', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:008_10_08', false)
+
+flow Root():
+    if SubflowResults@2[0] != 0:
+        switch SubflowResults@5[22]:
+            case 1:
+                run PreEv_Xmas()
+            case 2:
+                run PreEv_AfterXmas()
+            case 3:
+                run PreEv_Easter()
+            case 4:
+                run PreEv_Snow()
+            default:
+                return
+    elif SubflowResults@5[22] == 3:
+        run PreEv_Easter()
+

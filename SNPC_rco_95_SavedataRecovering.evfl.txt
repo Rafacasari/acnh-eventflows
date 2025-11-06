@@ -1,0 +1,105 @@
+flow AfterSuccessRecovring():
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.SystemRequestChangeStage('cBoot', 'cNormalFader', 'cNormalFader', 'cBlack', 0.800000011920929, 0.800000011920929)
+
+flow EndRecoveringMenu():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:125', false)
+    EventFlowSystemActor.MessageLockNext(3)
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:004', false)
+    EventFlowSystemActor.WaitFrame(-1)
+
+flow SavedataRestoring():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:100_01', false)
+    EventFlowSystemActor.MessageSuspend()
+    MainNpc.OpenMessageWindow('Dialog/DIALOG_Msg:9017', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:100_03', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run SearchAgain()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:123', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:124', false)
+        run EndRecoveringMenu()
+
+flow SearchAgain():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:100_04', false)
+    EventFlowSystemActor.MessageLockNext(1)
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:012', false)
+    fork:
+        branch:
+            EventFlowSystemActor.SaveListDownloadableBackupInfo()
+        branch:
+            EventFlowSystemActor@Sub.WaitFrame(60)
+    EventFlowSystemActor.MessageUnlockNext()
+    if EventFlowSystemActor.CheckErrorType(2):
+        run Search_InternetError()
+    elif EventFlowSystemActor.SaveIsSucceededDownloadableBackupInfoListup():
+entrypoint Event56:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:122_01', false)
+        run Sub_Event85()
+    elif EventFlowSystemActor.SaveIsDownloadableBackupInfoGreaterThan(1):
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:122_02', false)
+        run Sub_Event85()
+    else:
+        if EventFlowSystemActor.SaveIsDownloadableBackupInfoGreaterThan(2):
+            EventFlowSystemActor.DecideRecoverySaveSingle()
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:103', true)
+        else:
+            SubflowResults[0] = 1
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:105', false)
+entrypoint Event12:
+            EventFlowSystemActor.SetRecoverySaveChoice()
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:106', true)
+            EventFlowSystemActor.DecideRecoverySaveChoice()
+        EventFlowSystemActor.UIRecoverySaveDataHandling()
+        if EventFlowSystemActor.UIResultMenuDecide():
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:107', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:107_01', false)
+                EventFlowSystemActor.MessageLockNext(1)
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:009', false)
+                EventFlowSystemActor.SaveDownloadBackup()
+                if EventFlowSystemActor.SaveIsDownloadedBackup():
+                    EventFlowSystemActor.MessageUnlockNext()
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:126', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:131', false)
+                    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                        run SearchAgain()
+                    else:
+                        run EndRecoveringMenu()
+                else:
+                    run SuccessRecovering()
+            else:
+                run Sub_grp_Event29()
+        else:
+            run Sub_grp_Event29()
+
+flow Search_InternetError():
+    run Event56()
+
+flow ShowListAgain():
+    run Event12()
+
+local flow Sub_Event85():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:123', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:124', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:131', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run SearchAgain()
+    else:
+        run EndRecoveringMenu()
+
+local flow Sub_grp_Event29():
+    if SubflowResults@2[0] == 0:
+        run EndRecoveringMenu()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:108', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run ShowListAgain()
+        else:
+            run EndRecoveringMenu()
+
+flow SuccessRecovering():
+    EventFlowSystemActor.MessageUnlockNext()
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:110', true)
+    run AfterSuccessRecovring()
+

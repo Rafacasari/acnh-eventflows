@@ -1,0 +1,232 @@
+flow Hgs02():
+    if System.EventFlags['cPlayer:HgsTalkTodayFlag']:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:018', true)
+                SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:019', true)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:016', true)
+                SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:017', true)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:015', true)
+    elif System.EventFlags['cPlayer:HgsCloseness'] == 2:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:012', true)
+    elif System.EventFlags['cPlayer:HgsCloseness'] != 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:010', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:011', true)
+
+flow Hgs10():
+    if not System.EventFlags['cPlayer:HgsTalkTodayFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:080', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:081', true)
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:082', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:083', true)
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:084', true)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:086', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:085', true)
+
+flow Hgs11():
+    if (not System.EventFlags['cPlayer:HgsTalkTodayFlag']) and (not EventFlowSystemActor.IsUnlockedAllItemRemakeCommonPattern()):
+        run Hgs_Direction()
+        if System.EventFlags['cPlayer:HgsGotCloth']:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:205', true)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:200', true)
+        MainNpc.SetDeliveryItemAtRandom(9283, false, 'cVillageRemakePattern', 0)
+        MainNpc.NpcDelivery(1, 'Default')
+        EventFlowSystemActor.UnlockRandomItemRemakeCommonPattern()
+        if System.EventFlags['cPlayer:HgsGotCloth']:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:206', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:201', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:202', false)
+        System.EventFlags['cPlayer:HgsGotCloth'] = true
+        System.EventFlags['cLand:NNpcPhoneColorChangeCounter'] += 1
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+            case 0:
+                switch EventFlowSystemActor.RandomChoice4(4):
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:100', false)
+                        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:101', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:102', false)
+                        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:103', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:104', false)
+                        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:105', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:106', false)
+                    case 3:
+                        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:107', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:110', true)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:120', true)
+            case 3:
+                if EventFlowSystemActor.EnvWeatherArea() == `cWeatherArea_North`:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:130', true)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:130_01', true)
+            case 4:
+                if not System.EventFlags['cPlayer:KotonoTalkBeforeFlag']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:150', false)
+                elif System.EventFlags['cPlayer:KotonoQuestCount'] >= 50:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:153', false)
+                elif System.EventFlags['cPlayer:KotonoQuestCount'] < 20:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:151', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:152', false)
+
+flow Hgs34():
+    if not System.EventFlags['cPlayer:HgsTalkTodayFlag']:
+        if System.EventFlags['cPlayer:HgsCloseness'] != 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:020', true)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:021', true)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:026', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:027', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:025', true)
+
+flow Hgs7():
+    if not System.EventFlags['cPlayer:HgsTalkTodayFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:050', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:051', true)
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:052', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:053', true)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:056', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:057', true)
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:058', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:059', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:055', true)
+
+flow Hgs8():
+    if not System.EventFlags['cPlayer:HgsTalkTodayFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:060', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:061', true)
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:062', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:063', true)
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:064', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:065', true)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:067', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:066', true)
+
+flow Hgs9():
+    if not System.EventFlags['cPlayer:HgsTalkTodayFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:070', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:071', true)
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:072', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:073', true)
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:074', true)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:076', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:077', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:075', true)
+
+flow HgsEnd():
+    if not System.EventFlags['cPlayer:HgsTalkTodayFlag']:
+        System.EventFlags['cPlayer:HgsTalkTodayFlag'] = true
+        if System.EventFlags['cPlayer:HgsCloseness'] != 11:
+            System.EventFlags['cPlayer:HgsAllowAddFriendship'] = true
+
+flow Hgs_Chat():
+    if System.EventFlags['cPlayer:HgsCloseness'] < 11:
+        if System.EventFlags['cPlayer:HgsCloseness'] >= 10:
+            run Hgs10()
+        elif System.EventFlags['cPlayer:HgsCloseness'] >= 9:
+            run Hgs9()
+        elif System.EventFlags['cPlayer:HgsCloseness'] >= 8:
+            run Hgs8()
+        elif System.EventFlags['cPlayer:HgsCloseness'] >= 7:
+            run Hgs7()
+        elif System.EventFlags['cPlayer:HgsCloseness'] >= 6:
+            run hgs6()
+        elif System.EventFlags['cPlayer:HgsCloseness'] >= 5:
+            run hgs5()
+        elif System.EventFlags['cPlayer:HgsCloseness'] < 3:
+            run Hgs02()
+        else:
+            run Hgs34()
+    else:
+        run Hgs11()
+    run HgsEnd()
+
+flow Hgs_ChatFixed():
+    if (EventFlowSystemActor.IsMyVillage()) and (System.EventFlags['cPlayer:HgsCloseness'] >= 8):
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:007', true)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:006', true)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:005', true)
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:003', true)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:002', true)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:001', true)
+
+flow Hgs_Direction():
+    MainNpc.TurnBody(10, 0.0)
+    MainNpc.SetDefaultWaitAs('cDefault')
+
+flow Root():
+    if EventFlowSystemActor.NetIsConnected():
+        run Hgs_ChatFixed()
+    elif not EventFlowSystemActor.IsSharePlay(0):
+        run Hgs_Chat()
+    elif System.EventFlags['cPlayer:HgsCloseness'] < 11:
+        run Hgs_ChatFixed()
+    elif System.EventFlags['cPlayer:HgsTalkTodayFlag']:
+        run Hgs_ChatFixed()
+    elif EventFlowSystemActor.IsUnlockedAllItemRemakeCommonPattern():
+        run Hgs_ChatFixed()
+    else:
+        run Hgs11()
+        run HgsEnd()
+
+flow Root_Init():
+    if not EventFlowSystemActor.NetIsConnected():
+        MainNpc.NpcAITalkSubCastEntry('hgh', 1)
+        if EventFlowSystemActor.IsSharePlay(0):
+            if (System.EventFlags['cPlayer:HgsCloseness'] >= 11) and (not System.EventFlags['cPlayer:HgsTalkTodayFlag']) and (not EventFlowSystemActor.IsUnlockedAllItemRemakeCommonPattern()):
+                MainNpc.SetDefaultWaitAs('cDefault')
+        elif System.EventFlags['cPlayer:HgsTalkTodayFlag']:
+            if System.EventFlags['cPlayer:HgsCloseness'] > 5:
+                MainNpc.SetDefaultWaitAs('cDefault')
+        else:
+            if System.EventFlags['cPlayer:HgsCloseness'] >= 5:
+                MainNpc.SetDefaultWaitAs('cDefault')
+
+flow hgs5():
+    if not System.EventFlags['cPlayer:HgsTalkTodayFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:030', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:031', true)
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:032', true)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:036', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:035', true)
+
+flow hgs6():
+    if not System.EventFlags['cPlayer:HgsTalkTodayFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:040', true)
+        SubNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:041', true)
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:042', true)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:046', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgs/SP_hgs:045', true)
+

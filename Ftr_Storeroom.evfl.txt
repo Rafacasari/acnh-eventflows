@@ -1,0 +1,31 @@
+flow Root():
+    if EventFlowSystemActor.NetIsDreaming():
+        run Storeroom_RndText()
+    elif not ((EventFlowSystemActor.IsMyVillage()) and ((EventFlowSystemActor.SystemCheckNowStage('cField')) or (EventFlowSystemActor.SystemCheckNowStage('cTalkingPlayerHouse')))):
+        run Storeroom_RndText()
+    elif EventFlowSystemActor.PlayerHouseLevel() in (`Homeless`, `PlacedTent`):
+        Player.OpenMessageWindow('TalkFtr/FTR_Storeroom:002', false)
+    else:
+        run StoreRoom_UseAtMyField()
+
+flow StoreRoom_UseAtMyField():
+    run Storeroom_ChkFirstWhereren()
+    Player.OpenMessageWindow('TalkFtr/FTR_Storeroom:011', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            EventFlowSystemActor.UIItemSelectWindowHandling('cMoveToChest', 65534, '', '', 'cPutInStorage', false)
+            EventFlowSystemActor.UISelectedItemMoveChest()
+        case 1:
+            EventFlowSystemActor.UIStorageHandling()
+        default:
+            return
+
+flow Storeroom_ChkFirstWhereren():
+    if (EventFlowSystemActor.SystemCheckNowStage('cWherearenOffice1')) and (not System.EventFlags['cWherearenPlayer:FirstOfficeStoreroomFlag']):
+        Player.OpenMessageWindow('TalkFtr/FTR_Storeroom:003', true)
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0126', true)
+        System.EventFlags['cWherearenPlayer:FirstOfficeStoreroomFlag'] = true
+
+flow Storeroom_RndText():
+    EventFlowSystemActor.OpenMessageWindow('TalkFtr/FTR_Storeroom:001', false)
+

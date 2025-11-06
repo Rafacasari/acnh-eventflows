@@ -1,0 +1,35 @@
+flow FacilityName_Chk():
+    if (EventFlowSystemActor.WherearenExistFacilityName('cTailor')) and (not EventFlowSystemActor.PercentChoice(80)):
+        EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cSelectFacility', 0, 'cTailor')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Tailor:100', false)
+        EventFlowSystemActor.ExitFlowchart()
+
+flow Root():
+    if not EventFlowSystemActor.IsInspectingWherearen():
+        run ShareHouseMate_Chk()
+    run FacilityName_Chk()
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Tailor:101', true)
+
+flow ShareHouseMate_Chk():
+    if EventFlowSystemActor.WherearenOrderStatus() == 1:
+        MainNpc.TurnNeck(10, false)
+        run NNPC_Spot_WherearenMainFieldVisitor::LookforHouseMate()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow StandSleep():
+    run NNPC_RestaurantCustomer::`StandSleep_2.1`()
+
+flow Walk():
+    run Root()
+
+flow WatchTorso():
+    switch MainNpc.ClassifyWatchTorsoType():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Tailor:102', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Tailor:103', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Tailor:104', true)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Tailor:101', true)
+

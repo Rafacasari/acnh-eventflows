@@ -1,0 +1,62 @@
+flow Bpt_Friendship_Result():
+    switch MainNpc.BptGetFriendship():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:211', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:212', false)
+            run Sub_grp_Event33()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:213', false)
+            run Sub_grp_Event33()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:214', false)
+            run Sub_grp_Event33()
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:215', false)
+            run Sub_grp_Event33()
+        case 5, 6:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:216', false)
+
+flow Root():
+    MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:201', false)
+    EventFlowSystemActor.UIMsgCardAdrHandling('cFortuneTelling')
+    if EventFlowSystemActor.UIResultMenuDecide():
+        System.EventFlags['cPlayer:Bpt_FinishCompatibilityToday'] = true
+        System.EventFlags['cPlayer:Bpt_1stTalk'] = true
+        EventFlowSystemActor.SetTagFromUIResult('cSelectNpcName', 0)
+        run SNPC_bpt_02_Commune_2_CmnProcess::Bpt_PayFortuneFee()
+        EventFlowSystemActor.PrepareCommuneDecoFortuneDisplayContent('cNPCIcon')
+        SubflowResults[3] = 1
+        MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:203', false)
+        run SNPC_bpt_02_Commune_2_CmnProcess::Bpt_Start_FortuneTelling()
+        run Bpt_Friendship_Result()
+        run SNPC_bpt_02_Commune_2_CmnProcess::Bpt_Finish_FortuneTelling()
+        if SubflowResults@2[2] == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:221', false)
+            EventFlowSystemActor.SetPlayReporterBptTelling('cFriendship', false, false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:222', true)
+            EventFlowSystemActor.WaitFrame(10)
+            EventFlowSystemActor.UIMoneyAppear()
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:223', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run SNPC_bpt_02_Commune_2_CmnProcess::Bpt_PayExtraFee()
+                SubflowResults[3] = 3
+                EventFlowSystemActor.PrepareCommuneDecoFortuneDisplayContent('cNPCIcon')
+                MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:225', false)
+                run SNPC_bpt_02_Commune_2_CmnProcess::Bpt_Start_FortuneTelling()
+                run SNPC_bpt_02_Commune_2_CmnProcess::Bpt_Finish_FortuneTelling()
+                MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:226', false)
+                EventFlowSystemActor.SetPlayReporterBptTelling('cFriendship', false, true)
+                MainNpc.BptAddFriendShip(2)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:224', false)
+                EventFlowSystemActor.SetPlayReporterBptTelling('cFriendship', false, false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:202', false)
+        EventFlowSystemActor.UIMoneyDisappear()
+
+local flow Sub_grp_Event33():
+    if EventFlowSystemActor.HasBellCount(10000):
+        SubflowResults[2] = 1
+

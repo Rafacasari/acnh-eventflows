@@ -1,0 +1,79 @@
+flow CallVillager():
+    EventFlowSystemActor.UIPhotoIslandInteriorEditGuideOff()
+    EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:1610', false)
+
+flow LoadNFP_Error():
+    EventFlowSystemActor.UIPhotoIslandInteriorEditGuideOff()
+    switch EventFlowSystemActor.NfpErrorType():
+        case 0:
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:1614', false)
+        case 1:
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:1613', false)
+        case 2:
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:1601', true)
+
+flow PostLoadNFP():
+    if not EventFlowSystemActor.WherearenAmiiboNpcFreeQuery2('cExistSpace'):
+        EventFlowSystemActor.UIPhotoIslandInteriorEditGuideOff()
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:1608', false)
+    elif EventFlowSystemActor.WherearenAmiiboNpcFreeQuery2('cIsFullNpc'):
+        EventFlowSystemActor.UIPhotoIslandInteriorEditGuideOff()
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:3501', false)
+    elif not EventFlowSystemActor.IsAcceptableAmiibo():
+        EventFlowSystemActor.UIPhotoIslandInteriorEditGuideOff()
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:1614', false)
+    elif EventFlowSystemActor.CheckAmiiboNPC('cRcmAndRct'):
+        EventFlowSystemActor.UIPhotoIslandInteriorEditGuideOff()
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:1609', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            EventFlowSystemActor.ChangeAmiiboNPC('cRcm')
+            run Sub_Event11()
+        else:
+            EventFlowSystemActor.ChangeAmiiboNPC('cRct')
+            run Sub_Event11()
+    else:
+        if EventFlowSystemActor.CheckAmiiboNPC('cVillager'):
+            run CallVillager()
+        else:
+            run Sub_Event11()
+
+flow PostOpenNFP(NpadId: int = 0, ReadPadId: int = 0):
+    if System.EventFlags['cWherearenPlayer:Unlock_Amiibo']:
+        if not System.EventFlags['cWherearenPlayer:NoticeAboutAmibo_NpcMode']:
+            EventFlowSystemActor.UIAmiiboPreviousNoticeGuideCreate()
+            System.EventFlags['cWherearenPlayer:NoticeAboutAmibo_NpcMode'] = true
+        if not EventFlowSystemActor.NfcDisabled():
+            EventFlowSystemActor.CheckNfpController(NpadId)
+            if (NpadId < 0) and (not System.EventFlags['cPlayerTemp:NFPControllerAssertDone']):
+                EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:1602', false)
+                System.EventFlags['cPlayerTemp:NFPControllerAssertDone'] = true
+        elif not System.EventFlags['cPlayerTemp:NFPFlightModeAssertDone']:
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:1612', false)
+            System.EventFlags['cPlayerTemp:NFPFlightModeAssertDone'] = true
+
+local flow Sub_Event11():
+    EventFlowSystemActor.SetTagFromSystem('cAmiiboCallNpcNameToDialog', 'cDegit', 0, 0, '')
+    if EventFlowSystemActor.WherearenAmiiboNpcFreeQuery2('cIsExistAnotherTkk'):
+        EventFlowSystemActor.UIPhotoIslandInteriorEditGuideOff()
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:3505', false)
+    elif EventFlowSystemActor.WherearenAmiiboNpcFreeQuery2('cIsAmiiboNpc'):
+        EventFlowSystemActor.UIPhotoIslandInteriorEditGuideOff()
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:3504', false)
+    elif EventFlowSystemActor.WherearenAmiiboNpcFreeQuery2('cIsResidentNpc'):
+        EventFlowSystemActor.UIPhotoIslandInteriorEditGuideOff()
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:3503', false)
+    elif EventFlowSystemActor.WherearenAmiiboNpcFreeQuery2('cIsOfficerNpc'):
+        EventFlowSystemActor.UIPhotoIslandInteriorEditGuideOff()
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:3502', false)
+    elif EventFlowSystemActor.IsCallableAmiiboNpc('cWherearen'):
+        if EventFlowSystemActor.CheckAmiiboNPC('cOtg'):
+            if EventFlowSystemActor.CheckAmiiboNPC('cOtgMakeUp'):
+                System.EventFlags['cWherearenPlayer:OtgWithoutMakeup'] = false
+            else:
+                System.EventFlags['cWherearenPlayer:OtgWithoutMakeup'] = true
+        EventFlowSystemActor.CreateWherearenAmiiboNpc()
+    else:
+        EventFlowSystemActor.SetTagFromSystem('cAmiiboCallNpcNameToDialog', 'cDegit', 0, 0, '')
+        EventFlowSystemActor.UIPhotoIslandInteriorEditGuideOff()
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:1606', true)
+

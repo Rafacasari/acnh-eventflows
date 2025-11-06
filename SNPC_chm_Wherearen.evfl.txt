@@ -1,0 +1,17 @@
+flow Root():
+    if System.EventFlags['cPlayerTemp:WHEREAREN_ChmTalkedNow']:
+        MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:004', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:001', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:002', true)
+        System.EventFlags['cPlayerTemp:WHEREAREN_LessonEventStart'] = true
+        System.EventFlags['cLandTemp:ReserveFaderKeep'] = true
+        EventFlowSystemActor.ReserveSystemFlowDemo('Demo_SchoolEvent', 'LessonStart', false, false, false)
+        EventFlowSystemActor.CameraReserveFirstStateCommand('Demo:EventLessonStart', 'Place:EditArea', false)
+        EventFlowSystemActor.RequestLessonDemoForSound()
+        EventFlowSystemActor.SystemRequestChangeStage('cWherearenSchool', 'cCircle', 'cCircle', 'cBlack', 1.0, 1.0)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/chm/SP_chm_WherearenEvent:003', false)
+        System.EventFlags['cPlayerTemp:WHEREAREN_ChmTalkedNow'] = true
+

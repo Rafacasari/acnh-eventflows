@@ -1,0 +1,196 @@
+flow Root():
+    run Root_AfterRave()
+
+flow Root_AfterRave():
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:701', true)
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:702', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            MainNpc.TurnNeck(1, false)
+            Npc_2.TurnNeck(1, false)
+        branch:
+            EventFlowSystemActor@sub.WaitFrame(15)
+            Player.TurnNeck(1, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:703', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            Npc_2.TurnNeck(0, false)
+        branch:
+            EventFlowSystemActor@sub.WaitFrame(15)
+            Player.TurnNeck(0, false)
+    MainNpc.TurnNeck(2, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:704', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            SubNpc.TurnNeck(2, false)
+        branch:
+            EventFlowSystemActor@sub.WaitFrame(15)
+            Player.TurnNeck(2, false)
+    Npc_2.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:705', false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:706', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            SubNpc.TurnNeck(0, false)
+        branch:
+            EventFlowSystemActor@sub.WaitFrame(15)
+            Player.TurnNeck(0, false)
+    SubNpc.TurnNeck(2, false)
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:707', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            Npc_2.TurnNeck(1, false)
+            MainNpc.TurnNeck(1, false)
+        branch:
+            EventFlowSystemActor@sub.WaitFrame(15)
+            Player.TurnNeck(1, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:708', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+            SubNpc.TurnNeck(0, false)
+            Npc_2.TurnNeck(0, false)
+        branch:
+            EventFlowSystemActor@sub.WaitFrame(15)
+            Player.TurnNeck(0, false)
+    fork:
+        branch:
+            MainNpc.CharacterEmoticonAction('OtgPretty', false, '', 0, false)
+        branch:
+            SubNpc.CharacterEmoticonAction('MncHappy', false, '', 0, false)
+        branch:
+            Npc_2.CharacterEmoticonAction('Smiling', false, '', 0, false)
+        branch:
+            Player.CharacterEmoticonAction('RequestWillingness', false, '', 0, false)
+    EventFlowSystemActor.WaitFrame(30)
+    System.EventFlags['cWherearenPlayer:SeqKKRave1stDone'] = true
+    System.EventFlags['cPlayerTemp:WHEREAREN_IsSequenceFirstKKFes'] = false
+    System.EventFlags['cWherearenPlayer:FirstKKFesStep'] = 3
+    System.EventFlags['cPlayer:WHEREAREN_Unlock_CoordinateNpcHouse'] = true
+    System.EventFlags['cPlayerTemp:WHEREAREN_OtgTalkReserve_Office'] = true
+    EventFlowSystemActor.SystemRequestChangeStage('cWherearenOfficeReturn', 'cCircle', 'cCircle', 'cBlack', 1.0, 1.0)
+
+flow Root_BuildStage():
+    run SNPC_otg_01_WherearenOffice::HouseCompleteActing()
+    run SNPC_otg_01_WherearenOffice::SetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:631', false)
+    run SNPC_otg_01_WherearenOffice::GetSalaryForEvent()
+    MainNpc.TurnNeck(1, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:632', false)
+        branch:
+            SubNpc.TurnNeck(0, false)
+            EventFlowSystemActor.WaitFrame(15)
+            Npc_2.TurnNeck(1, false)
+        branch:
+            Player.TurnNeck(1, false)
+    SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:633', false)
+    SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:634', false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:635', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:636', false)
+        branch:
+            Player.TurnNeck(0, false)
+            EventFlowSystemActor.WaitFrame(20)
+            Npc_2.TurnNeck(0, false)
+    MainNpc.TurnNeck(2, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:636_01', false)
+        branch:
+            Player.TurnNeck(2, false)
+            EventFlowSystemActor.WaitFrame(15)
+            SubNpc.TurnNeck(2, false)
+    fork:
+        branch:
+            Npc_2.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:638', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(60)
+            MainNpc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+    MainNpc.TurnNeck(10, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:639', false)
+        branch:
+            SubNpc.TurnNeck(0, false)
+            EventFlowSystemActor.WaitFrame(15)
+            Npc_2.TurnNeck(0, false)
+        branch:
+            Player.TurnNeck(0, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:640', true)
+    run Demo_Common_Wherearen::Demo_SetNormalPositionInOffice()
+    SubflowResults[3] = 2
+    run SNPC_otg_01_WherearenOffice::OrderClose_Complete()
+    System.EventFlags['cWherearenPlayer:SeqKKRaveStageDone'] = true
+
+flow Root_BuildStage_Init():
+    MainNpc.NpcAITalkCastSetting('WherearenPrologue')
+
+flow Root_Init():
+    MainNpc.NpcAITalkCastSetting('WherearenPrologue')
+    MainNpc.NpcAISetting(5, false)
+
+flow Root_StartBuildStage():
+    run SNPC_otg_01_WherearenOffice::HouseCompleteActing()
+    run SNPC_otg_01_WherearenOffice::SetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:621', true)
+    run SNPC_otg_01_WherearenOffice::GetSalaryForEvent()
+    MainNpc.TurnNeck(1, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:626', false)
+        branch:
+            Player.TurnNeck(1, false)
+            SubNpc.TurnNeck(0, false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Npc_2.TurnNeck(1, false)
+    SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:627', false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:628', true)
+        branch:
+            Player.TurnNeck(0, false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Npc_2.TurnNeck(0, false)
+    SubNpc.TurnNeck(10, false)
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:629', true)
+        branch:
+            Player.TurnNeck(1, false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Npc_2.TurnNeck(1, false)
+    MainNpc.TurnNeck(10, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:630', true)
+        branch:
+            Player.TurnNeck(0, false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Npc_2.TurnNeck(10, false)
+    run Demo_Common_Wherearen::Demo_SetNormalPositionInOffice()
+    SubflowResults[3] = 2
+    run SNPC_otg_01_WherearenOffice::OrderClose_Complete()
+    run SNPC_otg_01_WherearenOffice::Otg_ReturnHomePos()
+    System.EventFlags['cWherearenPlayer:SeqKKFesStartBuildStageDone'] = true
+    System.EventFlags['cWherearenPlayer:MncGenerateInOfficeTemp'] = false
+
+flow Root_StartBuildStage_Init():
+    MainNpc.NpcAITalkCastSetting('WherearenPrologue')
+

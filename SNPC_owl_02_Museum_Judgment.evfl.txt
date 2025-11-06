@@ -1,0 +1,97 @@
+flow Donation_Accept():
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:221', false)
+    run SNPC_owl_01_Museum_Donation::Fossil_DonationTypeChk()
+
+flow Donation_Decline():
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:220', true)
+    MainNpc.NpcDelivery(10, '"Default"')
+    if not System.EventFlags['cLand:OwlFoundFossil']:
+        run SNPC_owl_01_Museum_Donation::Eplanation_ExpertOpinion()
+    run SNPC_owl_00_Common::Again()
+
+flow Fossil_Check():
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:204', false)
+    MainNpc.OwlFossilAppraise()
+    EventFlowSystemActor.SetTagFromUIResult('cItemName', 0)
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:205', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:206', false)
+
+flow Root():
+    if EventFlowSystemActor.HasKindItem('cKind', 'FossilUnknown', ''):
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:202', true)
+        EventFlowSystemActor.UIItemSelectWindowHandling('cItemFilter', 65534, '', 'OwlFossilJudgement', 'cItemSelect', false)
+        if EventFlowSystemActor.UIResultMenuDecide():
+            MainNpc.SetDeliveryItem(4, false)
+            MainNpc.NpcDelivery(0, 'Keep')
+            if EventFlowSystemActor.UIResultItemWindowNumCheck(2, 'cItemSelect'):
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:214', false)
+                MainNpc.OwlFossilAppraise()
+                switch MainNpc.AppraiseFossilDonationRate():
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:215', false)
+                        run Sub_grp_Event20()
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:216', false)
+                        run Sub_grp_Event20()
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:219', false)
+                        run Sub_Event185()
+            else:
+                run Fossil_Check()
+                if MainNpc.OwlIsDonation('cUISelect'):
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:209', true)
+                    run Sub_Event185()
+                else:
+                    switch EventFlowSystemActor.MuseumLevel():
+                        case `BlathersTent`:
+                            if EventFlowSystemActor.MuseumDonationNumCheck(20):
+                                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:227', false)
+                                MainNpc.NpcDelivery(10, '"Default"')
+                            else:
+                                if EventFlowSystemActor.MuseumDonationNumCheck(19):
+                                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:212', false)
+                                else:
+                                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:211', false)
+                                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                                    run Donation_Accept()
+                                else:
+                                    run Donation_Decline()
+                        case `BlathersMuseumNoArt`, `BlathersMuseumArt`, `BlathersCafe`:
+                            if EventFlowSystemActor.NetHasVisitor():
+                                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:210', false)
+                                MainNpc.NpcDelivery(10, '"Default"')
+                                run SNPC_owl_00_Common::Again()
+                            else:
+                                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:213', false)
+                                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                                    run Donation_Accept()
+                                else:
+                                    run Donation_Decline()
+                        default:
+                            return
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:203', false)
+            run SNPC_owl_00_Common::Again()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:201', true)
+        run SNPC_owl_00_Common::Again()
+
+local flow Sub_Event185():
+    MainNpc.NpcDelivery(10, '"Default"')
+    run SNPC_owl_00_Common::Again()
+
+local flow Sub_grp_Event20():
+    switch EventFlowSystemActor.MuseumLevel():
+        case `BlathersTent`:
+            if EventFlowSystemActor.MuseumDonationNumCheck(20):
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:228', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:229', false)
+            MainNpc.NpcDelivery(10, '"Default"')
+            run SNPC_owl_00_Common::Again()
+        case `BlathersMuseumNoArt`, `BlathersMuseumArt`, `BlathersCafe`:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:217', false)
+            run Sub_Event185()
+        default:
+            return
+

@@ -1,0 +1,124 @@
+flow InvisibleNpc():
+    MainNpc.NpcRequestAction(3)
+    Npc_1.NpcRequestAction(3)
+    Npc_2.NpcRequestAction(3)
+    EventFlowSystemActor.SetNpcAIBlackBoardByLabel('rco', 'Visible', 0, 0)
+    EventFlowSystemActor.SetNpcAIBlackBoardByLabel('rct', 'Visible', 0, 0)
+    EventFlowSystemActor.SetNpcAIBlackBoardByLabel('rcm', 'Visible', 0, 0)
+
+flow RcoTentCall():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:001', false)
+    System.EventFlags['cLand:ChangePlazaFtrToNormal'] = true
+    System.EventFlags['cLand:OpeningSeqBGMChangeCounter'] = 6
+    MainNpc.ResetNpcSchedule()
+    EventFlowSystemActor.NpcInitializeActivity(-1)
+    EventFlowSystemActor.ReserveNpcCommand('PrologueNextDayFrontOfTent')
+
+flow Rco_GetSmartPhone():
+    MainNpc.SetDeliveryItemAtRandom(3076, false, 'cVillageRemakePattern', 0)
+    MainNpc.NpcDelivery(1, 'Keep')
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:004_02', true)
+    MainNpc.NpcDelivery(2, 'Default')
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:004_03', true)
+    Player.SmartPhone(0)
+    EventFlowSystemActor.WaitFrame(5)
+    Player.SmartPhone(4)
+    System.EventFlags['cPlayer:MainmenuAchievement'] = true
+    System.EventFlags['cPlayer:MainmenuMydesign'] = true
+    System.EventFlags['cPlayer:PlayerMainUImenuEnable'] = true
+    EventFlowSystemActor.PlayReport('cSeqEndTutorial', 0)
+    System.EventFlags['cPlayer:MainUiClockEnable'] = true
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.UIMenuDeviceAppear('cBoot', 'cNone')
+    EventFlowSystemActor.WaitFrame(45)
+    Player.SmartPhone(5)
+    EventFlowSystemActor.WaitFrame(5)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:004_04', true)
+    Player.SmartPhone(1)
+    EventFlowSystemActor.WaitFrame(5)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:005', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:006_01', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:006_02', false)
+        case 2:
+            if EventFlowSystemActor.PlayerHouseLevel() == `Homeless`:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:006_04', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:006_03', false)
+
+flow Rco_OrientationEnd():
+    EventFlowSystemActor.WaitFrame(10)
+    EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 0.800000011920929, 0.800000011920929, true)
+    EventFlowSystemActor.WaitFrame(30)
+    MainNpc.NpcAISetting(12, false)
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        System.EventFlags['cLand:FinishiPC1Prologue'] = true
+        System.EventFlags['cLand:TodayStartTown1P'] = true
+    else:
+        run InvisibleNpc()
+    EventFlowSystemActor.FadeIn(true)
+    EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Once', 'Get_MainGame', 'cNowDemoEnd', false)
+
+flow Rco_TutorialGetBill():
+    MainNpc.SetDeliveryItemAtRandom(3077, false, 'cVillageRemakePattern', 0)
+    MainNpc.NpcDelivery(1, 'Keep')
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:007_01', false)
+    EventFlowSystemActor.UIMoneyAppear()
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:008', false)
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        if EventFlowSystemActor.GeneralTalkChoice3() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:008_01', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:008_02', false)
+    else:
+        if EventFlowSystemActor.GeneralTalkChoice3() == 0:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:110_01', false)
+        else:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:110_02', false)
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:111', false)
+    MainNpc.NpcDelivery(2, 'Default')
+    EventFlowSystemActor.UIMoneyDisappear()
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:009', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0, 1, 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:010', false)
+            EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 0, 5000, '')
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:011', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:012', false)
+
+flow Root():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:002', false)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            if System.EventFlags['cPlayer:PlayerProducedByPlayerMoving']:
+                run SNPC_rco_00_StartMainGame_PlayerMoving::Root_MainP()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:003', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:004_01', true)
+                run Rco_GetSmartPhone()
+                run v200_SendTipsApp()
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:007', true)
+                run Rco_TutorialGetBill()
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:013', true)
+                run Rco_OrientationEnd()
+
+flow v200_SendTipsApp():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:2001', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:2002', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:2003', true)
+        System.EventFlags['cPlayer:MainmenuTips'] = true
+        run Demo_Common_PhoneCall::SendingPhoneApp_PhoneInPHand1()
+        EventFlowSystemActor.UIMenuDeviceAppear('cInstall', 'cLoadTips')
+        run Demo_Common_PhoneCall::SendingPhoneApp_PhoneInPHand2()
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:2004', true)
+        EventFlowSystemActor.WaitFrame(5)
+        MainNpc.SmartPhone(1)
+        Player.SmartPhone(1)
+        EventFlowSystemActor.WaitFrame(5)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:2006', false)
+    EventFlowSystemActor.WaitFrame(5)
+

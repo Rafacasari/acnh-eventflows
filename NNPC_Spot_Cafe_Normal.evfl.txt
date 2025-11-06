@@ -1,0 +1,35 @@
+flow Root():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, false):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:001', false)
+        case 1:
+            switch EventFlowSystemActor.EnvDayOfWeek():
+                case `Sunday`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:101', false)
+                case `Monday`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:102', false)
+                case `Tuesday`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:103', false)
+                case `Wednesday`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:104', false)
+                case `Thursday`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:105', false)
+                case `Friday`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:106', false)
+                case `Saturday`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:107', false)
+        case 2:
+            switch EventFlowSystemActor.EnvTimeZone():
+                case `05:00-07:59`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:201', false)
+                case `08:00-11:59`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:202', false)
+                case `12:00-15:59`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:203', false)
+                case `16:00-18:59`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:204', false)
+                case `19:00-23:59`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:205', false)
+                case `00:00-04:59`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Cafe_Normal:206', false)
+

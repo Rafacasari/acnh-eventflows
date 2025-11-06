@@ -1,0 +1,301 @@
+flow Hint_Nuts_Rco():
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:600', false)
+    if EventFlowSystemActor.EnvWeatherArea() == `cWeatherArea_North`:
+        switch EventFlowSystemActor.EnvMonth():
+            case `September`, `October`, `November`:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:612_01', false)
+                run Hint_Nuts_Rco_Cmn()
+            case `December`:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:612_01_01', false)
+                run Hint_Nuts_Rco_Cmn()
+            default:
+                return
+    else:
+        switch EventFlowSystemActor.EnvMonth():
+            case `March`, `April`, `May`:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:612_01', false)
+                run Hint_Nuts_Rco_Cmn()
+            case `June`:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:612_01_01', false)
+                run Hint_Nuts_Rco_Cmn()
+            default:
+                return
+
+flow Hint_Nuts_Rco_Cmn():
+    if not System.EventFlags['cPlayer:MainmenuRecipe']:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:612_03', false)
+    elif EventFlowSystemActor.PlayerHasCraftRecipe('', 6079):
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:612_03', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:612_02_01', true)
+        run Demo_Common_PhoneCall::SendingDataOneWay()
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:612_02_02', false)
+        EventFlowSystemActor.PlayerSetCraftRecipe('', 6079)
+
+flow Hint_Nuts_Sza():
+    if EventFlowSystemActor.EnvWeatherArea() == `cWeatherArea_North`:
+        switch EventFlowSystemActor.EnvMonth():
+            case `September`, `October`, `November`:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:612_01', false)
+                run Hint_Nuts_Sza_Cmn()
+            case `December`:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:612_01_01', false)
+                run Hint_Nuts_Sza_Cmn()
+            default:
+                return
+    else:
+        switch EventFlowSystemActor.EnvMonth():
+            case `March`, `April`, `May`:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:612_01', false)
+                run Hint_Nuts_Sza_Cmn()
+            case `June`:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:612_01_01', false)
+                run Hint_Nuts_Sza_Cmn()
+            default:
+                return
+
+flow Hint_Nuts_Sza_Cmn():
+    if not System.EventFlags['cPlayer:MainmenuRecipe']:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:612_03', false)
+    elif EventFlowSystemActor.PlayerHasCraftRecipe('', 6079):
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:612_03', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:612_02_01', true)
+        run Demo_Common_PhoneCall::SendingDataOneWay()
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:612_02_02', false)
+        EventFlowSystemActor.PlayerSetCraftRecipe('', 6079)
+
+flow Root():
+    if not System.EventFlags['cPlayer:MainmenuRecipe']:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:711', false)
+    elif System.EventFlags['cPlayer:MainmenuRndDailyQuest']:
+        if (not System.EventFlags['cPlayer:PublicAnnouncement_MarinsuitHint']) and (not System.EventFlags['cPlayer:IsOnPlayerMemoriesDivingFirst']):
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:703', false)
+            if EventFlowSystemActor.ShopLevel() == `InResServiceTent`:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:703_01', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:703_02', false)
+            System.EventFlags['cPlayer:PublicAnnouncement_MarinsuitHint'] = true
+        else:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:703', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:704', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:705', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:706', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:702', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:702', false)
+
+flow SeasonNews_Rco():
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:610', false)
+    switch SubflowResults@10[11]:
+        case 0:
+            System.EventFlags['cPlayer:PAnnounce_SummerShell'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:600', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:611_01', false)
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:611_03', false)
+            elif EventFlowSystemActor.PlayerHasCraftRecipe('', 4376):
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:611_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:611_02_01', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:611_02_02', false)
+                EventFlowSystemActor.PlayerSetCraftRecipe('', 4376)
+        case 1:
+            System.EventFlags['cPlayer:PAnnounce_AutumnNuts'] = true
+            run Hint_Nuts_Rco()
+        case 2:
+            System.EventFlags['cPlayer:PAnnounce_AutumnMushroom'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:600', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:613_01', false)
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:613_03', false)
+            elif EventFlowSystemActor.PlayerHasCraftRecipe('', 4726):
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:613_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:613_02_01', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:613_02_02', false)
+                EventFlowSystemActor.PlayerSetCraftRecipe('', 4726)
+        case 3:
+            System.EventFlags['cPlayer:PAnnounce_AutumnRedLeaf'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:600', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:616_01', false)
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:616_03', false)
+            elif EventFlowSystemActor.PlayerHasCraftRecipe('', 4271):
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:616_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:616_02_01', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:616_02_02', false)
+                EventFlowSystemActor.PlayerSetCraftRecipe('', 4271)
+        case 4:
+            System.EventFlags['cPlayer:PAnnounce_WinterSnowball'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:615', false)
+        case 5:
+            System.EventFlags['cPlayer:PAnnounce_WinterSnowFlake'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:614_01', false)
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:614_03', false)
+            elif EventFlowSystemActor.PlayerHasCraftRecipe('', 4375):
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:614_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:614_02_01', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:614_02_02', false)
+                EventFlowSystemActor.PlayerSetCraftRecipe('', 4375)
+        case 6:
+            System.EventFlags['cPlayer:PAnnounce_SpringBamboo'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:600', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:618_01', false)
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:618_03', false)
+            elif EventFlowSystemActor.PlayerHasCraftRecipe('', 5979):
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:618_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:618_02_01', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:618_02_02', false)
+                EventFlowSystemActor.PlayerSetCraftRecipe('', 5979)
+        case 7:
+            System.EventFlags['cPlayer:PAnnounce_SpringSakura'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:600', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:617_01', false)
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:617_03', false)
+            elif EventFlowSystemActor.PlayerHasCraftRecipe('', 6033):
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:617_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:617_02_01', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:617_02_02', false)
+                EventFlowSystemActor.PlayerSetCraftRecipe('', 6033)
+        case 9:
+            System.EventFlags['cPlayer:PAnnounceHalloween'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:600', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:048_01', false)
+            if EventFlowSystemActor.ShopLevel() == `InResServiceTent`:
+                if System.EventFlags['cLand:PeddlingAvailableSlo']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:048_02_01', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:048_03_01', false)
+            else:
+                if System.EventFlags['cLand:PeddlingAvailableSlo']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:048_02', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:048_03', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_00_Rco:048_06', false)
+            System.EventFlags['cPlayer:PAnnounceHalloween'] = true
+            System.EventFlags['cPlayer:AnnounceHalloween2Ready'] = true
+        default:
+            return
+
+flow SeasonNews_Sza():
+    MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:610', false)
+    switch SubflowResults@10[11]:
+        case 0:
+            System.EventFlags['cPlayer:PAnnounce_SummerShell'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:611_01', false)
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:611_03', false)
+            elif EventFlowSystemActor.PlayerHasCraftRecipe('', 4376):
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:611_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:611_02_01', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:611_02_02', false)
+                EventFlowSystemActor.PlayerSetCraftRecipe('', 4376)
+        case 1:
+            System.EventFlags['cPlayer:PAnnounce_AutumnNuts'] = true
+            run Hint_Nuts_Sza()
+        case 2:
+            System.EventFlags['cPlayer:PAnnounce_AutumnMushroom'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:613_01', false)
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:613_03', false)
+            elif EventFlowSystemActor.PlayerHasCraftRecipe('', 4726):
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:613_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:613_02_01', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:613_02_02', false)
+                EventFlowSystemActor.PlayerSetCraftRecipe('', 4726)
+        case 3:
+            System.EventFlags['cPlayer:PAnnounce_AutumnRedLeaf'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:616_01', false)
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:616_03', false)
+            elif EventFlowSystemActor.PlayerHasCraftRecipe('', 4271):
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:616_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:616_02_01', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:616_02_02', false)
+                EventFlowSystemActor.PlayerSetCraftRecipe('', 4271)
+        case 4:
+            System.EventFlags['cPlayer:PAnnounce_WinterSnowball'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:615', false)
+        case 5:
+            System.EventFlags['cPlayer:PAnnounce_WinterSnowFlake'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:614_01', false)
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:614_03', false)
+            elif EventFlowSystemActor.PlayerHasCraftRecipe('', 4375):
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:614_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:614_02_01', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:614_02_02', false)
+                EventFlowSystemActor.PlayerSetCraftRecipe('', 4375)
+        case 6:
+            System.EventFlags['cPlayer:PAnnounce_SpringBamboo'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:618_01', false)
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:618_03', false)
+            elif EventFlowSystemActor.PlayerHasCraftRecipe('', 5979):
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:618_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:618_02_01', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:618_02_02', false)
+                EventFlowSystemActor.PlayerSetCraftRecipe('', 5979)
+        case 7:
+            System.EventFlags['cPlayer:PAnnounce_SpringSakura'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:617_01', false)
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:617_03', false)
+            elif EventFlowSystemActor.PlayerHasCraftRecipe('', 6033):
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:617_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:617_02_01', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:617_02_02', false)
+                EventFlowSystemActor.PlayerSetCraftRecipe('', 6033)
+        case 8:
+            System.EventFlags['cPlayer:PAnnounce_WinterOrnament'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:619_01', false)
+            if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:619_03', false)
+            elif EventFlowSystemActor.PlayerHasCraftRecipe('', 4377):
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:619_03', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:619_02_01', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:619_02_02', false)
+                EventFlowSystemActor.PlayerSetCraftRecipe('', 4377)
+        case 9:
+            System.EventFlags['cPlayer:PAnnounceHalloween'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:008_08_01', false)
+            if System.EventFlags['cLand:PeddlingAvailableSlo']:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:008_08_02', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:008_08_03', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/PublicAnnouncement/SP_PublicAnnouncement_01_Sza:008_08_07', false)
+            System.EventFlags['cPlayer:PAnnounceHalloween'] = true
+            System.EventFlags['cPlayer:AnnounceHalloween2Ready'] = true
+

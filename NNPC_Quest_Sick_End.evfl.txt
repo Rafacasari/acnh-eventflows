@@ -1,0 +1,132 @@
+flow Cheer():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:013', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:014', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:015', false)
+    System.EventFlags['cPlayerTemp:SickQuestGossip'] = false
+
+flow End():
+    MainNpc.EventFlags['cNpcMemory:TalkedDuringSick'] = true
+    run NNPC_Reaction_First_Root::Root()
+    run NNPC_FreeH_Progress::Conceal_NpcHouseBuilt()
+    if not EventFlowSystemActor.HasTargetItem(2777, 1):
+        if System.EventFlags['cPlayerTemp:SickQuestGossip']:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:007', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:008', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:009', false)
+            System.EventFlags['cPlayerTemp:SickQuestGossip'] = false
+        else:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:010', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:011', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:012', false)
+    elif System.EventFlags['cPlayerTemp:SickQuestGossip']:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:001', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run TakeMedicine()
+                else:
+                    run Cheer()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:002', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run TakeMedicine()
+                else:
+                    run Cheer()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:003', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run TakeMedicine()
+                else:
+                    run Cheer()
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:004', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run TakeMedicine()
+                else:
+                    run Cheer()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:005', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run TakeMedicine()
+                else:
+                    run Cheer()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:006', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run TakeMedicine()
+                else:
+                    run Cheer()
+
+flow TakeMedicine():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:100', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:101', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:102', false)
+    EventFlowSystemActor.UIItemSelectWindowHandling('cQuest', 2777, 'Medicine', '', 'cItemSelect', false)
+    if EventFlowSystemActor.UIResultMenuDecide():
+        MainNpc.SetDeliveryItem(4, false)
+        MainNpc.NpcDelivery(0, 'Keep')
+        EventFlowSystemActor.SystemDeletePlayerItem('cItemWindowSub', 1)
+        MainNpc.NpcDelivery(9, '"Default"')
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:103', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:104', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:105', false)
+        run NNPC_Quest_AllReward::Root()
+        if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:200', false)
+            MainNpc.NpcMailSendRandom('MAIL_XX_OverFlow', 1, 3, 'cNone', 'cFastTomorrow', 'cReward', false)
+        else:
+            switch MainNpc.NpcQuestReward():
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:109', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:110', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:111', false)
+            MainNpc.SetDeliveryItem(1, true)
+            MainNpc.NpcDelivery(1, '"Default"')
+            MainNpc.AddMemoryEventPlayerForNpc('Present_FromNNPC')
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:112', false, true)
+                case 1:
+                    MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:113', false, true)
+                case 2:
+                    MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:114', false, true)
+        if not System.EventFlags['cPlayer:SickQuestFirst']:
+            System.EventFlags['cPlayer:SickQuestFirst'] = true
+        MainNpc.NpcQuestControl('cFinish')
+        MainNpc.EventFlags['cNpcTemp:SickCured'] = true
+        System.EventFlags['cLifeSupportDaily:AchieveQuest'] = true
+        System.EventFlags['cLifeSupportAchievement:AchieveVillagersQuest'] += 1
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:106', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:107', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Sick_End:108', false)
+        MainNpc.NpcAddFriendship(-1)
+

@@ -1,0 +1,70 @@
+flow End():
+    if MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] <= 3:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:004', true)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:005', true)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:006', true)
+    else:
+        MainNpc.EventFlags['cNpcTemp:VisitQuestFurnitureTrade'] = false
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:001', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:002', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:003', false)
+        if MainNpc.EventFlags['cNpcMemory:IsPlayedQuestVisitN']:
+            run NNPC_Quest_AllReward::Root()
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:100', true)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:101', true)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:102', true)
+            if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:106', true, true)
+                MainNpc.NpcMailSendRandom('MAIL_XX_Quest_VisitN', 1, 3, 'cNone', 'cFastTomorrow', 'cReward', false)
+            else:
+                MainNpc.NpcMoveToPlayer()
+                MainNpc.NpcDelivery(1, '"Default"')
+                MainNpc.AddMemoryEventPlayerForNpc('Present_FromNNPC')
+                switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                    case 0:
+                        MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:103', true, true)
+                    case 1:
+                        MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:104', true, true)
+                    case 2:
+                        MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:105', true, true)
+            MainNpc.NpcQuestControl('cFinish')
+            System.EventFlags['cLifeSupportDaily:AchieveQuest'] = true
+            System.EventFlags['cLifeSupportAchievement:AchieveVillagersQuest'] += 1
+            EventFlowSystemActor.SetSharePlayChangeCondition(false)
+            MainNpc.NpcPlayReport('cVisitNPCResult', 0)
+        else:
+            run NNPC_Quest_AllReward::Music()
+            if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:200', true)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:201', true)
+            if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:106', true, true)
+                MainNpc.NpcMailSendRandom('MAIL_XX_Quest_VisitN', 1, 3, 'cNone', 'cFastTomorrow', 'cVisitPresent', false)
+            else:
+                MainNpc.NpcMoveToPlayer()
+                MainNpc.NpcDelivery(1, '"Default"')
+                MainNpc.AddMemoryEventPlayerForNpc('Present_FromNNPC')
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:202', true, true)
+                else:
+                    MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_End:203', true, true)
+            MainNpc.NpcQuestControl('cFinish')
+            System.EventFlags['cLifeSupportDaily:AchieveQuest'] = true
+            System.EventFlags['cLifeSupportAchievement:AchieveVillagersQuest'] += 1
+            EventFlowSystemActor.SetSharePlayChangeCondition(false)
+            MainNpc.EventFlags['cNpcMemory:IsPlayedQuestVisitN'] = true
+            MainNpc.NpcPlayReport('cVisitNPCResult', 0)
+

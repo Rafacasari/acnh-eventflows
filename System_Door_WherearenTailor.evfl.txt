@@ -1,0 +1,7 @@
+flow Root():
+    if System.EventFlags['cWherearenPlayer:CompleteAppearanceTailor']:
+        EventFlowSystemActor.SetCheckResultStructureDoor(CheckResult=0)
+    else:
+        Player.OpenMessageWindow('TalkSys/SYS_Door:201', false)
+        EventFlowSystemActor.SetCheckResultStructureDoor(CheckResult=1)
+

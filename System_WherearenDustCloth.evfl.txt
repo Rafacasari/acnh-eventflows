@@ -1,0 +1,26 @@
+flow ChkGateOpen():
+    if not EventFlowSystemActor.IsVillageGateOpened():
+        EventFlowSystemActor.MessageSuspend()
+    elif System.EventFlags['cPlayer:EquipDustClothWithGateOpen']:
+        EventFlowSystemActor.MessageSuspend()
+    else:
+        System.EventFlags['cPlayer:EquipDustClothWithGateOpen'] = true
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:5211', true)
+
+local flow Sub_Event9():
+    System.EventFlags['cPlayer:WHEREAREN_NoticeAboutDustCloth2'] = true
+    run ChkGateOpen()
+
+flow TipsDialog():
+    if not System.EventFlags['cPlayer:WHEREAREN_NoticeAboutDustCloth']:
+        System.EventFlags['cPlayer:WHEREAREN_NoticeAboutDustCloth'] = true
+        if System.EventFlags['cPlayer:WHEREAREN_Unlock_DustCloth_02']:
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0102_01', false)
+            run Sub_Event9()
+        else:
+            EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0102', false)
+            run ChkGateOpen()
+    elif (not System.EventFlags['cPlayer:WHEREAREN_NoticeAboutDustCloth2']) and (System.EventFlags['cPlayer:WHEREAREN_Unlock_DustCloth_02']):
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_WherearenMsg:0102_02', false)
+        run Sub_Event9()
+

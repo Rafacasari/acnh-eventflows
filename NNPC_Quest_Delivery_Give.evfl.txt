@@ -1,0 +1,268 @@
+flow Give():
+    MainNpc.SetItemName(11, 0, 0)
+    MainNpc.SetNpcName(3, 1)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:001', false)
+    EventFlowSystemActor.UIItemSelectWindowHandling('cQuest', 65534, '', '', 'cItemSelect', false)
+    MainNpc.SetDeliveryItem(4, false)
+    if MainNpc.IsSelectNpcRequestedItem():
+        MainNpc.NpcDelivery(0, 'Keep')
+        if MainNpc.QuestFlags['cDeliveryItemOpen']:
+            if EventFlowSystemActor.UISelectedItemIsWrapping('cItemSelect'):
+                MainNpc.QuestFlags['cDeliveryWrappingAgain'] = true
+                run Sub_Event102()
+            else:
+                MainNpc.NpcAddFriendship(1)
+                run NNPC_Quest_Delivery_End::OpenEnd()
+        else:
+            run Sub_Event102()
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:002', false)
+
+local flow Sub_Event102():
+    MainNpc.NpcAddFriendship(3)
+    switch MainNpc.DeliveryQuestType():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:003', false)
+            switch MainNpc.CheckClientNpcLook():
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:101', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:102', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:103', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:104', false)
+                case 4:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:105', false)
+                case 5:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:106', false)
+                case 6:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:107', false)
+                case 7:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:108', false)
+            switch MainNpc.CheckNpcFavorLevel():
+                case 0, 1:
+                    run Sub_grp_Event125()
+                case 2, 3:
+                    if EventFlowSystemActor.PercentChoice(20):
+                        run Sub_grp_Event125()
+                    else:
+                        run TypeA()
+                case 4, 5:
+                    run TypeA()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:004', false)
+            switch MainNpc.CheckNpcFavorLevel():
+                case 0, 1:
+                    if EventFlowSystemActor.PercentChoice(70):
+                        run Sub_grp_Event128()
+                    else:
+                        run TypeB()
+                case 2, 3:
+                    switch EventFlowSystemActor.PercentChoice3(20, 10, 70):
+                        case 0:
+                            run Sub_grp_Event128()
+                        case 1:
+                            run TypeB()
+                        case 2:
+                            run Sub_Event6()
+                case 4, 5:
+                    run Sub_Event6()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:005', false)
+            switch MainNpc.CheckNpcFavorLevel():
+                case 0, 1:
+                    if EventFlowSystemActor.PercentChoice(30):
+                        run Sub_Event40()
+                    else:
+                        run Sub_Event124()
+                case 2, 3:
+                    switch EventFlowSystemActor.PercentChoice3(10, 20, 70):
+                        case 0:
+                            run Sub_Event40()
+                        case 1:
+                            run Sub_Event124()
+                        case 2:
+                            run Sub_Event37()
+                case 4, 5:
+                    run Sub_Event37()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:006', false)
+            run Sub_Event50()
+        case 4:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:007', false)
+            run Sub_Event50()
+
+local flow Sub_Event103():
+    MainNpc.SetItemToNpcStockList(2, 2)
+    MainNpc.QuestFlags['cDeliveryItemOpen'] = false
+    MainNpc.QuestFlags['cDeliveryEnd'] = true
+    MainNpc.EventFlags['cNpcMemory:StoodUpFlag'] = false
+
+local flow Sub_Event124():
+    if MainNpc.QuestFlags['cDeliveryItemOpen']:
+        run Sub_Event40()
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:303', false)
+        run NNPC_Quest_Delivery_End::QuizEnd()
+
+local flow Sub_Event37():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:301', false)
+    MainNpc.NpcDelivery(6, 'Default')
+    MainNpc.QuestFlags['cDeliveryItemOpen'] = true
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:302', false)
+    run NNPC_Quest_Delivery_End::Thanks1()
+
+local flow Sub_Event40():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:304', false)
+    MainNpc.NpcDelivery(10, 'Keep')
+    MainNpc.QuestFlags['cDeliveryGetFree'] = true
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:305', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.NpcDelivery(5, 'Default')
+        MainNpc.QuestFlags['cDeliveryItemOpen'] = true
+        if MainNpc.DeliveryQuestItemKind() == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:308', false)
+            MainNpc.SetDeliveryItemApplySave()
+            MainNpc.NpcDelivery(2, 'Default')
+            if MainNpc.EventFlags['cNpcMemory:VisitCount'] < 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:313', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:309', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:307', false)
+            MainNpc.SetDeliveryItemApplySave()
+            MainNpc.NpcDelivery(2, 'Default')
+    else:
+        MainNpc.NpcDecideDeliveryQuestReward(2, 4)
+        MainNpc.NpcDelivery(2, 'Default')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:306', false)
+        MainNpc.QuestFlags['cDeliveryItemOpen'] = true
+        MainNpc.NpcSetQuestRewardToPlayerBaggage('cSwap')
+    MainNpc.RegistToReleaseItemList(1)
+    MainNpc.QuestFlags['cDeliveryItemOpen'] = false
+    MainNpc.QuestFlags['cDeliveryEnd'] = true
+    MainNpc.EventFlags['cNpcMemory:StoodUpFlag'] = false
+    MainNpc.AddMemoryEventPlayerForNpc('Present_FromNNPC_Delivery')
+
+local flow Sub_Event50():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:400', false)
+    MainNpc.NpcDelivery(6, 'Default')
+    MainNpc.QuestFlags['cDeliveryItemOpen'] = true
+    if MainNpc.DeliveryQuestItemKind() == 0:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:401', false)
+                switch MainNpc.CheckClientNpcLook():
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:411', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:412', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:413', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 3:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:414', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 4:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:415', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 5:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:416', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 6:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:417', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 7:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:418', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:402', false)
+                switch MainNpc.CheckClientNpcLook():
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:411', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:412', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:413', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 3:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:414', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 4:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:415', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 5:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:416', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 6:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:417', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+                    case 7:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:418', false)
+                        run NNPC_Quest_Delivery_End::Thanks1()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:403', false)
+                if EventFlowSystemActor.PercentChoice(50):
+                    run NNPC_Quest_Delivery_End::Thanks1()
+                else:
+                    MainNpc.SetDeliveryItemApplySave()
+                    MainNpc.NpcDelivery(3, 'Default')
+                    switch MainNpc.DeliveryQuestType():
+                        case 3:
+                            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:404', false)
+                            run Sub_Event103()
+                        case 4:
+                            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:405', false)
+                            run Sub_Event103()
+                        default:
+                            return
+    else:
+        run NNPC_Quest_Delivery_Cloth::Cloth()
+
+local flow Sub_Event6():
+    MainNpc.NpcDelivery(6, 'Default')
+    MainNpc.QuestFlags['cDeliveryItemOpen'] = true
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:201', false)
+    run NNPC_Quest_Delivery_End::Thanks1()
+
+local flow Sub_grp_Event125():
+    if MainNpc.QuestFlags['cDeliveryItemOpen']:
+        run TypeA()
+    else:
+        run NNPC_Quest_Delivery_End::QuizEnd()
+
+local flow Sub_grp_Event128():
+    if MainNpc.QuestFlags['cDeliveryItemOpen']:
+        run TypeB()
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:202', false)
+        run NNPC_Quest_Delivery_End::QuizEnd()
+
+flow TypeA():
+    MainNpc.SetDeliveryItemApplySave()
+    MainNpc.NpcDelivery(3, 'Default')
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:109', false)
+    MainNpc.QuestFlags['cDeliveryEnd'] = true
+    MainNpc.EventFlags['cNpcMemory:StoodUpFlag'] = false
+
+flow TypeB():
+    MainNpc.NpcDelivery(6, 'Default')
+    MainNpc.QuestFlags['cDeliveryItemOpen'] = true
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:203', false)
+    MainNpc.NpcDecideDeliveryQuestReward(2, 1)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:204', false)
+    MainNpc.SetDeliveryItemApplySave()
+    MainNpc.NpcDelivery(10, 'Default')
+    MainNpc.QuestFlags['cDeliverySameBought'] = true
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_Give:205', false)
+    MainNpc.RegistToReleaseItemList(1)
+    MainNpc.QuestFlags['cDeliveryEnd'] = true
+    MainNpc.QuestFlags['cDeliveryItemOpen'] = false
+    MainNpc.EventFlags['cNpcMemory:StoodUpFlag'] = false
+    MainNpc.AddMemoryEventPlayerForNpc('Present_FromNNPC_Delivery')
+

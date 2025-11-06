@@ -1,0 +1,45 @@
+flow Root():
+    fork:
+        branch:
+            if (not EventFlowSystemActor@NetActor.IsMyVillage()) and (EventFlowSystemActor@NetActor.NetMode() not in (0, 1)):
+                EventFlowSystemActor@NetActor.NetMeasureBitRate()
+            else:
+                EventFlowSystemActor@NetActor.WaitFrame(20)
+            EventFlowSystemActor@NetActor.WaitFrame(20)
+        branch:
+            EventFlowSystemActor.SwapSpeaker('cDoc', true)
+            EventFlowSystemActor.SystemFaderRelease()
+            EventFlowSystemActor.CameraSetDemoParam('Cut0End', 'Cut0', 'Keep', false, false, false, 0)
+            EventFlowSystemActor.WaitFrame(20)
+            EventFlowSystemActor.MessageLockNext(3)
+            fork:
+                branch:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/doc/SP_doc_30_Flight_Announce:110', false)
+                    EventFlowSystemActor.WaitFrame(20)
+                    EventFlowSystemActor.MessageSuspend()
+                    EventFlowSystemActor.WaitFrame(2)
+                    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/doc/SP_doc_30_Flight_Announce:140', false)
+                    EventFlowSystemActor.WaitFrame(40)
+                    EventFlowSystemActor.MessageSuspend()
+                    EventFlowSystemActor.OpenMessageWindow('TalkSNpc/doc/SP_doc_30_Flight_Announce:151', false)
+                    EventFlowSystemActor.WaitFrame(30)
+                    EventFlowSystemActor.MessageSuspend()
+                branch:
+                    EventFlowSystemActor@BgmActor.BGMPropertyControl(48)
+                    EventFlowSystemActor@BgmActor.WaitFrame(400)
+                    EventFlowSystemActor@BgmActor.NetDemoNextStep('cStartArriveDemo')
+                    EventFlowSystemActor@BgmActor.SoundTriggerEmit('Flight_Landing', -1)
+                    EventFlowSystemActor@BgmActor.WaitFrame(140)
+                    EventFlowSystemActor@BgmActor.FadeOut('cNormalFader', 'cCircle', 'cBlack', 0.25, 1.0, true)
+                    EventFlowSystemActor@BgmActor.WaitFrame(60)
+                    EventFlowSystemActor@BgmActor.BGMPropertyControl(46)
+            EventFlowSystemActor.MessageUnlockNext()
+            EventFlowSystemActor.BGMPropertyControl(46)
+    if EventFlowSystemActor.IsMyVillage():
+        EventFlowSystemActor.SystemRequestChangeStage('cGrowUp', 'cCircle', 'cCircle', 'cBlack', 1.0, 1.0)
+    else:
+        EventFlowSystemActor.PlayReport('cVisitFriend', 0)
+        System.EventFlags['cPlayer:VisitFriendMileageGet'] = true
+        run SNPC_dod_AirPort::DALNoveltyCountUp()
+        EventFlowSystemActor.NetDemoNextStep('cArriveVisitor')
+

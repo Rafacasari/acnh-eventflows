@@ -1,0 +1,859 @@
+flow AfterEv():
+    if not EventFlowSystemActor.IsMyVillage():
+        if System.EventFlags['cPlayerVisit:DC_BevTalkFirst_AfterEv']:
+            run AfterEv_2nd()
+        else:
+            System.EventFlags['cPlayerVisit:DC_BevTalkFirst_AfterEv'] = true
+            if System.EventFlags['cPlayerVisit:DC_BevTalkFirst_BeforeEv']:
+                run AfterEv_First()
+            else:
+                run AfterEv_SNPC_First()
+    elif System.EventFlags['cPlayer:BevTalkFirst_AfterEv']:
+        run AfterEv_2nd()
+    else:
+        System.EventFlags['cPlayer:BevTalkFirst_AfterEv'] = true
+        if System.EventFlags['cPlayer:BeyEvent_TalkFirst']:
+entrypoint Event343:
+            if EventFlowSystemActor.IsSharePlay(0):
+                run Sub_grp_Event344()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:080', false)
+                switch EventFlowSystemActor.GeneralTalkChoice3():
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:081', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:082', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:083', false)
+                if System.EventFlags['cPlayer:CatchFishFesCount'] > 10:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:085', false)
+                    run Sub_grp_Event437()
+                elif System.EventFlags['cPlayer:CatchFishFesCount'] == 10:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:084', false)
+                    run Sub_grp_Event437()
+                elif EventFlowSystemActor.EventCheck('FishingConvention') not in (0, 1, 2):
+                    run TalkAfterEvent()
+                elif EventFlowSystemActor.EnvMonth() in (`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`, `September`):
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:086', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:087', false)
+        else:
+            System.EventFlags['cPlayer:BeyEvent_TalkFirst'] = true
+            if System.EventFlags['cPlayer:BeyDaily_TalkFirst']:
+                run Sub_grp_Event344()
+            else:
+                System.EventFlags['cPlayer:BeyDaily_TalkFirst'] = true
+entrypoint Event25:
+                if System.EventFlags['cPlayer:CatchFishFesCount'] < 10:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:090_01', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:090', false)
+                    run Sub_grp_Event264()
+
+flow AfterEv_2nd():
+    if System.EventFlags['cPlayer:CatchFishFesCount'] < 10:
+        run AfterEv_Always()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:100', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run PointCheck()
+        else:
+            run AfterEv_Always()
+
+flow AfterEv_Always():
+    if EventFlowSystemActor.EventCheck('FishingConvention') not in (0, 1, 2):
+        run TalkAfterEvent()
+    elif EventFlowSystemActor.EnvMonth() in (`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`, `September`):
+        switch EventFlowSystemActor.RandomChoice3(3):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:101', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:102', false)
+            case 2:
+                run TalkAfterEvent()
+    else:
+        switch EventFlowSystemActor.RandomChoice3(3):
+            case 0:
+                run TalkAfterEvent()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:104', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:105', false)
+
+flow AfterEv_First():
+    run Event343()
+
+flow AfterEv_SNPC_First():
+    run Event25()
+
+flow BeforeEV_SNPC_First():
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:000', true)
+
+flow BeforeEv():
+    if not EventFlowSystemActor.IsMyVillage():
+        if not System.EventFlags['cPlayerVisit:DC_BevTalkFirst_BeforeEv']:
+            System.EventFlags['cPlayerVisit:DC_BevTalkFirst_BeforeEv'] = true
+            run BeforeEV_SNPC_First()
+        elif System.EventFlags['cPlayer:CatchFishFesCount'] < 10:
+            run BeforeEv_Always()
+        elif System.EventFlags['cPlayer:BevTalkPoint_BeforeEv']:
+            run BeforeEv_2nd()
+        else:
+            System.EventFlags['cPlayer:BevTalkPoint_BeforeEv'] = true
+            run BeforeEv_PointCheck()
+    elif not System.EventFlags['cPlayer:BeyEvent_TalkFirst']:
+        System.EventFlags['cPlayer:BeyEvent_TalkFirst'] = true
+        if System.EventFlags['cPlayer:BeyDaily_TalkFirst']:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:007', true)
+        else:
+            System.EventFlags['cPlayer:BeyDaily_TalkFirst'] = true
+            if EventFlowSystemActor.IsSharePlay(0):
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:169', true)
+            else:
+                run BeforeEV_SNPC_First()
+    elif System.EventFlags['cPlayer:CatchFishFesCount'] < 10:
+        run BeforeEv_Always()
+    elif System.EventFlags['cPlayer:BevTalkPoint_BeforeEv']:
+        run BeforeEv_2nd()
+    else:
+        System.EventFlags['cPlayer:BevTalkPoint_BeforeEv'] = true
+        run BeforeEv_PointCheck()
+
+flow BeforeEv_2nd():
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:006', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run PointExchange()
+    else:
+        run BeforeEv_Always()
+
+flow BeforeEv_Always():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:001', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:002', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:003', true)
+
+flow BeforeEv_PointCheck():
+    if System.EventFlags['cPlayer:CatchFishFesCount'] != 10:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:004', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:005', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run PointExchange()
+    else:
+        run PointExCancel()
+
+flow Bey_AfterMinigame_Talk():
+    run Event151()
+
+flow Check_EvQ_Entry():
+    if not EventFlowSystemActor.NetHasVisitor():
+        run Check_Item()
+    elif not EventFlowSystemActor.UIMiniGameCanStart():
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:068', true)
+    elif not MainNpc.ChmFreeQuery2('cChmQueryType_FesBoxNotEmpty'):
+        run Check_Item()
+    elif MainNpc.ChmFreeQuery2('cChmQueryType_BoxNotEmptyNum'):
+        EventFlowSystemActor.SetTagFromSystem('cInsectBoxPlayer', 'cDegit', 0, 0, '')
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:066', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:067', true)
+
+flow Check_Item():
+    if EventFlowSystemActor.HasKindItem('cKind', 'FishingRod', ''):
+        run EvQ_Entry()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:060', true)
+
+flow Check_TotalPoint():
+    MainNpc.SmartPhone(4)
+    if System.EventFlags['cPlayer:BeyEvent_TotalPoint'] >= 300:
+        if System.EventFlags['cPlayer:BeyEvent_TalkTrophyGold']:
+            run GetPoint_next()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:200', false)
+            run SmartPhone_TotalPoint()
+            System.EventFlags['cPlayer:BeyEvent_TalkTrophyGold'] = true
+            if System.EventFlags['cPlayer:BeyEvent_TalkTrophySilver']:
+                run GetPoint_next()
+            else:
+                run Sub_Event364()
+    elif System.EventFlags['cPlayer:BeyEvent_TotalPoint'] < 200:
+        if (System.EventFlags['cPlayer:BeyEvent_TotalPoint'] >= 100) and (not System.EventFlags['cPlayer:BeyEvent_TalkTrophyCopper']):
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:202', false)
+            run SmartPhone_TotalPoint()
+            run Sub_Event396()
+        else:
+            run GetPoint_next()
+    else:
+        if System.EventFlags['cPlayer:BeyEvent_TalkTrophySilver']:
+            run GetPoint_next()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:201', false)
+            run SmartPhone_TotalPoint()
+            run Sub_Event364()
+
+flow Check_pay500():
+    EventFlowSystemActor.UIMoneyAppear()
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:062_01', false)
+    EventFlowSystemActor.BellCountDown(500, true)
+    EventFlowSystemActor.UIMoneyDisappear()
+
+flow EvQ_Entry():
+    if EventFlowSystemActor.IsMyVillage():
+        if System.EventFlags['cPlayer:BevTalkFirst_EvQuestFinish']:
+            if EventFlowSystemActor.NetHasVisitor():
+entrypoint Event92:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:064', true)
+                run Sub_Event95()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:062', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+                    run EvQ_Entry_Cancel()
+                elif EventFlowSystemActor.HasBellCount(500):
+                    run Check_pay500()
+                    run Sub_Event354()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:061', true)
+        else:
+            run Sub_Event97()
+    else:
+        if System.EventFlags['cPlayerVisit:DC_BevTalkFirst_EvQuestFinish']:
+            run EvQ_Start()
+        else:
+            run Sub_Event97()
+
+flow EvQ_Entry_Cancel():
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:024', false)
+
+flow EvQ_Start():
+    run Event92()
+
+flow GetPoint_next():
+    MainNpc.SmartPhone(5)
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:151', false)
+    if EventFlowSystemActor.EnvHourCompare(18, -1, true, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:203', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:209', false)
+    MainNpc.SmartPhone(1)
+
+flow OpenEv():
+    if not EventFlowSystemActor.IsMyVillage():
+        if System.EventFlags['cPlayerVisit:DC_BevTalkFirst_EvQuestFinish']:
+            run OpenEv_AfterQ()
+        elif System.EventFlags['cPlayerVisit:DC_BevTalkRuleFirst']:
+            run OpenEv_BeforeQ()
+        else:
+            System.EventFlags['cPlayerVisit:DC_BevTalkRuleFirst'] = true
+            if System.EventFlags['cPlayerVisit:DC_BevTalkFirst_BeforeEv']:
+                run OpenEv_BeforeQ_First()
+            else:
+                System.EventFlags['cPlayerVisit:DC_BevTalkFirst_BeforeEv'] = true
+                run OpenEv_SNPC_First()
+    elif System.EventFlags['cPlayer:BevTalkFirst_EvQuestFinish']:
+        run OpenEv_AfterQ()
+    else:
+        if System.EventFlags['cPlayer:BevTalkRuleFirst']:
+entrypoint Event210:
+            if EventFlowSystemActor.NetHasVisitor():
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:034', false)
+            elif EventFlowSystemActor.IsSharePlay(0):
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:171', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:026', false)
+        else:
+            System.EventFlags['cPlayer:BevTalkRuleFirst'] = true
+            if System.EventFlags['cPlayer:BeyEvent_TalkFirst']:
+entrypoint Event227:
+                if EventFlowSystemActor.EnvHourCompare(10, -1, true, true) == 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:020', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:031', false)
+            else:
+                System.EventFlags['cPlayer:BeyEvent_TalkFirst'] = true
+                if System.EventFlags['cPlayer:BeyDaily_TalkFirst']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:037', false)
+                else:
+entrypoint Event219:
+                    System.EventFlags['cPlayer:BeyDaily_TalkFirst'] = true
+                    if EventFlowSystemActor.IsSharePlay(0):
+                        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:168', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:036', false)
+            if EventFlowSystemActor.NetHasVisitor():
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:022', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:032', false)
+            elif EventFlowSystemActor.IsSharePlay(0):
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:161', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:162', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:167', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:021', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:023', false)
+        switch EventFlowSystemActor.GeneralTalkChoice4():
+            case 0:
+                run Check_EvQ_Entry()
+            case 1:
+                run TalkRule()
+            case 2:
+                run PointCheck()
+            case 3:
+                run EvQ_Entry_Cancel()
+
+flow OpenEv_AfterQ():
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:035', false)
+    run Select_OpenEv_AfterQ()
+
+flow OpenEv_BeforeQ():
+    run Event210()
+
+flow OpenEv_BeforeQ_First():
+    run Event227()
+
+flow OpenEv_SNPC_First():
+    run Event219()
+
+flow PointCheck():
+    run SmartPhone_entry()
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:025', false)
+    MainNpc.SmartPhone(5)
+    if System.EventFlags['cPlayer:CatchFishFesCount'] < 10:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:039', true)
+        MainNpc.SmartPhone(1)
+    else:
+        run PointExchange()
+
+flow PointExCancel():
+    switch EventFlowSystemActor.EventCheck('FishingConvention'):
+        case 0, 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:017', true)
+        case 2:
+            if EventFlowSystemActor.EnvHourCompare(20, -1, true, true) in (0, 1):
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:018', true)
+            else:
+                run AfterEv_Always()
+        case 3:
+            run AfterEv_Always()
+
+flow PointExchange():
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:011', false)
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:010', true)
+        MainNpc.SmartPhone(1)
+    else:
+        MainNpc.SmartPhone(1)
+        System.EventFlags['cPlayer:CatchFishFesCount'] += -10
+        MainNpc.DecideEventReward('cTournamentFishing')
+        EventFlowSystemActor.SetMemoryEventPlayerReward('cBlancoEventPlayer:PE_CatchFishFes_Exchange')
+        MainNpc.SetDeliveryItem(1, false)
+        EventFlowSystemActor.PlayReport('cBeyPointExchange', 0)
+        MainNpc.SetEventRewardToPlayerBaggage('cFree')
+        MainNpc.SetItemName(1, 4, 0)
+        MainNpc.NpcDelivery(1, '"Default"')
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:012', false)
+        if System.EventFlags['cPlayer:CatchFishFesCount'] < 10:
+            switch EventFlowSystemActor.EventCheck('FishingConvention'):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:013', true)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:014', true)
+                case 2, 3:
+                    run AfterEv_Always()
+            MainNpc.SmartPhone(1)
+        else:
+            EventFlowSystemActor.SetTagFromSystem('cEventFlag', 'cDegit', 1, 0, 'cPlayer:CatchFishFesCount')
+            if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:015', true)
+                MainNpc.SmartPhone(1)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:016', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run PointExchange()
+                else:
+                    run PointExCancel()
+                    MainNpc.SmartPhone(1)
+
+flow Quest_Result():
+    if EventFlowSystemActor.IsMyVillage():
+        System.EventFlags['cPlayer:BevQuestFinish'] = false
+        System.EventFlags['cPlayer:BevTalkFirst_EvQuestFinish'] = true
+        if System.EventFlags['cPlayer:BeyEvent_TalkFirst']:
+entrypoint Event151:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:141', false)
+            run Sub_grp_Event288()
+        else:
+            System.EventFlags['cPlayer:BeyEvent_TalkFirst'] = true
+            if System.EventFlags['cPlayer:BeyDaily_TalkFirst']:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:152', false)
+                run Sub_grp_Event288()
+            else:
+                System.EventFlags['cPlayer:BeyDaily_TalkFirst'] = true
+                run Sub_Event148()
+    else:
+        System.EventFlags['cPlayerVisit:DC_BevQuestFinish'] = false
+        System.EventFlags['cPlayerVisit:DC_BevTalkFirst_EvQuestFinish'] = true
+        if System.EventFlags['cPlayerVisit:DC_BevTalkFirst_BeforeEv']:
+            run Bey_AfterMinigame_Talk()
+        else:
+            System.EventFlags['cPlayerVisit:DC_BevTalkFirst_BeforeEv'] = true
+            run Sub_Event148()
+
+flow Result_Bonus_DC():
+    run Event294()
+
+flow Result_CatchP():
+    run Event292()
+
+flow Result_CatchP-Bonus_C():
+    run Event309()
+
+flow Result_CatchP-Bonus_DC():
+    run Event310()
+
+flow Result_CatchP-Bonus_DC-C():
+    run Event311()
+
+flow Result_CatchPOver-Bonus_C():
+    run Event467()
+
+flow Result_CatchPOver-Bonus_DC-C():
+    run Event428()
+
+flow Result_NoPoint():
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:142', false)
+    MainNpc.SmartPhone(5)
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:155', false)
+    if EventFlowSystemActor.NetHasVisitor():
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:143', false)
+    MainNpc.SmartPhone(4)
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:144', false)
+    MainNpc.SmartPhone(5)
+    if System.EventFlags['cPlayer:CatchFishFesCount'] < 10:
+        if System.EventFlags['cPlayer:CatchFishFesCount'] != 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:040', false)
+            run TalkNextSchedule()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:041', false)
+            run TalkNextSchedule()
+    else:
+        if System.EventFlags['cPlayer:CatchFishFesCount'] != 10:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:046', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:045', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run PointExchange()
+        else:
+            run PointExCancel()
+            MainNpc.SmartPhone(1)
+
+flow Root():
+    run Tag_Num()
+    run Tag_SET_HOUR()
+    run Tag_SET_MONTH()
+    if System.EventFlags['cLandTemp:CatchFishFesQuestStart']:
+        System.EventFlags['cLandTemp:FesEnterBalloon'] = true
+        if EventFlowSystemActor.IsMyVillage():
+            if System.EventFlags['cPlayer:BeyDaily_TalkFirst']:
+                run Sub_grp_Event5()
+            else:
+                System.EventFlags['cPlayer:BeyDaily_TalkFirst'] = true
+                System.EventFlags['cPlayer:BeyEvent_TalkFirst'] = true
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:073', false)
+        elif MainNpc.ChmFreeQuery2('cChmQueryType_IsEntryQuestBey'):
+            if System.EventFlags['cPlayerVisit:DC_BevTalkFirst_BeforeEv']:
+                run Sub_grp_Event5()
+            else:
+                System.EventFlags['cPlayerVisit:DC_BevTalkFirst_BeforeEv'] = true
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:073', false)
+        elif System.EventFlags['cPlayerVisit:DC_BevTalkFirst_BeforeEv']:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:112', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:113', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:114', false)
+        else:
+            System.EventFlags['cPlayerVisit:DC_BevTalkFirst_BeforeEv'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:110', false)
+    elif EventFlowSystemActor.IsMyVillage():
+        if System.EventFlags['cPlayer:BevQuestFinish']:
+            run Quest_Result()
+        else:
+            run Sub_grp_Event254()
+    else:
+        if System.EventFlags['cPlayerVisit:DC_BevQuestFinish']:
+            run Quest_Result()
+        else:
+            run Sub_grp_Event254()
+
+flow Select_OpenEv_AfterQ():
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:047', false)
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            run Check_EvQ_Entry()
+        case 1:
+            run TalkRule()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:049', false)
+            switch EventFlowSystemActor.GeneralTalkChoice4():
+                case 0:
+                    run SellFish()
+                case 1:
+                    run PointCheck()
+                case 2:
+                    run Select_OpenEv_AfterQ()
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:048', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:048', false)
+
+flow SellBOX(SellTotal: int = 0):
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:120', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            MainNpc.InsectFishBoxSellCalc(SellTotal, 1.5)
+            EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 5, SellTotal, '')
+            EventFlowSystemActor.SetTagFromSystem('cInsectFishBoxNum', 'cDegit', 6, SellTotal, '')
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:134', false)
+            run SmartPhone_entry()
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:135', false)
+            MainNpc.SmartPhone(1)
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:123', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                EventFlowSystemActor.UIMoneyAppear()
+                switch EventFlowSystemActor.MoneyCapacity(SellTotal, 'cFishInsectFes'):
+                    case 0:
+                        MainNpc.InsectFishBoxSellDone(1.5)
+                        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:125', false)
+                    case 1:
+                        MainNpc.InsectFishBoxSellDone(1.5)
+                        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:126', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:124', false)
+                        MainNpc.InsectFishBoxSellDone(1.5)
+                switch EventFlowSystemActor.EventCheck('FishingConvention'):
+                    case 0, 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:127', false)
+                    case 2:
+                        if EventFlowSystemActor.EnvMonth() in (`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`, `September`):
+                            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:128', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:129', false)
+                    case 3:
+                        run TalkAfterEvent()
+            else:
+                run SellBoxCancel()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:130', true)
+        case 2:
+entrypoint Event114:
+            switch EventFlowSystemActor.EventCheck('FishingConvention'):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:130', true)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:131', true)
+                case 2:
+                    if EventFlowSystemActor.EnvHourCompare(20, -1, true, true) == 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:132', true)
+                    else:
+                        if EventFlowSystemActor.EnvHourCompare(0, -1, true, true) == 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:133', true)
+                        else:
+                            run AfterEv_Always()
+                case 3:
+                    run AfterEv_Always()
+
+flow SellBoxCancel():
+    run Event114()
+
+flow SellFish(SellTotal: int = 0):
+    if EventFlowSystemActor.HasKindItem('cKind', 'Fish', ''):
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:050', false)
+        EventFlowSystemActor.UIItemSelectWindowHandling('cFishSell', 65534, 'Fish', '', 'cItemSelect', false)
+        if EventFlowSystemActor.UIResultMenuDecide():
+            MainNpc.SetDeliveryItem(4, false)
+            MainNpc.NpcDelivery(0, 'Keep')
+            MainNpc.ShopSellCalc(SellTotal, 1.5, true, false)
+            EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 3, SellTotal, '""')
+            if EventFlowSystemActor.UIResultItemWindowNumCheck(2, 'cItemSelect'):
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:051', true)
+                run Sub_Event43(SellTotal=SellTotal)
+            else:
+                if EventFlowSystemActor.UIResultItemWindowNumCheck(1, 'cItemSelect'):
+                    EventFlowSystemActor.SetTagFromUIResult('cItemName', 1)
+                    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:052', true)
+                    run Sub_Event43(SellTotal=SellTotal)
+                else:
+                    run Sub_Event448(SellTotal=SellTotal)
+        else:
+            run SellFish_Cancel()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:056', true)
+
+flow SellFish_Cancel():
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:057', true)
+
+flow SmartPhone_ResultCatchPOver():
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:156', false)
+    MainNpc.SmartPhone(5)
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:156_01', false)
+    MainNpc.SmartPhone(4)
+
+flow SmartPhone_TotalPoint():
+    MainNpc.SmartPhone(5)
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:207', false)
+
+flow SmartPhone_entry():
+    MainNpc.SmartPhone(0)
+    MainNpc.SmartPhone(4)
+
+local flow Sub_Event148():
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:140', false)
+    run Sub_grp_Event288()
+
+local flow Sub_Event354():
+    if EventFlowSystemActor.IsSharePlay(0):
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:163', true)
+        run Sub_Event95()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:063', true)
+        run Sub_Event95()
+
+local flow Sub_Event364():
+    System.EventFlags['cPlayer:BeyEvent_TalkTrophySilver'] = true
+    if System.EventFlags['cPlayer:BeyEvent_TalkTrophyCopper']:
+        run GetPoint_next()
+    else:
+        run Sub_Event396()
+
+local flow Sub_Event396():
+    System.EventFlags['cPlayer:BeyEvent_TalkTrophyCopper'] = true
+    run GetPoint_next()
+
+local flow Sub_Event411():
+    MainNpc.SmartPhone(5)
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:153', false)
+    MainNpc.NpcStartAS('BeyTakePictures', false, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:154', false)
+    run Check_TotalPoint()
+
+local flow Sub_Event43(SellTotal: int):
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        EventFlowSystemActor.UIMoneyAppear()
+        MainNpc.NpcDelivery(7, 'Default')
+        MainNpc.ShopSellDone(1.5, false)
+        EventFlowSystemActor.UIMoneyDisappear()
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:053', false)
+    else:
+        run Sub_Event448(SellTotal=SellTotal)
+
+local flow Sub_Event448(SellTotal: int):
+    run SellFish_Cancel()
+    MainNpc.NpcDelivery(10, 'Default')
+
+local flow Sub_Event74():
+    run SmartPhone_entry()
+    if not EventFlowSystemActor.IsMyVillage():
+        if System.EventFlags['cPlayerVisit:DC_CatchFishFes_CooperativeBonus']:
+            run Result_Bonus_DC()
+        else:
+            run Result_NoPoint()
+    elif System.EventFlags['cPlayer:CatchFishFes_CooperativeBonus']:
+entrypoint Event294:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:145', false)
+        run Sub_Event411()
+    else:
+        run Result_NoPoint()
+
+local flow Sub_Event95():
+    MainNpc.MessageSuspend()
+    System.EventFlags['cLand:CatchFishFesGetTotalNum'] = 0
+    System.EventFlags['cLandTemp:CatchFishFesQuestStart'] = true
+    System.EventFlags['cLandTemp:FesEnterBalloon'] = false
+    MainNpc.ChmFreeAction('cChmActionType_FishFesEntry')
+    if EventFlowSystemActor.IsSharePlay(0):
+        EventFlowSystemActor.SetSharePlayChangeCondition(true)
+    MainNpc.ChmFreeAction('cChmActionType_FishFesStart')
+    EventFlowSystemActor.SetMemoryEventPlayer('cBlancoEventPlayer:PE_CatchFishFes_Join')
+
+local flow Sub_Event97():
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:065', false)
+    if EventFlowSystemActor.NetHasVisitor():
+        run EvQ_Start()
+    else:
+        run Sub_Event354()
+
+local flow Sub_grp_Event254():
+    if EventFlowSystemActor.InsectFishBoxIsEmpty():
+        run SellBOX()
+    else:
+        switch EventFlowSystemActor.EventCheck('FishingConvention'):
+            case 0:
+                run BeforeEv()
+            case 1:
+                System.EventFlags['cLandTemp:NNPC_CatchFishFesAction_Continue'] = true
+                run OpenEv()
+                System.EventFlags['cLandTemp:NNPC_CatchFishFesAction_Continue'] = false
+            case 2, 3:
+                run AfterEv()
+
+local flow Sub_grp_Event264():
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run PointCheck()
+    elif EventFlowSystemActor.EnvHourCompare(20, -1, true, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:092', false)
+    else:
+        run AfterEv_Always()
+
+local flow Sub_grp_Event288():
+    if EventFlowSystemActor.IsMyVillage():
+        if System.EventFlags['cPlayer:BeyEvent_ResultGetFish'] < 1:
+            run Sub_Event74()
+        else:
+            run Sub_grp_Event356()
+    else:
+        if System.EventFlags['cPlayerTemp:CatchFishFesGetNum'] < 1:
+            run Sub_Event74()
+        else:
+            run Sub_grp_Event356()
+
+local flow Sub_grp_Event344():
+    if System.EventFlags['cPlayer:CatchFishFesCount'] < 10:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:170_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:170', false)
+        run Sub_grp_Event264()
+
+local flow Sub_grp_Event356():
+    if EventFlowSystemActor.IsSharePlay(0):
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:160', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:146', false)
+    run SmartPhone_entry()
+    if EventFlowSystemActor.IsMyVillage():
+        if System.EventFlags['cPlayer:CatchFishFes_CooperativeBonus']:
+            if not System.EventFlags['cPlayer:CatchFishFes_Bonus']:
+entrypoint Event310:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:149', false)
+                run Sub_Event411()
+            elif System.EventFlags['cPlayer:BeyEvent_ResultGetFish'] < 21:
+entrypoint Event311:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:150', false)
+                run Sub_Event411()
+            else:
+entrypoint Event428:
+                run SmartPhone_ResultCatchPOver()
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:157', false)
+                run Sub_Event411()
+        elif not System.EventFlags['cPlayer:CatchFishFes_Bonus']:
+entrypoint Event292:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:147', false)
+            run Sub_Event411()
+        elif System.EventFlags['cPlayer:BeyEvent_ResultGetFish'] < 21:
+entrypoint Event309:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:148', false)
+            run Sub_Event411()
+        else:
+entrypoint Event467:
+            run SmartPhone_ResultCatchPOver()
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:158', false)
+            run Sub_Event411()
+    else:
+        if not System.EventFlags['cPlayerVisit:DC_CatchFishFes_CooperativeBonus']:
+            if System.EventFlags['cPlayerVisit:DC_CatchFishFes_Bonus']:
+                run Result_CatchP-Bonus_C()
+            else:
+                run Result_CatchP()
+        elif not System.EventFlags['cPlayerVisit:DC_CatchFishFes_Bonus']:
+            run Result_CatchP-Bonus_DC()
+        elif System.EventFlags['cPlayerTemp:CatchFishFesGetNum'] < 21:
+            run Result_CatchP-Bonus_DC-C()
+        else:
+            run Result_CatchPOver-Bonus_DC-C()
+
+local flow Sub_grp_Event437():
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run PointExchange()
+    else:
+        run PointExCancel()
+
+local flow Sub_grp_Event5():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:070', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:071', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:072', true)
+
+flow Tag_Num():
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 0, 10, '')
+    EventFlowSystemActor.SetTagFromSystem('cEventFlag', 'cDegit', 1, 0, 'cPlayer:CatchFishFesCount')
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 2, 500, '')
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 4, 3, '')
+    if EventFlowSystemActor.IsMyVillage():
+        EventFlowSystemActor.SetTagFromSystem('cEventFlag', 'cDegit', 7, 0, 'cPlayer:BeyEvent_ResultGetPoint')
+        EventFlowSystemActor.SetTagFromSystem('cEventFlag', 'cDegit', 8, 0, 'cPlayer:BeyEvent_ResultGetFish')
+    else:
+        EventFlowSystemActor.SetTagFromSystem('cEventFlag', 'cDegit', 7, 0, 'cPlayerTemp:CatchFesGetPoint')
+        EventFlowSystemActor.SetTagFromSystem('cEventFlag', 'cDegit', 8, 0, 'cPlayerTemp:CatchFishFesGetNum')
+    EventFlowSystemActor.SetTagFromSystem('cEventFlag', 'cDegit', 9, 0, 'cLand:CatchFishFesGetTotalNum')
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 10, 5, '')
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 11, 300, '')
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 12, 200, '')
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 13, 100, '')
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 14, 3, '')
+
+flow Tag_SET_HOUR():
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cHour', 0, 9, '')
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cHour', 1, 18, '')
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cHour', 2, 20, '')
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cHour', 3, 5, '')
+
+flow Tag_SET_MONTH():
+    EventFlowSystemActor.SetTagFromSystem('cNextFishingEvent', 'cDegit', 0, 0, '')
+
+flow TalkAfterEvent():
+    MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:103', false)
+
+flow TalkNextSchedule():
+    if EventFlowSystemActor.EnvHourCompare(18, -1, true, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:042', true)
+    else:
+        if EventFlowSystemActor.EnvMonth() in (`January`, `February`, `March`, `April`, `May`, `June`, `July`, `August`, `September`):
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:044', true)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:043', true)
+    MainNpc.SmartPhone(1)
+
+flow TalkRule():
+    if EventFlowSystemActor.NetHasVisitor():
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:038', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:028', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:027', false)
+        if EventFlowSystemActor.IsSharePlay(0):
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:164', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:028', false)
+    if EventFlowSystemActor.NetHasVisitor():
+        MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:033', false)
+    else:
+        if System.EventFlags['cPlayer:BevTalkFirst_EvQuestFinish']:
+            if EventFlowSystemActor.IsSharePlay(0):
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:165', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:029', false)
+        elif EventFlowSystemActor.IsSharePlay(0):
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:166', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/bey/SP_bey_event:030', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run Check_EvQ_Entry()
+    else:
+        run EvQ_Entry_Cancel()
+

@@ -1,0 +1,107 @@
+flow ObjRcoMachineCheck1st():
+    run ObjRcoStandChair()
+    run AI_NPC_Rco::CheckRob_ATM_Direction()
+    System.EventFlags['cPlayerTemp:RcoMachineTalkCntl'] = true
+    if EventFlowSystemActor.PlayerHouseLevel() == `Homeless`:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:002', false)
+    else:
+        switch SubflowResults@4[0]:
+            case 1:
+                if System.EventFlags['cPlayerTemp:RcoHeardOfficeOBJ']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:001_00_02', false)
+                else:
+                    System.EventFlags['cPlayerTemp:RcoHeardOfficeOBJ'] = true
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:001_00_01', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:001_01', false)
+                System.EventFlags['cPlayer:ObjRcoMachineHeardExplanation'] = true
+                if System.EventFlags['cPlayer:RcoPaid1stCharge']:
+                    if System.EventFlags['cLand:TanuportAmiiboCampUnlock']:
+                        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:001_05', false)
+                        System.EventFlags['cPlayer:RcoMachineAmiiboCamperUnlock'] = true
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:001_03', false)
+                    if System.EventFlags['cLand:RcmImmQuestComplete']:
+                        System.EventFlags['cPlayer:ObjRcoMachineHeardFenceRecipe'] = true
+                else:
+                    if System.EventFlags['cLand:TanuportAmiiboCampUnlock']:
+                        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:001_04', false)
+                        System.EventFlags['cPlayer:RcoMachineAmiiboCamperUnlock'] = true
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:001_02', false)
+            case 2:
+                run ObjRcoMachineCheck_2PUnlockFence()
+            case 3:
+                run ObjRcoMachineCheck_UnlockAmiibo()
+            default:
+                return
+
+flow ObjRcoMachineCheck1st_Init():
+    MainNpc.NpcAISetting(4, false)
+
+flow ObjRcoMachineCheck_2PUnlockFence():
+    run ObjRcoStandChair()
+    System.EventFlags['cPlayerTemp:RcoMachineTalkCntl'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:031', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:032', false)
+    System.EventFlags['cPlayer:ObjRcoMachineHeardFenceRecipe'] = true
+
+flow ObjRcoMachineCheck_2PUnlockFence_Init():
+    MainNpc.NpcAISetting(4, false)
+
+flow ObjRcoMachineCheck_UnlockAmiibo():
+    run ObjRcoStandChair()
+    System.EventFlags['cPlayerTemp:RcoMachineTalkCntl'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:021', false)
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:022', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:023', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:024', false)
+    System.EventFlags['cPlayer:RcoMachineAmiiboCamperUnlock'] = true
+
+flow ObjRcoMachineCheck_UnlockAmiibo_Init():
+    MainNpc.NpcAISetting(4, false)
+
+flow ObjRcoRecycleBox1st():
+    run ObjRcoStandChair()
+    System.EventFlags['cPlayer:AccessLostPropertyBox1st'] = true
+    if System.EventFlags['cPlayerTemp:RcoHeardOfficeOBJ']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:011_02', false)
+    else:
+        System.EventFlags['cPlayerTemp:RcoHeardOfficeOBJ'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:011_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:012', false)
+    if System.EventFlags['cPlayer:MainmenuCall']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:013_02', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:013_01', false)
+    if not System.EventFlags['cPlayer:PlayerProducedByPlayerMoving']:
+        run TalkAboutRecycleBox_NormalSeq()
+    elif not System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        if System.EventFlags['cPlayer:PocketItemSendRecycleBoxByMoving']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:015', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:016_02', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:017', false)
+        else:
+            run TalkAboutRecycleBox_NormalSeq()
+    elif System.EventFlags['cPlayer:PocketItemSendRecycleBoxByMoving']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:015', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:016', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:017', false)
+    elif System.EventFlags['cPlayer:PocketItemSendRecycleBoxByMoving']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:015', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:016_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:017', false)
+    else:
+        run TalkAboutRecycleBox_NormalSeq()
+
+flow ObjRcoRecycleBox1st_Init():
+    MainNpc.NpcAISetting(4, false)
+
+flow ObjRcoStandChair():
+    MainNpc.RcoStandUpChair()
+    MainNpc.TalkCamera(true, 'cTalk', 0)
+
+flow TalkAboutRecycleBox_NormalSeq():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_91_BreakInSpeak:014', false)
+

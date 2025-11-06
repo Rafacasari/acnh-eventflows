@@ -1,0 +1,114 @@
+flow Cancel():
+    MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:104', false)
+
+flow ChkUnlockDirectRoute():
+    if not System.EventFlags['cPlayer:DocUnlockSpnOtgDirectRoute']:
+        MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:306', false)
+        System.EventFlags['cPlayer:DocUnlockSpnOtgDirectRoute'] = true
+        if EventFlowSystemActor.WherearenKKFesStatus(false) in (0, 1, 3):
+            MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:307', false)
+            run ReturnDirectRoute_sel3()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:308', false)
+            run ReturnDirectRoute_sel4()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow GoToCommune():
+    if EventFlowSystemActor.EnvHourOverGrowUp():
+        MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:305', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:302', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:303', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:304', true)
+            EventFlowSystemActor.StopMeasurePlayTime('cWherearenIslands')
+            System.EventFlags['cPlayerTemp:WHEREAREN_DocMainEreaFirstTalkDone'] = false
+            run SNPC_dod_01_Airport_NormalSeq::Dod_GoToCommune()
+        else:
+            run Cancel()
+
+flow GoToMainIsland():
+    MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:102', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:103', true)
+        System.EventFlags['cPlayerTemp:WHEREAREN_DocMainEreaFirstTalkDone'] = false
+        EventFlowSystemActor.BGMPropertyControl(144)
+        EventFlowSystemActor.SoundTriggerEmit('Airplane_Takeoff_Short', -1)
+        System.EventFlags['cLandTemp:DocReturnFromIsland'] = true
+        EventFlowSystemActor.StopMeasurePlayTime('cWherearenIslands')
+        EventFlowSystemActor.SystemRequestChangeStage('cFromOutlierToHomeland', 'cDALWherearenWithLoadWait', 'cCircle', 'cBlack', 1.0, 1.0)
+    else:
+        run Cancel()
+
+flow ReturnDirectRoute_sel3():
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run GoToMainIsland()
+        case 1:
+            run GoToCommune()
+        case 2:
+            run Cancel()
+
+flow ReturnDirectRoute_sel4():
+    run Event54()
+
+flow Root():
+    if not System.EventFlags['cWherearenPlayer:VisitToday']:
+        System.EventFlags['cWherearenPlayer:VisitToday'] = true
+        System.EventFlags['cWherearenPlayer:VisitTotal'] += 1
+    if not System.EventFlags['cPlayerTemp:WHEREAREN_DocMainEreaFirstTalkDone']:
+        System.EventFlags['cPlayerTemp:WHEREAREN_DocMainEreaFirstTalkDone'] = true
+        MainNpc.CharacterEmoticonAction('DodRoger', true, '', 0, false)
+        EventFlowSystemActor.WaitFrame(20)
+        if not System.EventFlags['cWherearenPlayer:TutorialDone']:
+            EventFlowSystemActor.WaitFrame(20)
+            Player.TurnBody(12, 255.0)
+            EventFlowSystemActor.WaitFrame(20)
+            EventFlowSystemActor.SetNpcAIBlackBoardByLabel('mnc', 'OpDemoState', 1, 1)
+        elif System.EventFlags['cWherearenPlayer:MncMovetoBridge']:
+            EventFlowSystemActor.SoundDuckingOn(59)
+            EventFlowSystemActor.SetNpcAIBlackBoardByLabel('mnc', 'FirstTalk', 1, 1)
+            EventFlowSystemActor.WaitFrame(1)
+            EventFlowSystemActor.SoundDuckingOff(59)
+    elif not System.EventFlags['cWherearenPlayer:TutorialDone']:
+        MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:201', true)
+    elif EventFlowSystemActor.WherearenOrderStatus() not in (0, 2, 3, 4, 5, 6, 7):
+        MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:106', false)
+    elif EventFlowSystemActor.WherearenKKFesStatus(false) in (0, 1, 3):
+        if System.EventFlags['cPlayer:CommuneCompleteExpandEvent_Player']:
+            run ChkUnlockDirectRoute()
+            MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:300', false)
+            run ReturnDirectRoute_sel3()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:101', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run GoToMainIsland()
+            else:
+                run Cancel()
+    elif System.EventFlags['cPlayer:CommuneCompleteExpandEvent_Player']:
+        run ChkUnlockDirectRoute()
+        MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:301', false)
+entrypoint Event54:
+        switch EventFlowSystemActor.GeneralTalkChoice4():
+            case 0:
+                run GoToMainIsland()
+            case 1:
+                run GoToCommune()
+            case 2:
+                run Sub_Event31()
+            case 3:
+                run Cancel()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:101_01', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                run GoToMainIsland()
+            case 1:
+                run Sub_Event31()
+            case 2:
+                run Cancel()
+
+local flow Sub_Event31():
+    MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_53_Wherearen:105', true)
+    run Demo_Common_Wherearen::ToKKFesDemoLive()
+

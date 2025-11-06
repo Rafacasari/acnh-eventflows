@@ -1,0 +1,210 @@
+flow GstGiveSpirits():
+    MainNpc.SetDeliveryItemAtRandom(4702, false, 'cVillageRemakePattern', 0)
+    run Gst_ClearProcess()
+    MainNpc.NpcDelivery(15, 'Default')
+    EventFlowSystemActor.DeleteTargetItem(4702, 5, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:030', true)
+    MainNpc.NpcDelivery(16, 'Default')
+    MainNpc.NpcGstChange(0)
+    SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:031', false)
+    run Gst_Choose_Category()
+    SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:032', false)
+    switch SubflowResults@4[0]:
+        case 0:
+            SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:033_01', false)
+        case 1:
+            SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:033_02', false)
+        case 2:
+            SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:033_03', false)
+        case 3:
+            SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:033_04', false)
+    SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:035', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:036_01', false)
+        run Gst_Choose_Item_NotHave()
+    else:
+        SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:036_02', false)
+        run Gst_Choose_Item_Rich()
+    SubNpc.SetItemName(1, 4, 0)
+    SubNpc.SetDeliveryItem(1, true)
+    SubNpc.SetEventRewardToPlayerBaggage('cFree')
+    SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:037', false)
+    SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:038', false)
+    MainNpc.NpcGstChange(2)
+    EventFlowSystemActor.SetMemoryEventPlayer('cBlancoEventPlayer:PE_Gst_Help')
+
+flow Gst_Choose_Category():
+    if EventFlowSystemActor.PlayerHouseLevel() not in (`Homeless`, `PlacedTent`):
+        run Moving_SubPlayer()
+    elif (System.EventFlags['cPlayer:PlayerProducedByPlayerMoving']) and (System.EventFlags['cPlayer:NotBuilt2PMyHomeAfterMoving']):
+        run Moving_SubPlayer()
+    elif EventFlowSystemActor.PercentChoice(75):
+        SubflowResults[0] = 0
+    else:
+        SubflowResults[0] = 3
+
+flow Gst_Choose_Item_NotHave():
+    switch SubflowResults@4[0]:
+        case 0:
+            MainNpc.GstDecideReward(`Furniture`, 10001, 0, true)
+        case 1:
+            MainNpc.GstDecideReward(`Wallpaper`, 10000, 0, true)
+        case 2:
+            MainNpc.GstDecideReward(`Flooring`, 10000, 0, true)
+        case 3:
+            MainNpc.GstDecideReward(`Clothing`, 10000, 0, true)
+
+flow Gst_Choose_Item_Rich():
+    switch SubflowResults@4[0]:
+        case 0:
+            if EventFlowSystemActor.ShopLevel() in (`InResServiceTent`, `NooksCrannyInitial`):
+                MainNpc.GstDecideReward(`Furniture`, 15001, 3500, false)
+            else:
+                MainNpc.GstDecideReward(`Furniture`, 100001, 6600, false)
+        case 1:
+            MainNpc.GstDecideReward(`Wallpaper`, 10000, 2000, false)
+        case 2:
+            MainNpc.GstDecideReward(`Flooring`, 10000, 2000, false)
+        case 3:
+            MainNpc.GstDecideReward(`Clothing`, 10000, 3500, false)
+
+flow Gst_ClearProcess():
+    System.EventFlags['cPlayer:GstQuestClearFlag'] = true
+    System.EventFlags['cPlayer:GstQuestStartFlag'] = false
+    System.EventFlags['cLifeSupportAchievement:HelpGst'] += 1
+
+flow Gst_Hit():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:065_01', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:065_02', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:065_03', true)
+
+flow Gst_HoleChat():
+    if (MainNpc.CountHole(2)) and (not System.EventFlags['cPlayerTemp:GstTalkHoleChat']):
+        System.EventFlags['cPlayerTemp:GstTalkHoleChat'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:070', false)
+        EventFlowSystemActor.ExitFlowchart()
+
+flow Gst_Quest():
+    run Gst_HoleChat()
+    if not EventFlowSystemActor.HasTargetItem(4702, 5):
+        if EventFlowSystemActor.HasTargetItem(4702, 4):
+            MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:015', false)
+        elif EventFlowSystemActor.HasTargetItem(4702, 3):
+            MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:014', false)
+        elif EventFlowSystemActor.HasTargetItem(4702, 2):
+            MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:013', false)
+        elif EventFlowSystemActor.HasTargetItem(4702, 1):
+            MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:012', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:011', false)
+    elif EventFlowSystemActor.NetHasVisitor():
+        MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:040', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:016', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run GstGiveSpirits()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:017', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run GstGiveSpirits()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:018', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run GstGiveSpirits()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:019', false)
+                    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                        run GstGiveSpirits()
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:020', false)
+                        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                            run GstGiveSpirits()
+                        else:
+                            do:
+                                MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:021', false)
+                            while EventFlowSystemActor.GeneralTalkChoice2() == 1
+                            run GstGiveSpirits()
+
+flow Gst_Share():
+    if System.EventFlags['cLandTemp:GstQuestStartLandFlag']:
+        if System.EventFlags['cPlayer:GstQuestStartFlag']:
+            run Gst_Quest()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:061', false)
+            EventFlowSystemActor.ExitFlowchart()
+    elif System.EventFlags['cPlayer:GstQuestClearFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:060', false)
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        run Gst_Start()
+
+flow Gst_Start():
+    MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:001', true)
+    MainNpc.NpcGstChange(1)
+    EventFlowSystemActor.WaitFrame(30)
+    SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:002', false)
+    if System.EventFlags['cPlayer:GstQuestBreakFlag']:
+        SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:050', false)
+        SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:051', false)
+    else:
+        if not System.EventFlags['cLand:GstTalkAnyone']:
+            SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:003', false)
+            run Sub_Event2()
+        elif System.EventFlags['cPlayer:GstTalkBefore']:
+            SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:045', false)
+            SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:046', false)
+        else:
+            SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:004', false)
+            run Sub_Event2()
+    SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:007', false)
+    if not EventFlowSystemActor.HasKindItem('cKind', 'Net', ''):
+        SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:052', false)
+    SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:053', false)
+    run Gst_StartProcess()
+
+flow Gst_StartProcess():
+    System.EventFlags['cLand:GstTalkAnyone'] = true
+    System.EventFlags['cPlayer:GstTalkBefore'] = true
+    System.EventFlags['cPlayer:GstQuestStartFlag'] = true
+    System.EventFlags['cLandTemp:GstQuestStartLandFlag'] = true
+
+flow Moving_SubPlayer():
+    switch EventFlowSystemActor.PercentChoice3(75, 10, 15):
+        case 0:
+            SubflowResults[0] = 0
+        case 1:
+            if EventFlowSystemActor.RandomChoice2(2) == 0:
+                SubflowResults[0] = 1
+            else:
+                SubflowResults[0] = 2
+        case 2:
+            SubflowResults[0] = 3
+
+flow Root():
+    if EventFlowSystemActor.IsSharePlay(0):
+        run Gst_Share()
+    elif System.EventFlags['cPlayer:GstQuestStartFlag']:
+        run Gst_Quest()
+    else:
+        run Gst_Start()
+
+flow Root_Init():
+    if not EventFlowSystemActor.NetHasVisitor():
+        MainNpc.NpcAITalkSubCastEntry('gstA', 1)
+
+local flow Sub_Event2():
+    SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:005', false)
+    SubNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:006', false)
+
+flow tst():
+    run Moving_SubPlayer()
+    run Gst_Choose_Item_Rich()
+    MainNpc.SetItemName(1, 4, 0)
+    MainNpc.SetDeliveryItem(1, true)
+    MainNpc.SetEventRewardToPlayerBaggage('cFree')
+    MainNpc.OpenMessageWindow('TalkSNpc/gst/SP_gst:037', false)
+

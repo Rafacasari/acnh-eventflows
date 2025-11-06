@@ -1,0 +1,106 @@
+flow ChkCommuneShopNum(ShopNum: int = 0):
+    SubflowResults[4] = 0
+    ShopNum = 0
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneSloDonation') not in (0, 1):
+        ShopNum += 1
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneCmlDonation') not in (0, 1):
+        ShopNum += 1
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneFoxDonation') not in (0, 1):
+        ShopNum += 1
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneBptDonation') not in (0, 1):
+        ShopNum += 1
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneSkkDonation') not in (0, 1):
+        ShopNum += 1
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneAlpDonation') not in (0, 1):
+        ShopNum += 1
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneTtlDonation') not in (0, 1):
+        ShopNum += 1
+    if ShopNum < 3:
+        SubflowResults[4] = 0
+    elif ShopNum < 7:
+        SubflowResults[4] = 1
+    else:
+        SubflowResults[4] = 2
+
+flow NightPos():
+    run Event14()
+
+flow Root():
+    if EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayerTemp:PooCheckPlace') not in (0, 1, 2, 4):
+        SubflowResults[1] = 0
+        run SNPC_poo_03_Commune_HairStyling::Root()
+    elif EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayerTemp:PooCheckPlace') == 0:
+        if System.EventFlags['cPlayer:PooTalkAfterJuneBride']:
+            run Sub_grp_Event6()
+        else:
+            run Sub_grp_Event2()
+    else:
+        System.EventFlags['cPlayer:PooTalkAfterJuneBride'] = false
+        run Sub_grp_Event2()
+
+flow SamePosSpn():
+    if EventFlowSystemActor.RandomChoice2(2) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:012', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:011', false)
+
+flow Sitdown_StylingChair():
+    SubflowResults[1] = 1
+    run SNPC_poo_03_Commune_HairStyling::Root()
+
+local flow Sub_grp_Event2():
+    if System.EventFlags['cPlayer:PooTalkToday']:
+        run ChkCommuneShopNum()
+        switch EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayerTemp:PooCheckPlace'):
+            case 0:
+                run Sub_grp_Event6()
+            case 1, 4:
+                if EventFlowSystemActor.PercentChoice(50):
+                    run NightPos()
+                else:
+                    switch SubflowResults@3[4]:
+                        case 0:
+                            MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:031', false)
+                        case 1:
+                            MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:032', false)
+                        case 2:
+                            MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:033', false)
+            case 2:
+                run NightPos()
+            default:
+                return
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:001', false)
+        System.EventFlags['cPlayer:PooTalkToday'] = true
+
+local flow Sub_grp_Event6():
+    if EventFlowSystemActor.TermEventNow('JuneBride', false):
+        if not System.EventFlags['cPlayer:AlwJuneBrideQuestClearFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:022', false)
+        elif System.EventFlags['cPlayer:PooTalkAfterJuneBride']:
+            MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:023', false)
+            System.EventFlags['cPlayer:PooTalkToday'] = true
+        else:
+            run NightPos()
+    elif EventFlowSystemActor.PercentChoice(25):
+        MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:021', false)
+    else:
+entrypoint Event14:
+        if System.EventFlags['cPlayer:PooTalkFirstToday']:
+            MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:013', false)
+        else:
+            switch EventFlowSystemActor.RandomChoice4(4):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:013', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:012', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:011', false)
+                case 3:
+                    if EventFlowSystemActor.EventFlagSystemComqare('cPlayerTemp:SpnCheckPlace', 'cPlayerTemp:PooCheckPlace') not in (0, 2):
+                        run SamePosSpn()
+                    elif System.EventFlags['cPlayer:SpnSendMailCommuneExpansion']:
+                        MainNpc.OpenMessageWindow('TalkSNpc/poo/SP_poo_02_Commune:014', false)
+                    else:
+                        run SamePosSpn()
+

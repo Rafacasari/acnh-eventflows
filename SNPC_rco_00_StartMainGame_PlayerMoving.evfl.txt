@@ -1,0 +1,159 @@
+flow PlayerMoving_CmnSmaphoSeq():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1023_01', false)
+    Player.SmartPhone(0)
+    EventFlowSystemActor.WaitFrame(5)
+    Player.SmartPhone(4)
+    System.EventFlags['cPlayer:PlayerMainUImenuEnable'] = true
+    EventFlowSystemActor.PlayReport('cSeqEndTutorial', 0)
+    System.EventFlags['cPlayer:MainUiClockEnable'] = true
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.UIMenuDeviceAppear('cBoot', 'cNone')
+    EventFlowSystemActor.WaitFrame(45)
+    Player.SmartPhone(5)
+    EventFlowSystemActor.WaitFrame(5)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1024', true)
+    if System.EventFlags['cPlayer:IslandCreaterUnlockMoving']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1024_02', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1024_01', false)
+    Player.SmartPhone(1)
+    EventFlowSystemActor.WaitFrame(5)
+
+flow Return_SelectItem():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:1009', false)
+    MainNpc.NpcDelivery(10, 'Default')
+    EventFlowSystemActor.MessageSuspend()
+    run Event62()
+
+flow Root_MainP():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1001', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1002', false)
+    if System.EventFlags['cPlayer:PlayerMovingwithNoBelongings']:
+        run Skip_ReturnBelongings()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1003', false)
+        if EventFlowSystemActor.CanMargeReserveItem():
+            MainNpc.SetDeliveryItem(38, false)
+            MainNpc.NpcDelivery(1, 'Default')
+            EventFlowSystemActor.PlayerBaggageOperationForEvent('cMargeFromReserve')
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1004', false)
+            MainNpc.SetDeliveryItem(36, false)
+            MainNpc.NpcDelivery(0, 'Default')
+            EventFlowSystemActor.BaggageToLostItemBox()
+            System.EventFlags['cPlayer:PocketItemSendRecycleBoxByMoving'] = true
+            MainNpc.SetDeliveryItem(38, false)
+            MainNpc.NpcDelivery(1, 'Default')
+            EventFlowSystemActor.PlayerBaggageOperationForEvent('cMargeFromReserve')
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1005', false)
+        if System.EventFlags['cPlayer:PocketItemSendRecycleBoxByMoving']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1006', false)
+        run Root_MainP_BuildMyHome()
+
+flow Root_MainP_BootSmapho():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1021', false)
+    run Skip_TransferTentFurniture()
+
+flow Root_MainP_BuildMyHome():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1007', true)
+entrypoint Event20:
+    EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 1.0, 1.0, true)
+    if EventFlowSystemActor.HouseItemNum(1):
+        if EventFlowSystemActor.CanMargeTentItem():
+            SubflowResults[0] = 0
+            MainNpc.SetDeliveryItem(37, false)
+            EventFlowSystemActor.PlayerBaggageOperationForEvent('cMargeFromTent')
+        else:
+            SubflowResults[0] = 1
+            EventFlowSystemActor.TentItemToLostItemBox()
+    else:
+        SubflowResults[0] = 2
+    EventFlowSystemActor.PlayerHouseRestore()
+    EventFlowSystemActor.FadeIn(true)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1008', false)
+    switch SubflowResults@3[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1009', false)
+            MainNpc.NpcDelivery(1, 'Default')
+            run Root_MainP_BootSmapho()
+        case 1:
+            if System.EventFlags['cPlayer:PocketItemSendRecycleBoxByMoving']:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1009_02', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1009_01', false)
+            System.EventFlags['cPlayer:TentItemSendRecycleBoxByMoving'] = true
+            run Root_MainP_BootSmapho()
+        case 2:
+            run Skip_TransferTentFurniture()
+
+flow Root_OtherP():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:1001', false)
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:1003', false)
+        switch EventFlowSystemActor.GeneralTalkChoice2():
+            case 0, 1:
+                MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:1004', true)
+entrypoint Event62:
+                EventFlowSystemActor.UIItemSelectWindowHandling('cLostItemBox', 65534, '', '', 'cLostItemBox', false)
+                MainNpc.SetDeliveryItem(4, false)
+                EventFlowSystemActor.SetTagFromUIResult('cItemName', 0)
+                if EventFlowSystemActor.MultiKindItemSelectInclude('FtrWall', 'Counter', 'Pillar', '', '', '', '', '', 'cItemSelect'):
+                    MainNpc.NpcDelivery(0, 'Keep')
+                    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:1008', false)
+                    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                        run Trash_AOCItem()
+                    else:
+                        run Return_SelectItem()
+                else:
+                    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:1005', false)
+                    MainNpc.NpcDelivery(0, 'Default')
+                    EventFlowSystemActor.ItemSelectToLostItemBox()
+                    System.EventFlags['cPlayer:PocketItemSendRecycleBoxByMoving'] = true
+entrypoint Event65:
+                    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:1006', false)
+                    run Sub_Event69()
+    else:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:1002', false)
+        run Sub_Event69()
+
+flow Root_OtherP_BootSmapho():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:1021', false)
+    run PlayerMoving_CmnSmaphoSeq()
+    run Tutorials_Prologue3_Orientation1::Rco_Orientation2P_Office()
+    if System.EventFlags['cPlayer:PocketItemSendRecycleBoxByMoving']:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:1022', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1025', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1026', true)
+    run SNPC_rco_00_StartMainGame::Rco_OrientationEnd()
+
+flow Skip_ReturnBelongings():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1003_01', true)
+    run Event20()
+
+flow Skip_TransferTentFurniture():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1022', false)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1023', false)
+            run PlayerMoving_CmnSmaphoSeq()
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1025', false)
+            if (not System.EventFlags['cPlayer:PocketItemSendRecycleBoxByMoving']) and (not System.EventFlags['cPlayer:TentItemSendRecycleBoxByMoving']):
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1026', true)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_01_StartingMaingame:1026_01', true)
+            run SNPC_rco_00_StartMainGame::Rco_OrientationEnd()
+
+local flow Sub_Event69():
+    MainNpc.SetDeliveryItemAtRandom(13346, true, 'cVillageRemakePattern', 0)
+    MainNpc.NpcDelivery(1, 'Keep')
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:1007', false)
+    MainNpc.NpcDelivery(2, 'Default')
+    System.EventFlags['cPlayer:NotBuilt2PMyHomeAfterMoving'] = true
+    run Root_OtherP_BootSmapho()
+
+flow Trash_AOCItem():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue3_Orientation1:1010', false)
+    MainNpc.NpcDelivery(3, 'Default')
+    EventFlowSystemActor.SystemDeletePlayerItem('cItemWindow', 1)
+    run Event65()
+

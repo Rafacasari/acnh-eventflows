@@ -1,0 +1,436 @@
+flow Chat_Inside():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious4(4, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:150', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:151', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:152', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:153', false)
+
+flow GetItem():
+    MainNpc.SetDeliveryItem(1, true)
+    MainNpc.MessageSuspend()
+    MainNpc.NpcDelivery(1, 'Default')
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:004_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:004_02', false)
+    if MainNpc.EventFlags['cNpcMemory:HalloweenGiveCandyCount'] >= 1:
+        run Npc_TerrifyReaction()
+
+flow Halloween_Inside():
+    if MainNpc.EventFlags['cNpcMemory:HaloweenGetCandyThisSceneFalg']:
+        run Chat_Inside()
+    elif not MainNpc.EventFlags['cNpcMemory:HaloweenTalkThisSceneFalg']:
+        MainNpc.EventFlags['cNpcMemory:HaloweenTalkThisSceneFalg'] = true
+        if MainNpc.EventFlags['cNpcMemory:HalloweenGetCandyFlag']:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:101', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:100', false)
+        if MainNpc.CheckGetCandyMinute(5):
+            if (not EventFlowSystemActor.IsPlayerDisguise()) and (not EventFlowSystemActor.PlayerIsEquipItem(4395, 8283, 14269, 519, 65534, 65534, 65534, 65534, 'cAny', false, true)):
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:102', false)
+                if (not EventFlowSystemActor.HasKindItem('', 'Candy', '')) and (not System.EventFlags['cPlayer:NpcHalloweenCandyHelpFlag']):
+                    EventFlowSystemActor.SelectRewardItemDirect(13197, 3, 'cVillageRemakePattern', 0)
+                    MainNpc.SetItemName(1, 0, 0)
+                    if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:108', false)
+                        MainNpc.SetDeliveryItem(1, true)
+                        MainNpc.NpcDelivery(1, 'Default')
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:109', false)
+                        run Sub_Event118()
+            else:
+                run Sub_grp_Event42()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:103', false)
+    elif MainNpc.CheckGetCandyMinute(5):
+        if (not EventFlowSystemActor.IsPlayerDisguise()) and (not EventFlowSystemActor.PlayerIsEquipItem(4395, 8283, 14269, 519, 65534, 65534, 65534, 65534, 'cAny', false, true)):
+            run Chat_Inside()
+        else:
+            run Sub_grp_Event42()
+    else:
+        run Chat_Inside()
+
+flow Halloween_Outside():
+    if MainNpc.EventFlags['cNpcMemory:HaloweenTalkThisSceneFalg']:
+entrypoint Event2:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious4(4, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:050', false)
+                return
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:051', false)
+                return
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:052', false)
+                return
+            case 3:
+                if EventFlowSystemActor.EnvHourCompare(19, 0, true, true) == 0:
+                    run Event2()
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:053', false)
+                    return
+    else:
+        MainNpc.EventFlags['cNpcMemory:HaloweenTalkThisSceneFalg'] = true
+        if EventFlowSystemActor.IsMyVillage():
+            if not System.EventFlags['cPlayer:NpcTalkLastNotGetFlag']:
+                System.EventFlags['cPlayer:NpcTalkLastNotGetFlag'] = true
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:000', true)
+        else:
+            if not System.EventFlags['cPlayerVisit:DC_NpcTalkHalloweenFlag']:
+                System.EventFlags['cPlayerVisit:DC_NpcTalkHalloweenFlag'] = true
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:000', true)
+        if EventFlowSystemActor.HasKindItem('', 'Candy', ''):
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:001', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                EventFlowSystemActor.UIItemSelectWindowHandling('cItemKind', 65534, 'Candy', '', '', false)
+                if EventFlowSystemActor.UIResultMenuDecide():
+                    if EventFlowSystemActor.MultiItemSelectInclude(13197, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+                        SubflowResults[0] = 0
+                    else:
+                        SubflowResults[0] = 1
+                    MainNpc.SetDeliveryItem(4, false)
+                    EventFlowSystemActor.MessageSuspend()
+                    MainNpc.NpcDelivery(0, 'Keep')
+                    EventFlowSystemActor.SystemDeletePlayerItem('cItemWindowSub', 1)
+                    MainNpc.EventFlags['cNpcMemory:HalloweenGiveCandyCount'] += 1
+                    if EventFlowSystemActor.RandomChoice2(2) == 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:002_01', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:002_02', false)
+                    MainNpc.NpcDelivery(3, 'Default')
+                    run SetItem()
+                    run ItemMsg()
+                    if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+                        run GetItem()
+                    else:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:006', false)
+                        MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetFlag'] = true
+                else:
+                    run Sub_grp_Event10()
+            else:
+                run Sub_grp_Event10()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:001_01', false)
+            if System.EventFlags['cPlayer:NpcHalloweenCandyHelpFlag']:
+                run Sub_grp_Event27()
+            else:
+                EventFlowSystemActor.SelectRewardItemDirect(13197, 3, 'cVillageRemakePattern', 0)
+                MainNpc.SetItemName(1, 0, 0)
+                if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:018', true)
+                    System.EventFlags['cPlayer:NpcHalloweenCandyHelpFlag'] = true
+                    MainNpc.SetDeliveryItem(1, true)
+                    MainNpc.NpcDelivery(1, 'Default')
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:019', false)
+                else:
+                    run Sub_grp_Event27()
+        return
+
+flow ItemMsg():
+    MainNpc.SetItemName(1, 0, 0)
+    if (MainNpc.EventRewardItem(13223)) or (MainNpc.EventRewardItem(13222)) or (MainNpc.EventRewardItem(7545)) or (MainNpc.EventRewardItem(13224)) or (MainNpc.EventRewardItem(13225)) or (MainNpc.EventRewardItem(12951)):
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:003_01', false)
+        System.EventFlags['cPlayer:NpcGiveCandyCount'] += 1
+    elif MainNpc.EventRewardItem(13196):
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:003_02', false)
+        System.EventFlags['cPlayer:NpcGiveCandyCount'] = 0
+    elif MainNpc.EventRewardItem(5794):
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:003_03', false)
+        System.EventFlags['cPlayer:NpcGiveCandyCount'] += 1
+    else:
+        if MainNpc.EventRewardItem(4525):
+            EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 0, 10, '')
+        else:
+            EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 0, 5, '')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:003_04', false)
+        System.EventFlags['cPlayer:NpcGiveCandyCount'] += 1
+
+flow ItemTest():
+    SubflowResults[0] = 0
+    run SetItem()
+    run ItemMsg()
+
+flow Later_SetItem():
+    if MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] == 9:
+        EventFlowSystemActor.SelectRewardItemDirect(7545, 1, 'cVillageRemakePattern', 0)
+    elif MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] == 10:
+        EventFlowSystemActor.SelectRewardItemDirect(13224, 1, 'cVillageRemakePattern', 0)
+    elif MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] == 11:
+        EventFlowSystemActor.SelectRewardItemDirect(13225, 1, 'cVillageRemakePattern', 0)
+    elif MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] != 12:
+        switch MainNpc.FlagNpcIntValue9(9, 'cNpcMemory:HalloweenLastNotGetItem'):
+            case 0:
+                EventFlowSystemActor.SelectRewardItemDirect(13196, 1, 'cVillageRemakePattern', 0)
+            case 1:
+                EventFlowSystemActor.SelectRewardItemDirect(13223, 1, 'cVillageRemakePattern', 0)
+            case 2:
+                EventFlowSystemActor.SelectRewardItemDirect(13222, 1, 'cVillageRemakePattern', 0)
+            case 3:
+                EventFlowSystemActor.NpcSetRewardRecipe(13223, false)
+            case 4:
+                EventFlowSystemActor.NpcSetRewardRecipe(13222, false)
+            case 5:
+                EventFlowSystemActor.SelectRewardItemDirect(4525, 10, 'cVillageRemakePattern', 0)
+            case 6:
+                EventFlowSystemActor.SelectRewardItemDirect(4527, 5, 'cVillageRemakePattern', 0)
+            case 7:
+                EventFlowSystemActor.SelectRewardItemDirect(4526, 5, 'cVillageRemakePattern', 0)
+            case 8:
+                EventFlowSystemActor.SelectRewardItemDirect(4528, 5, 'cVillageRemakePattern', 0)
+    else:
+        EventFlowSystemActor.SelectRewardItemDirect(12951, 1, 'cVillageRemakePattern', 0)
+
+flow Npc_TerrifyReaction():
+    if not Player.PlayerHaveNewReaction('cPrank'):
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:016', false)
+        if not System.EventFlags['cPlayer:EnableEmoticonUI']:
+            System.EventFlags['cPlayer:EnableEmoticonUI'] = true
+            System.EventFlags['cPlayer:EnabledEmoticonIrregular'] = true
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:017', false)
+        MainNpc.GetAddEmoticon('AddPrank')
+        EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Emoticons', 'Get_Emoticon', 'cNowDemoEnd', true)
+
+flow Root():
+    if EventFlowSystemActor.EventCheck('Halloween') == 1:
+        if MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetFlag']:
+            run Later_SetItem()
+            MainNpc.SetItemName(1, 0, 0)
+            if (MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] != 3) and (MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] != 4):
+                if (MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] >= 5) and (MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] <= 8):
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:007_pl', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:007', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:007_01', false)
+            if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+                run GetItem()
+                MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetFlag'] = false
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:005', false)
+            EventFlowSystemActor.ExitFlowchart()
+        else:
+            if EventFlowSystemActor.SystemCheckNowStage('cField'):
+                run Halloween_Outside()
+            else:
+                run Halloween_Inside()
+            EventFlowSystemActor.ExitFlowchart()
+
+flow SetItem():
+    if SubflowResults@2[0] != 0:
+        EventFlowSystemActor.SelectRewardItemDirect(12951, 1, 'cVillageRemakePattern', 0)
+        MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 12
+    elif System.EventFlags['cPlayer:NpcGiveCandyCount'] < 4:
+        switch EventFlowSystemActor.FlagSystemIntValue4(4, 'cPlayer:NpcGiveCandyCount'):
+            case 0:
+                run SetItem_NotRollipop()
+            case 1:
+                if EventFlowSystemActor.PercentChoice(25):
+                    run Sub_Event131()
+                else:
+                    run SetItem_NotRollipop()
+            case 2:
+                if EventFlowSystemActor.PercentChoice(40):
+                    run Sub_Event131()
+                else:
+                    run SetItem_NotRollipop()
+            case 3:
+                if EventFlowSystemActor.PercentChoice(60):
+                    run Sub_Event131()
+                else:
+                    run SetItem_NotRollipop()
+    else:
+        run Sub_Event131()
+
+flow SetItem_NotRollipop():
+    if System.EventFlags['cPlayer:GetHalloweenGarland']:
+        if System.EventFlags['cPlayer:GetHalloweenTableSetting']:
+            if not System.EventFlags['cPlayer:GetHalloweenRag']:
+                EventFlowSystemActor.SelectRewardItemDirect(7545, 1, 'cVillageRemakePattern', 0)
+                System.EventFlags['cPlayer:GetHalloweenRag'] = true
+                MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 9
+            elif System.EventFlags['cPlayer:GetHalloweenWallPaper']:
+                if System.EventFlags['cPlayer:GetHalloweenFloor']:
+                    if (not System.EventFlags['cPlayer:GetHalloweenGarlandRecipe']) and (not EventFlowSystemActor.PlayerHasCraftRecipe('None', 13222)):
+                        EventFlowSystemActor.NpcSetRewardRecipe(13222, false)
+                        System.EventFlags['cPlayer:GetHalloweenGarlandRecipe'] = true
+                        MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 4
+                    elif (not System.EventFlags['cPlayer:GetHalloweenTableSettingRecipe']) and (not EventFlowSystemActor.PlayerHasCraftRecipe('None', 13223)):
+                        EventFlowSystemActor.NpcSetRewardRecipe(13223, false)
+                        System.EventFlags['cPlayer:GetHalloweenTableSettingRecipe'] = true
+                        MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 3
+                    elif EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                        run Sub_grp_Event207()
+                    else:
+                        if EventFlowSystemActor.PlayerHasCraftRecipe('SeasonPumpkin', 65534):
+                            if EventFlowSystemActor.PlayerHasCookingRecipe('SeasonPumpkin', 65534):
+                                run Sub_grp_Event207()
+                            else:
+                                EventFlowSystemActor.DecideEventRewardCookingRecipe('SeasonPumpkin')
+                        else:
+                            EventFlowSystemActor.DecideEventRewardDIYRecipe('SeasonPumpkin')
+                else:
+                    run Sub_Event258()
+            else:
+                if (not System.EventFlags['cPlayer:GetHalloweenFloor']) and (EventFlowSystemActor.RandomChoice2(2) == 0):
+                    run Sub_Event258()
+                else:
+                    EventFlowSystemActor.SelectRewardItemDirect(13224, 1, 'cVillageRemakePattern', 0)
+                    System.EventFlags['cPlayer:GetHalloweenWallPaper'] = true
+                    MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 10
+        else:
+            run Sub_Event97()
+    else:
+        if (not System.EventFlags['cPlayer:GetHalloweenTableSetting']) and (EventFlowSystemActor.RandomChoice2(2) == 0):
+            run Sub_Event97()
+        else:
+            EventFlowSystemActor.SelectRewardItemDirect(13222, 1, 'cVillageRemakePattern', 0)
+            System.EventFlags['cPlayer:GetHalloweenGarland'] = true
+            MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 2
+
+local flow Sub_Event118():
+    MainNpc.EventFlags['cNpcMemory:HalloweenGetCandyFlag'] = true
+    MainNpc.EventFlags['cNpcMemory:HaloweenGetCandyThisSceneFalg'] = true
+    System.EventFlags['cPlayer:NpcHalloweenCandyHelpFlag'] = true
+    MainNpc.SetGetCandyTime()
+
+local flow Sub_Event126():
+    EventFlowSystemActor.SelectRewardItemDirect(4525, 10, 'cVillageRemakePattern', 0)
+    MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 5
+
+local flow Sub_Event131():
+    EventFlowSystemActor.SelectRewardItemDirect(13196, 1, 'cVillageRemakePattern', 0)
+    MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 0
+
+local flow Sub_Event219():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:012', false)
+    System.EventFlags['cPlayer:NpcHalloweenGetMirrorFlag'] = true
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:013', true)
+    MainNpc.SetDeliveryItem(1, true)
+    MainNpc.NpcDelivery(1, 'Default')
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:014', false)
+
+local flow Sub_Event258():
+    EventFlowSystemActor.SelectRewardItemDirect(13225, 1, 'cVillageRemakePattern', 0)
+    System.EventFlags['cPlayer:GetHalloweenFloor'] = true
+    MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 11
+
+local flow Sub_Event97():
+    EventFlowSystemActor.SelectRewardItemDirect(13223, 1, 'cVillageRemakePattern', 0)
+    System.EventFlags['cPlayer:GetHalloweenTableSetting'] = true
+    MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 1
+
+local flow Sub_grp_Event10():
+    if EventFlowSystemActor.RandomChoice2(2) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:010', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:011', true)
+    fork:
+        branch:
+            Player.PlayerHalloweenTricked()
+        branch:
+            MainNpc.NpcStartAS('NpcPrank', true, true)
+    if not System.EventFlags['cPlayer:NpcHalloweenTrickFlag']:
+        System.EventFlags['cPlayer:NpcHalloweenTrickFlag'] = true
+        EventFlowSystemActor.SelectRewardItemDirect(8826, 1, 'cVillageRemakePattern', 0)
+        MainNpc.SetItemName(1, 0, 0)
+        if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+            run Sub_Event219()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:012', false)
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:014', false)
+    elif System.EventFlags['cPlayer:NpcHalloweenGetMirrorFlag']:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:015', false)
+    else:
+        EventFlowSystemActor.SelectRewardItemDirect(8826, 1, 'cVillageRemakePattern', 0)
+        MainNpc.SetItemName(1, 0, 0)
+        if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+            run Sub_Event219()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:015', false)
+
+local flow Sub_grp_Event207():
+    switch EventFlowSystemActor.PercentChoice3(35, 20, 45):
+        case 0:
+            if (not EventFlowSystemActor.PlayerHasCraftRecipe('None', 13222)) and (not EventFlowSystemActor.PercentChoice(70)):
+                EventFlowSystemActor.NpcSetRewardRecipe(13222, false)
+                MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 4
+            elif (not EventFlowSystemActor.PlayerHasCraftRecipe('None', 13223)) and (not EventFlowSystemActor.PercentChoice(70)):
+                EventFlowSystemActor.NpcSetRewardRecipe(13223, false)
+                MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 3
+            else:
+                switch EventFlowSystemActor.RandomChoice3(3):
+                    case 0:
+                        EventFlowSystemActor.SelectRewardItemDirect(12951, 1, 'cVillageRemakePattern', 0)
+                        MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 12
+                    case 1:
+                        EventFlowSystemActor.SelectRewardItemDirect(13223, 1, 'cVillageRemakePattern', 0)
+                        MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 1
+                    case 2:
+                        EventFlowSystemActor.SelectRewardItemDirect(13222, 1, 'cVillageRemakePattern', 0)
+                        MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 2
+        case 1:
+            switch EventFlowSystemActor.RandomChoice3(3):
+                case 0:
+                    EventFlowSystemActor.SelectRewardItemDirect(13225, 1, 'cVillageRemakePattern', 0)
+                    System.EventFlags['cPlayer:GetHalloweenFloor'] = true
+                    MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 11
+                case 1:
+                    EventFlowSystemActor.SelectRewardItemDirect(13224, 1, 'cVillageRemakePattern', 0)
+                    System.EventFlags['cPlayer:GetHalloweenWallPaper'] = true
+                    MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 10
+                case 2:
+                    EventFlowSystemActor.SelectRewardItemDirect(7545, 1, 'cVillageRemakePattern', 0)
+                    System.EventFlags['cPlayer:GetHalloweenRag'] = true
+                    MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 9
+        case 2:
+            if EventFlowSystemActor.RandomChoice2(2) == 0:
+                switch EventFlowSystemActor.RandomChoice3(3):
+                    case 0:
+                        if Player.PlayerHaveGetColorSquash('cGreen'):
+                            EventFlowSystemActor.SelectRewardItemDirect(4527, 5, 'cVillageRemakePattern', 0)
+                            MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 6
+                        else:
+                            run Sub_Event126()
+                    case 1:
+                        if Player.PlayerHaveGetColorSquash('cYellow'):
+                            EventFlowSystemActor.SelectRewardItemDirect(4526, 5, 'cVillageRemakePattern', 0)
+                            MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 7
+                        else:
+                            run Sub_Event126()
+                    case 2:
+                        if Player.PlayerHaveGetColorSquash('cWhite'):
+                            EventFlowSystemActor.SelectRewardItemDirect(4528, 5, 'cVillageRemakePattern', 0)
+                            MainNpc.EventFlags['cNpcMemory:HalloweenLastNotGetItem'] = 8
+                        else:
+                            run Sub_Event126()
+            else:
+                run Sub_Event126()
+
+local flow Sub_grp_Event27():
+    if EventFlowSystemActor.RandomChoice2(2) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:008', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:009', true)
+
+local flow Sub_grp_Event42():
+    if MainNpc.EventFlags['cNpcMemory:HalloweenGetCandyFlag']:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:105', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:104', false)
+    EventFlowSystemActor.SelectRewardItemDirect(13197, 1, 'cVillageRemakePattern', 0)
+    if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+        MainNpc.MessageSuspend()
+        MainNpc.SetDeliveryItem(1, true)
+        MainNpc.NpcDelivery(1, 'Default')
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:106_01', false)
+            run Sub_Event118()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:106_02', false)
+            run Sub_Event118()
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Halloween:107', false)
+

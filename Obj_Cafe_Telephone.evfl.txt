@@ -1,0 +1,190 @@
+flow Finish_UsingTelephone():
+    Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:110', false)
+    Player.PlayerMuseumCafe(5, false)
+    EventFlowSystemActor.ExitFlowchart()
+
+flow NFC_CheckGst():
+    if (EventFlowSystemActor.CheckAmiiboNPC('cYutaro')) and (System.EventFlags['cPlayer:GstQuestStartFlag']):
+        Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:216', false)
+        run SummonAmiiboNpc_Retry()
+
+flow NFC_CheckGul():
+    if (EventFlowSystemActor.CheckAmiiboNPC('cJohnny')) and (EventFlowSystemActor.NowVisitSpNpc() in (7, 13)):
+        if not System.EventFlags['cLand:JohnnySitUpFlag']:
+            run gul_TelDidnotAnswer()
+        elif (System.EventFlags['cLandTemp:JohnnyTalkShareplay']) or (System.EventFlags['cLandTemp:GulBTalkShareplay']):
+entrypoint Event75:
+            Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:215', false)
+            run SummonAmiiboNpc_Retry()
+        elif EventFlowSystemActor.NowVisitSpNpc() == 13:
+            Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:215_01', false)
+            run SummonAmiiboNpc_Retry()
+
+flow NFC_CheckResidentNNPC():
+    if EventFlowSystemActor.IsAmiiboNpcLiving():
+        switch EventFlowSystemActor.AmiiboNpcGetUpTime():
+            case 0:
+                if not EventFlowSystemActor.IsAcquaintanceAmiiboNPC():
+                    Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:209', false)
+                    run SummonAmiiboNpc_Retry()
+                elif EventFlowSystemActor.IsAmiiboNpcSick():
+                    Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:210', false)
+                    run SummonAmiiboNpc_Retry()
+                elif EventFlowSystemActor.IsAmiiboNpcMoveInToday():
+                    Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:212', false)
+                    run SummonAmiiboNpc_Retry()
+                else:
+                    switch EventFlowSystemActor.IsAmiiboNpcMoveOutToday():
+                        case 0:
+                            if (EventFlowSystemActor.AmiiboNpcIsBirthday()) and (EventFlowSystemActor.IsHoldNpcBirthday()):
+                                Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:211', false)
+                                run SummonAmiiboNpc_Retry()
+                            else:
+                                run SuccessSummonNPC()
+                        case 1:
+                            Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:213', false)
+                            run SummonAmiiboNpc_Retry()
+                        case 2:
+                            Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:214', false)
+                            run SummonAmiiboNpc_Retry()
+            case 1:
+                Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:207', false)
+                run SummonAmiiboNpc_Retry()
+            case 2:
+                Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:208', false)
+                run SummonAmiiboNpc_Retry()
+
+flow NFC_CheckTakumi():
+    if (not EventFlowSystemActor.CheckAmiiboNPC('cOtg')) and (not EventFlowSystemActor.CheckAmiiboNPC('cMan')) and (not EventFlowSystemActor.CheckAmiiboNPC('cMnc')):
+        System.EventFlags['cPlayerTemp:CefeInvitingTakumiStuff'] = false
+    else:
+        System.EventFlags['cPlayerTemp:CefeInvitingTakumiStuff'] = true
+
+flow Root():
+    Player.PlayerMuseumCafe(4, false)
+    EventFlowSystemActor.CameraSetDemoParam('TalkAmiiboPhone', 'cTalk', 'CameraTag:CafeCenter', false, false, false, 0)
+    run Obj_Cafe_Telephone_01_Disable::Root()
+    if System.EventFlags['cPlayer:MuseumCafe_Telephone_Access1stTime']:
+        EventFlowSystemActor.SetTagFromSystem('cMuseumCafeAmiiboCallNpcName', 'cDegit', 0, 0, '')
+        switch EventFlowSystemActor.IsAreadyCalledAmiiboNpcVisitInMuseumCafe():
+            case 0:
+                Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:102', false)
+            case 1:
+                Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:103_01', false)
+            case 2:
+                Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:103_02', false)
+    else:
+        System.EventFlags['cPlayer:MuseumCafe_Telephone_Access1stTime'] = true
+        Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:101', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run Telephone_StartUsing()
+    else:
+        run Finish_UsingTelephone()
+
+flow SuccessSummonNPC():
+    if EventFlowSystemActor.AmiiboNameWithTitle() == 0:
+        Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:205_02', false)
+    else:
+        Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:205_01', false)
+    if EventFlowSystemActor.IsPluralAmiiboNpcVisitInMuseumCafe():
+        Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:206_02', false)
+    else:
+        Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:206_01', false)
+    EventFlowSystemActor.SetUnlockFlagCollaboAmiiboNPC()
+    System.EventFlags['cPlayerTemp:CafeInvitingTwins'] = false
+    run NFC_CheckTakumi()
+    run SummonAmiiboNpc()
+
+flow SummonAmiiboNpc():
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.WaitFrame(5)
+    fork:
+        branch:
+            Player.PlayerMuseumCafe(5, false)
+        branch:
+            run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+        branch:
+            EventFlowSystemActor.BGMPropertyControl(179)
+    fork:
+        branch:
+            EventFlowSystemActor.WaitFrame(5)
+        branch:
+            EventFlowSystemActor.AmiiboPhoneForbidTalkPlayerTurn()
+            Player.PlayerDemoTurnAngle(30.0)
+    EventFlowSystemActor.DeleteMuseumCafeAmiiboNpc()
+    EventFlowSystemActor.CreateMuseumCafeAmiiboNpc()
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.StoreNormalCamera(true, '')
+    EventFlowSystemActor.SoundEmitMuseumCafeDoorBell()
+    EventFlowSystemActor.WaitFrame(70)
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+    EventFlowSystemActor.BGMPropertyControl(178)
+    EventFlowSystemActor.ExitFlowchart()
+
+flow SummonAmiiboNpc_Retry():
+    Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:104', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run Telephone_StartUsing()
+    else:
+        run Finish_UsingTelephone()
+
+flow Telephone_StartUsing(NpadId: int = 0, ReadPadId: int = 0):
+    run Obj_Common_AmiiboProcess::NFC_SettingChk()
+    Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:111', false)
+    run Obj_Common_AmiiboProcess::NFC_ReadProcess()
+    if EventFlowSystemActor.IsAlreadyCalledAmiiboNpc('cCafe'):
+        if EventFlowSystemActor.CheckAmiiboNPC('cMaster'):
+            Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:202_03', false)
+            run SummonAmiiboNpc_Retry()
+        elif EventFlowSystemActor.CheckAmiiboNPC('cTkk'):
+            if EventFlowSystemActor.CheckAmiiboNPC('cDJKK'):
+                Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:202_05', false)
+            else:
+                Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:202_04', false)
+            run SummonAmiiboNpc_Retry()
+        else:
+            if EventFlowSystemActor.CheckAmiiboNPC('cRcmAndRct'):
+                Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:202_02', false)
+            else:
+                Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:201_01', false)
+            run SummonAmiiboNpc_Retry()
+    else:
+        if EventFlowSystemActor.CheckAmiiboNPC('cRcmAndRct'):
+            Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:203_02', false)
+        else:
+            Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:203_01', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            EventFlowSystemActor.MessageSuspend()
+            run Telephone_Waiting()
+            if EventFlowSystemActor.CheckAmiiboNPC('cRcmAndRct'):
+                System.EventFlags['cPlayerTemp:CafeInvitingTwins'] = true
+                Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:205_03', true)
+                run SummonAmiiboNpc()
+            else:
+                run NFC_CheckGul()
+                run NFC_CheckGst()
+                run NFC_CheckResidentNNPC()
+                run SuccessSummonNPC()
+        else:
+            run SummonAmiiboNpc_Retry()
+
+flow Telephone_Waiting():
+    EventFlowSystemActor.WaitFrame(5)
+    EventFlowSystemActor.MessageLockNext(3)
+    EventFlowSystemActor.SoundTriggerEmit('Wait_AmiiboCalling', 1)
+    Player.OpenMessageWindow('TalkObj/OBJ_Cafe_Telephone:204', false)
+    switch EventFlowSystemActor.RandomChoice3(3):
+        case 0:
+            EventFlowSystemActor.WaitFrame(60)
+        case 1:
+            EventFlowSystemActor.WaitFrame(90)
+        case 2:
+            EventFlowSystemActor.WaitFrame(150)
+    EventFlowSystemActor.SoundFade(1)
+    EventFlowSystemActor.MessageUnlockNext()
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.WaitFrame(5)
+
+flow gul_TelDidnotAnswer():
+    run Event75()
+

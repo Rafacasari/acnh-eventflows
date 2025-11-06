@@ -1,0 +1,240 @@
+flow AmiiboConv():
+    System.EventFlags['cPlayerTemp:XctDoneAmiiboConv'] = true
+    System.EventFlags['cPlayerTemp:XctBanAmiiboConv'] = true
+    if System.EventFlags['cPlayer:XctCalledMessageBefore'] <= 0:
+        switch EventFlowSystemActor.RandomChoice4(4):
+            case 0:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 1
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_01', false)
+            case 1:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 2
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_02', false)
+            case 2:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 3
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_03', false)
+            case 3:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 4
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_04', false)
+    elif System.EventFlags['cPlayer:XctCalledMessageBefore'] == 1:
+        switch EventFlowSystemActor.RandomChoice3(3):
+            case 0:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 2
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_02', false)
+            case 1:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 3
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_03', false)
+            case 2:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 4
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_04', false)
+    elif System.EventFlags['cPlayer:XctCalledMessageBefore'] == 2:
+        switch EventFlowSystemActor.RandomChoice3(3):
+            case 0:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 1
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_01', false)
+            case 1:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 3
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_03', false)
+            case 2:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 4
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_04', false)
+    elif System.EventFlags['cPlayer:XctCalledMessageBefore'] == 3:
+        switch EventFlowSystemActor.RandomChoice3(3):
+            case 0:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 1
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_01', false)
+            case 1:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 2
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_02', false)
+            case 2:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 4
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_04', false)
+    elif System.EventFlags['cPlayer:XctCalledMessageBefore'] == 4:
+        switch EventFlowSystemActor.RandomChoice3(3):
+            case 0:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 1
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_01', false)
+            case 1:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 2
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_02', false)
+            case 2:
+                System.EventFlags['cPlayer:XctCalledMessageBefore'] = 3
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:021_03', false)
+
+flow ByeFirst():
+    MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:014', false)
+    System.EventFlags['cPlayer:XctGetRewardThisIsland'] = true
+
+flow Bye_Xct():
+    if SubflowResults@2[0] == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:210', false)
+    else:
+        run ByeFirst()
+
+flow ComChat():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious6(6, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_00', false)
+            run Sub_grp_Event157()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_01', false)
+            run Sub_grp_Event157()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_02', false)
+            run Sub_grp_Event157()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_03', false)
+            run Sub_grp_Event157()
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_04', false)
+            run Sub_grp_Event157()
+        case 5:
+            if System.EventFlags['cPlayerTemp:XctBanAmiiboConv']:
+                System.EventFlags['cPlayerTemp:XctBanAmiiboConv'] = false
+                run ComChat()
+            else:
+                switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_05', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_06', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_07', false)
+
+flow FinishedNoRewardPast():
+    SubflowResults[0] = 0
+    if System.EventFlags['cPlayerTemp:XctTalkMayDayTourNow']:
+        run xctFreeTalk()
+    else:
+        if System.EventFlags['cPlayer:XctGetRewardSec']:
+            MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:206', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:207', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:208', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:209', false)
+            System.EventFlags['cPlayerTemp:XctTalkMayDayTourNow'] = true
+            switch System.EventFlags['cPlayer:XctGerReward']:
+                case 0, 1:
+                    System.EventFlags['cPlayer:XctGetRewardEveryYear'] = true
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:201', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:202', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:203', false)
+            System.EventFlags['cPlayerTemp:XctTalkMayDayTourNow'] = true
+            if System.EventFlags['cPlayer:XctGerReward']:
+                System.EventFlags['cPlayer:XctGetRewardSec'] = true
+            else:
+                System.EventFlags['cPlayer:XctGerReward'] = true
+            System.EventFlags['cPlayer:XctGetRewardThisIsland'] = true
+        run Bye_Xct()
+
+flow GetReward():
+    MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:205', false)
+    System.EventFlags['cPlayer:XctFirstTalk'] = true
+    System.EventFlags['cPlayerTemp:XctTalkMayDayTourNow'] = true
+    System.EventFlags['cPlayer:XctGetRewardSec'] = true
+    System.EventFlags['cPlayer:XctGetRewardThisIsland'] = true
+
+flow NoReward():
+    MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:101', false)
+    System.EventFlags['cPlayer:XctFirstTalk'] = true
+    System.EventFlags['cPlayerTemp:XctTalkMayDayTourNow'] = true
+
+flow Root():
+    EventFlowSystemActor.SetMemoryEventPlayer('cBlancoEventPlayer:PE_MaydayIsland_TalkXct')
+    if System.EventFlags['cPlayer:XctGerReward']:
+        if System.EventFlags['cPlayer:XctFirstTalk']:
+            run FinishedNoRewardPast()
+        else:
+            SubflowResults[0] = 1
+            run Xct_First()
+    elif System.EventFlags['cPlayer:XctFirstTalk']:
+        run FinishedNoRewardPast()
+    else:
+        if System.EventFlags['cPlayerTemp:XctTalkMayDayTourNow']:
+            MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:013', false)
+        else:
+            run Xct_First()
+            System.EventFlags['cPlayerTemp:XctTalkMayDayTourNow'] = true
+        System.EventFlags['cPlayer:XctGerReward'] = true
+        run ByeFirst()
+
+local flow Sub_grp_Event157():
+    if System.EventFlags['cPlayerTemp:XctBanAmiiboConv']:
+        System.EventFlags['cPlayerTemp:XctBanAmiiboConv'] = false
+
+flow Xct_First():
+    MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:001', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:002', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:004', false)
+            switch EventFlowSystemActor.GeneralTalkChoice2():
+                default:
+                    return
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:009', false)
+            switch EventFlowSystemActor.GeneralTalkChoice2():
+                default:
+                    return
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:003', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:005', false)
+            switch EventFlowSystemActor.GeneralTalkChoice2():
+                default:
+                    return
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:010', false)
+            switch EventFlowSystemActor.GeneralTalkChoice2():
+                default:
+                    return
+    MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:007', false)
+    if not System.EventFlags['cPlayer:XctGerReward']:
+        MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:204', false)
+        System.EventFlags['cPlayer:XctFirstTalk'] = true
+        System.EventFlags['cPlayer:XctGerReward'] = true
+    elif System.EventFlags['cPlayer:XctGetRewardSec']:
+        run NoReward()
+    elif System.EventFlags['cPlayer:GetMayDayTicketFirst']:
+        if System.EventFlags['cPlayer:XctGetRewardPast']:
+            run GetReward()
+        else:
+            run NoReward()
+    elif System.EventFlags['cPlayer:XctGetRewardPast']:
+        run GetReward()
+    else:
+        run NoReward()
+
+flow xctFreeTalk():
+    if not ((System.EventFlags['cPlayer:XctGetRewardSec']) and (System.EventFlags['cPlayer:MuseumCafe_Tel_CalledThisYearXct'])):
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_00', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_01', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_02', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_03', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_04', false)
+    elif not System.EventFlags['cPlayerTemp:XctDoneAmiiboConv']:
+        run AmiiboConv()
+    elif System.EventFlags['cPlayer:MuseumCafe_Telephone_Calledxct']:
+        run ComChat()
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_00', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_01', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_02', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_03', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkSNpc/xct/SP_xct:020_04', false)
+

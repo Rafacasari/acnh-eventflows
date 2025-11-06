@@ -1,0 +1,94 @@
+flow HHA_1st_BuildCelebration():
+    switch EventFlowSystemActor.RandomChoice3(3):
+        case 0:
+            MainNpc.NpcSetRewardRecipe(7134, false)
+        case 1:
+            MainNpc.NpcSetRewardRecipe(7133, false)
+        case 2:
+            MainNpc.NpcSetRewardRecipe(3438, false)
+    EventFlowSystemActor.SystemMailSend('cHHA', 'MAIL_SP_HHA_BuildCelebration', 1, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+
+flow RcoCmnProcessUpgradeMyhome():
+    System.EventFlags['cPlayer:RcoOrderedHouseBuilt'] = true
+    System.EventFlags['cPlayer:RcoHeardRemodel1'] = false
+    switch EventFlowSystemActor.PlayerHouseLevel():
+        case `PlacedTent`:
+            System.EventFlags['cHouse:HouseOrder1'] = true
+            System.EventFlags['cPlayer:NnpcFinishHintTalk'] = true
+            run HHA_1st_BuildCelebration()
+        case `BaseHouse`:
+            System.EventFlags['cHouse:HouseOrder2'] = true
+        case `HouseExpansion1`:
+            System.EventFlags['cHouse:HouseOrder3'] = true
+        case `BackRoom`:
+            System.EventFlags['cHouse:HouseOrder4'] = true
+        case `LeftRoom`:
+            System.EventFlags['cHouse:HouseOrder5'] = true
+        case `RightRoom`:
+            System.EventFlags['cHouse:HouseOrder6'] = true
+        case `SecondFloor`:
+            System.EventFlags['cHouse:HouseOrder7'] = true
+        default:
+            return
+
+flow Rco_Cmn_UpgradeHouseSel():
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        switch EventFlowSystemActor.PlayerHouseLevel():
+            case `PlacedTent`:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:202', false)
+                run SNPC_rco_02_SelRoofColor::Root()
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:209', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:209_01', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:209_02', true)
+                run Demo_Common_PhoneCall::SendingDataOneWay()
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:209_03', false)
+                MainNpc.SmartPhone(1)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:209_04', false)
+                System.EventFlags['cPlayer:MainmenuRndDailyQuest'] = true
+                System.EventFlags['cPlayer:PlayerSonkatsuQuestEnable'] = true
+                System.EventFlags['cPlayer:Mobile1stBoot_MilageProgram'] = true
+                if (EventFlowSystemActor.TermEventNow('EarthDay', false)) and (not System.EventFlags['cPlayer:MailSendFlag_EarthDayNotice']):
+                    EventFlowSystemActor.SystemMailSend('cRco', 'MAIL_SNpc_rco', 6, 'cNone', 'cFastToday', 'cReward', false, false)
+                    System.EventFlags['cPlayer:MailSendFlag_EarthDayNotice'] = true
+                run RcoCmnProcessUpgradeMyhome()
+            case `BaseHouse`, `BackRoom`:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:251', false)
+                run SNPC_rco_02_SelRoofColor::Root()
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:252', false)
+                run RcoCmnProcessUpgradeMyhome()
+            case `HouseExpansion1`, `LeftRoom`, `RightRoom`, `SecondFloor`:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:103', false)
+                run RcoCmnProcessUpgradeMyhome()
+            default:
+                return
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:102', false)
+        if EventFlowSystemActor.OfficeLevel() == `ResServiceBuilding`:
+            run SNPC_rco_00_Common::Rco_Office_CmnSelAgain()
+
+flow Root():
+    switch EventFlowSystemActor.PlayerHouseLevel():
+        case `PlacedTent`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:201', false)
+            run Rco_Cmn_UpgradeHouseSel()
+        case `BaseHouse`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:211', false)
+            run Rco_Cmn_UpgradeHouseSel()
+        case `HouseExpansion1`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:212', false)
+            run Rco_Cmn_UpgradeHouseSel()
+        case `BackRoom`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:213', false)
+            run Rco_Cmn_UpgradeHouseSel()
+        case `LeftRoom`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:214', false)
+            run Rco_Cmn_UpgradeHouseSel()
+        case `RightRoom`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:215', false)
+            run Rco_Cmn_UpgradeHouseSel()
+        case `SecondFloor`:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_00_Common:216', false)
+            run Rco_Cmn_UpgradeHouseSel()
+        default:
+            return
+

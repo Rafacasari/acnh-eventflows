@@ -1,0 +1,71 @@
+flow Packing_Chk():
+    if MainNpc.IsWrappingReturnDeliveryItem():
+        MainNpc.QuestFlags['cDeliveryWrappingAgain'] = true
+
+local flow Sub_Event235():
+    MainNpc.NpcDelivery(0, 'Default')
+    switch MainNpc.DeliveryQuestType():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:506', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:507', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:508', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:509', false)
+        case 4:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:510', false)
+    MainNpc.NpcAddFriendship(-1)
+    MainNpc.NpcQuestControl('cFinish')
+
+flow TimeOver():
+    run Packing_Chk()
+    MainNpc.SetNpcName(8, 0)
+    switch MainNpc.DeliveryQuestType():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:501', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:502', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:503', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:504', false)
+        case 4:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:505', false)
+    if MainNpc.HasDeliveryItem():
+        MainNpc.SetDeliveryItem(10, true)
+        run Sub_Event235()
+    elif MainNpc.QuestFlags['cDeliveryWrappingAgain']:
+        MainNpc.SetDeliveryItem(11, true)
+        run Sub_Event235()
+    elif MainNpc.HasOpenedDeliveryItem():
+        MainNpc.SetDeliveryItem(11, true)
+        MainNpc.NpcDelivery(0, 'Default')
+        switch MainNpc.DeliveryQuestType():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:511', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:512', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:513', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:514', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:515', false)
+        MainNpc.NpcAddFriendship(-2)
+        MainNpc.NpcQuestControl('cFinish')
+    else:
+        switch MainNpc.DeliveryQuestType():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:516', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:517', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:518', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:519', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_Delivery_After:520', false)
+        MainNpc.NpcAddFriendship(-3)
+        MainNpc.NpcQuestControl('cFinish')
+

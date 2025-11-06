@@ -1,0 +1,64 @@
+flow EndTalk():
+    if not System.EventFlags['cWherearenPlayer:ManGenerateInFieldTemp']:
+        run FromAmiiboReader()
+    elif not System.EventFlags['cPlayer:WHEREAREN_Unlock_EnvSound_01']:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:236', true)
+    elif System.EventFlags['cPlayer:WHEREAREN_Unlock_EnvSound_02']:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:246', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:245', true)
+
+flow EventStart_EnvSound01():
+    run SNPC_otg_01_WherearenOffice::HouseCompleteActing()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:231', false)
+    run SNPC_otg_01_WherearenOffice::SetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:232', true)
+    run SNPC_otg_01_WherearenOffice::GetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:233', false)
+    MainNpc.TurnNeck(11, false)
+    MainNpc.TurnBody(12, 235.0)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:234', false)
+    MainNpc.TurnBody(10, 0.0)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:235', true)
+    System.EventFlags['cWherearenPlayer:SeqEnvSoundOngoing'] = true
+    System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = true
+    SubflowResults[3] = 0
+    run SNPC_otg_01_WherearenOffice::OrderClose_Complete()
+    run SNPC_otg_01_WherearenOffice::Otg_ReturnHomePos()
+
+flow EventStart_EnvSound02():
+    run SNPC_otg_01_WherearenOffice::HouseCompleteActing()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:241', false)
+    run SNPC_otg_01_WherearenOffice::SetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:242', true)
+    run SNPC_otg_01_WherearenOffice::GetSalaryForEvent()
+    MainNpc.TurnNeck(11, false)
+    MainNpc.TurnBody(12, 235.0)
+    MainNpc.NpcWaitTurn()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:243', false)
+    MainNpc.TurnBody(10, 0.0)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:244', true)
+    System.EventFlags['cWherearenPlayer:SeqEnvSoundOngoing'] = true
+    System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = true
+    SubflowResults[3] = 0
+    run SNPC_otg_01_WherearenOffice::OrderClose_Complete()
+    run SNPC_otg_01_WherearenOffice::Otg_ReturnHomePos()
+
+flow EventStart_EnvSound03():
+    run EventStart_EnvSound02()
+
+flow FromAmiiboReader():
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:237', true)
+    run FromGrowUp()
+
+flow FromGrowUp():
+    System.EventFlags['cWherearenPlayer:SeqEnvSoundOngoing'] = false
+    if not System.EventFlags['cWherearenPlayer:SeqEventReserveInOffice']:
+        System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = false
+
+flow FromGrowUp_Reset03():
+    System.EventFlags['cWherearenPlayer:ManGenerateInFieldTemp'] = false
+    System.EventFlags['cWherearenPlayer:SeqEnvSoundOngoing'] = false
+    if not System.EventFlags['cWherearenPlayer:SeqEventReserveInOffice']:
+        System.EventFlags['cWherearenPlayer:Prohibit_NewOrder'] = false
+

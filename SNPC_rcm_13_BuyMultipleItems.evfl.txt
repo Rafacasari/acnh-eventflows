@@ -1,0 +1,27 @@
+flow PumpkinSeeding():
+    if (EventFlowSystemActor.MultiItemSelectInclude(13227, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect')) and (not System.EventFlags['cPlayer:RcmExplainPumpkinFlag']):
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:132_01', false)
+        System.EventFlags['cPlayer:RcmExplainPumpkinFlag'] = true
+        if (not System.EventFlags['cPlayer:SloExplainPumpkinColorFlag']) and (not System.EventFlags['cPlayer:ExplainPumpkinColorFlag']):
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:132_02', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:132_03', false)
+            System.EventFlags['cPlayer:ExplainPumpkinColorFlag'] = true
+            System.EventFlags['cPlayer:SloExplainPumpkinColorFlag'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:132_04', false)
+        run Select()
+
+flow Root():
+    run PumpkinSeeding()
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:131', false)
+    run Select()
+
+flow Select():
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run SNPC_rcm_00_Common::Rcm_Groceries_Buy_Process()
+        case 1:
+            SubflowResults[0] = 1
+            run SNPC_rcm_00_Common::Rcm_Groceries_Buy_Process()
+        case 2:
+            run SNPC_rcm_00_Common::Rcm_Groceries_Buy_Cancel()
+

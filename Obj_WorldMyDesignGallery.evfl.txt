@@ -1,0 +1,126 @@
+flow EntryPoint_AuthorID():
+    EventFlowSystemActor.SetTagFromSystem('cOwnDesignerID', 'cDegit', 0, 0, '')
+    EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:031', false)
+    if System.EventFlags['cPlayer:MyDesignExchangeDiscloseAuthorID']:
+        EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:032', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run EntryPoint_Cancel()
+        else:
+            System.EventFlags['cPlayer:MyDesignExchangeDiscloseAuthorID'] = false
+            EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:033', true)
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:034', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run EntryPoint_Cancel()
+        else:
+            System.EventFlags['cPlayer:MyDesignExchangeDiscloseAuthorID'] = true
+            EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:035', true)
+
+flow EntryPoint_Cancel():
+    EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:901', true)
+
+flow EntryPoint_CheckMydesignApp():
+    SubflowResults[0] = 0
+    if not System.EventFlags['cPlayer:MydesignExchangeTalkAboutMobile']:
+        if System.EventFlags['cPlayer:MainmenuMydesignShowcase']:
+            System.EventFlags['cPlayer:MydesignExchangeTalkAboutMobile'] = true
+        else:
+            run EntryPoint_ExplainMydesignApp()
+
+flow EntryPoint_ExplainMydesignApp():
+    SubflowResults[0] = 1
+    System.EventFlags['cPlayer:MydesignExchangeTalkAboutMobile'] = true
+    EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:101', false)
+
+flow EntryPoint_NoSignInNo():
+    EventFlowSystemActor.CheckFreeCommunication(true)
+    if EventFlowSystemActor.IsApprovedFreeCommunication():
+        if EventFlowSystemActor.NetMode() in (0, 1):
+            run System_ServerRegistration::UserRegist(WithLogin=false, WithSave=false, Terminate=true)
+        EventFlowSystemActor.SystemRequestChangeStage('cMyDesignExchange', 'cMyDesignGo', 'cMyDesignGo', 'cBlack', 1.0, 1.0)
+    else:
+        run EntryPoint_Parental()
+
+flow EntryPoint_Parental():
+    EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:020', true)
+
+flow EntryPoint_SignIn():
+    EventFlowSystemActor.CheckFreeCommunication(true)
+    if EventFlowSystemActor.IsApprovedFreeCommunication():
+        run System_ServerRegistration::UserRegist(WithLogin=false, Terminate=true, WithSave=true)
+        EventFlowSystemActor.SystemRequestChangeStage('cMyDesignExchange', 'cMyDesignGo', 'cMyDesignGo', 'cBlack', 1.0, 1.0)
+    else:
+        run EntryPoint_Parental()
+
+flow EntryPoint_SkipFirstAccess():
+    run EntryPoint_CheckMydesignApp()
+    if SubflowResults@2[0] == 0:
+        if EventFlowSystemActor.NetHasDesignerID():
+            EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:030', false)
+            switch EventFlowSystemActor.GeneralTalkChoice3():
+                case 0:
+                    run EntryPoint_SignIn()
+                case 1:
+                    run EntryPoint_AuthorID()
+                case 2:
+                    run EntryPoint_Cancel()
+        else:
+            EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:011', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run EntryPoint_SignIn()
+            else:
+                run EntryPoint_Cancel()
+    elif EventFlowSystemActor.NetHasDesignerID():
+        EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:103', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                run EntryPoint_SignIn()
+            case 1:
+                run EntryPoint_AuthorID()
+            case 2:
+                run EntryPoint_Cancel()
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:102', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run EntryPoint_SignIn()
+        else:
+            run EntryPoint_Cancel()
+
+flow InDream():
+    if System.EventFlags['cPlayer:TapFirstCheckMydesingShowcase']:
+        EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:037', false)
+    else:
+        System.EventFlags['cPlayer:TapFirstCheckMydesingShowcase'] = true
+        EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:036', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run EntryPoint_SignIn()
+    else:
+        run EntryPoint_Cancel()
+
+flow Root():
+    if not EventFlowSystemActor.IsMyVillage():
+        EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:802', true)
+    elif EventFlowSystemActor.NetIsConnected():
+        if EventFlowSystemActor.NetHasVisitor():
+            EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:801', true)
+        elif EventFlowSystemActor.IsVillageGateOpened():
+            EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:804', true)
+        else:
+            EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:801', true)
+    elif EventFlowSystemActor.IsSharePlay(0):
+        EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:803', true)
+    elif System.EventFlags['cPlayer:MyDesignExchangeFirstAccess']:
+        run EntryPoint_SkipFirstAccess()
+    else:
+        System.EventFlags['cPlayer:MyDesignExchangeFirstAccess'] = true
+        System.EventFlags['cPlayer:MyDesignExchangeExp_v1_4'] = true
+        System.EventFlags['cPlayer:MydesignExchangeTalkAboutMobile'] = true
+        if System.EventFlags['cPlayer:MainmenuMydesignShowcase']:
+            run EntryPoint_SkipFirstAccess()
+        else:
+            EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WorldMyDesignGallery:100', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run EntryPoint_SignIn()
+            else:
+                run EntryPoint_Cancel()
+

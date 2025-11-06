@@ -1,0 +1,231 @@
+flow AnnaijoBuilt():
+    if System.EventFlags['cPlayer:ReiGetReward3']:
+        if EventFlowSystemActor.EnvHourCompare(0, 0, true, true) in (0, 1):
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:080', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:081', false)
+    elif not System.EventFlags['cPlayer:ReiStartQuest2']:
+        if System.EventFlags['cPlayer:ReiGetReward1']:
+            if (EventFlowSystemActor.EnvHourCompare(4, 59, true, true) in (0, 1)) and ((not EventFlowSystemActor.IsExistSantaPresentNpcSleeping()) or (EventFlowSystemActor.EnvTimeZone() in (`05:00-07:59`, `08:00-11:59`, `12:00-15:59`, `16:00-18:59`, `19:00-23:59`))):
+                if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:051', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:052', false)
+                    run Sub_Event28()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:072_02', false)
+                System.EventFlags['cPlayer:ReiGetReward3'] = true
+        elif System.EventFlags['cPlayer:ReiFinishQuest1']:
+            if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:027', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:028', false)
+                run Sub_Event67()
+        elif not System.EventFlags['cPlayer:ReiStartQuest1']:
+            if EventFlowSystemActor.EnvHourCompare(4, 59, true, true) in (0, 1):
+                if System.EventFlags['cPlayer:ReiTalkFirst']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:019', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:001', false)
+                    System.EventFlags['cPlayer:ReiTalkFirst'] = true
+                    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:020', false)
+                if not System.EventFlags['cPlayer:MainmenuRecipe']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:023', false)
+                elif EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:021_2', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:021_1', false)
+                    MainNpc.NpcSetRewardRecipe(13792, false)
+                    MainNpc.SetDeliveryItem(1, true)
+                    MainNpc.NpcDelivery(1, 'Default')
+                    System.EventFlags['cPlayer:ReiStartQuest1'] = true
+                    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:022', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:081', false)
+                System.EventFlags['cPlayer:ReiTalkFirst'] = true
+        elif EventFlowSystemActor.HasTargetItem(13792, 3):
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:025', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.SetDeliveryItemAtRandom(13792, false, 'cVillageRemakePattern', 0)
+                MainNpc.NpcDelivery(0, 'Default')
+                EventFlowSystemActor.DeleteTargetItem(13792, 3, true)
+                System.EventFlags['cPlayer:ReiFinishQuest1'] = true
+                if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:027', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:026', false)
+                    run Sub_Event67()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:030', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:024', false)
+    elif EventFlowSystemActor.CheckChristmasSantaPresentsProgress(false, 2):
+        MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:057', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:058', false)
+        elif System.EventFlags['cPlayer:ReiGetReward2']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:068', false)
+            run ReturnBigbag()
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:071', false)
+            run Sub_Event91()
+        elif EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:077', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:073', false)
+            run ReturnBigbag()
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:074', false)
+            MainNpc.NpcSetRewardRecipe(13244, false)
+            MainNpc.SetDeliveryItem(1, true)
+            MainNpc.NpcDelivery(1, 'Default')
+            System.EventFlags['cPlayer:ReiGetReward2'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:076', false)
+            run Sub_Event91()
+    elif EventFlowSystemActor.CheckChristmasSantaPresentsProgress(false, 1):
+        MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:057_01', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:058', false)
+        elif System.EventFlags['cPlayer:ReiGetReward2']:
+            if EventFlowSystemActor.EnvHourCompare(4, 59, true, true) not in (0, 1):
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:068_02', false)
+                run Sub_Event88()
+            elif (EventFlowSystemActor.IsExistSantaPresentNpcSleeping()) and (EventFlowSystemActor.EnvTimeZone() not in (`05:00-07:59`, `08:00-11:59`, `12:00-15:59`, `16:00-18:59`, `19:00-23:59`)):
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:068_01', false)
+                run Sub_Event88()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:067', false)
+        elif EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:065', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:061', false)
+            MainNpc.NpcSetRewardRecipe(13244, false)
+            MainNpc.SetDeliveryItem(1, true)
+            MainNpc.NpcDelivery(1, 'Default')
+            System.EventFlags['cPlayer:ReiGetReward2'] = true
+            if EventFlowSystemActor.EnvHourCompare(4, 59, true, true) not in (0, 1):
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:068_02', false)
+                run Sub_Event108()
+            elif (EventFlowSystemActor.IsExistSantaPresentNpcSleeping()) and (EventFlowSystemActor.EnvTimeZone() not in (`05:00-07:59`, `08:00-11:59`, `12:00-15:59`, `16:00-18:59`, `19:00-23:59`)):
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:068_01', false)
+                run Sub_Event108()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:066', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:057_02', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:058', false)
+        elif EventFlowSystemActor.CheckChristmasSantaPresentsProgress(false, 0):
+            if EventFlowSystemActor.EnvHourCompare(4, 59, true, true) not in (0, 1):
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:068_02', false)
+                run Sub_Event129()
+            elif (EventFlowSystemActor.IsExistSantaPresentNpcSleeping()) and (EventFlowSystemActor.EnvTimeZone() not in (`05:00-07:59`, `08:00-11:59`, `12:00-15:59`, `16:00-18:59`, `19:00-23:59`)):
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:068_01', false)
+                run Sub_Event129()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:067_01', false)
+        elif EventFlowSystemActor.EnvHourCompare(4, 59, true, true) not in (0, 1):
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:068_02', false)
+            run Sub_Event130()
+        elif (EventFlowSystemActor.IsExistSantaPresentNpcSleeping()) and (EventFlowSystemActor.EnvTimeZone() not in (`05:00-07:59`, `08:00-11:59`, `12:00-15:59`, `16:00-18:59`, `19:00-23:59`)):
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:068_01', false)
+            run Sub_Event130()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:060', false)
+
+flow AnnaijoTent():
+    if System.EventFlags['cPlayer:ReiTalkFirst']:
+        if System.EventFlags['cPlayer:ReiGetReward1']:
+            if EventFlowSystemActor.EnvHourCompare(0, 0, true, true) == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:080', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:081', false)
+        else:
+            run Sub_Event9()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:001', false)
+        System.EventFlags['cPlayer:ReiTalkFirst'] = true
+        run Sub_Event9()
+
+flow ReturnBigbag():
+    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:070', true)
+    Player.PlayerUnequipPresentBag()
+    EventFlowSystemActor.DeleteTargetItem(13836, 1, false)
+
+flow Root():
+    if EventFlowSystemActor.IsMyVillage():
+        if EventFlowSystemActor.OfficeLevel() in (`ResServiceTent0`, `ResServiceTent1`):
+            run AnnaijoTent()
+        else:
+            run AnnaijoBuilt()
+    elif not System.EventFlags['cPlayer:ReiTalkFirst']:
+        MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:100', false)
+        System.EventFlags['cPlayer:ReiTalkFirst'] = true
+    elif EventFlowSystemActor.EnvHourCompare(0, 0, true, true) == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:101', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:081', false)
+
+local flow Sub_Event108():
+    run ReturnBigbag()
+    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:072_01', false)
+    System.EventFlags['cPlayer:ReiGetReward3'] = true
+
+local flow Sub_Event129():
+    run ReturnBigbag()
+    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:072_01', false)
+    System.EventFlags['cPlayer:ReiGetReward3'] = true
+
+local flow Sub_Event130():
+    run ReturnBigbag()
+    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:072_01', false)
+    System.EventFlags['cPlayer:ReiGetReward3'] = true
+
+local flow Sub_Event28():
+    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:050', true)
+    EventFlowSystemActor.WaitFrame(5)
+    EventFlowSystemActor.SetItemToPocket(13836, 1)
+    Player.PlayerEquipPresentBag()
+    EventFlowSystemActor.WaitFrame(40)
+    System.EventFlags['cPlayer:ReiStartQuest2'] = true
+    MainNpc.NpcDecideSantaMission()
+    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:053', false)
+
+local flow Sub_Event67():
+    MainNpc.SetDeliveryItemAtRandom(13248, true, 'cRemakePattern0', 0)
+    MainNpc.NpcDelivery(1, 'Default')
+    System.EventFlags['cPlayer:ReiGetReward1'] = true
+    if EventFlowSystemActor.PlayerHouseLevel() not in (`Homeless`, `PlacedTent`):
+        MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:029', false)
+    if (EventFlowSystemActor.EnvHourCompare(4, 59, true, true) in (0, 1)) and ((not EventFlowSystemActor.IsExistSantaPresentNpcSleeping()) or (EventFlowSystemActor.EnvTimeZone() in (`05:00-07:59`, `08:00-11:59`, `12:00-15:59`, `16:00-18:59`, `19:00-23:59`))):
+        if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:051', false)
+        else:
+            run Sub_Event28()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:072_01', false)
+        System.EventFlags['cPlayer:ReiGetReward3'] = true
+
+local flow Sub_Event88():
+    run ReturnBigbag()
+    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:072_01', false)
+    System.EventFlags['cPlayer:ReiGetReward3'] = true
+
+local flow Sub_Event9():
+    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:010', false)
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:012', false)
+    else:
+        MainNpc.SetDeliveryItemAtRandom(13248, true, 'cRemakePattern0', 0)
+        MainNpc.WrapDeliveryItem('cPresentBox')
+        MainNpc.NpcDelivery(1, 'Default')
+        System.EventFlags['cPlayer:ReiGetReward1'] = true
+        if EventFlowSystemActor.PlayerHouseLevel() not in (`Homeless`, `PlacedTent`):
+            MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:029', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:011', false)
+
+local flow Sub_Event91():
+    MainNpc.SetDeliveryItemAtRandom(13241, true, 'cVillageRemakePattern', 0)
+    MainNpc.NpcDelivery(1, 'Default')
+    EventFlowSystemActor.SetMemoryEventPlayer('cBlancoEventPlayer:PE_ChristmasEvent_GetSled')
+    System.EventFlags['cPlayer:ReiGetReward3'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/rei/SP_rei:072', false)
+

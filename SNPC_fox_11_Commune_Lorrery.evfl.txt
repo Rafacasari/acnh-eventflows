@@ -1,0 +1,180 @@
+flow Draw_Lottery():
+    EventFlowSystemActor.SetLookAtTargetObject('cCommuneFoxBox')
+    Player.TurnNeck(13, false)
+    Player.TurnBody(13, 0.0)
+    Player.PlayerWaitTurn()
+    Player.PlayerRequestSimple('PlayerDrawLots', true)
+    EventFlowSystemActor.WaitFrame(35)
+    Player.TurnBody(0, 0.0)
+
+flow FoodComment():
+    switch SubflowResults@3[2]:
+        case 1:
+            if not System.EventFlags['cPlayer:FoxCommuneTalkIceTodayFlag']:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:115', false)
+                System.EventFlags['cPlayer:FoxCommuneTalkIceTodayFlag'] = true
+        case 2:
+            if not System.EventFlags['cPlayer:FoxCommuneTalkJuiceTodayFlag']:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:124', false)
+                System.EventFlags['cPlayer:FoxCommuneTalkJuiceTodayFlag'] = true
+        default:
+            return
+
+flow Item_Set():
+    if (EventFlowSystemActor.CatalogItemFrom('FoxCommuneSubtool')) and (EventFlowSystemActor.CatalogItemFrom('FoxCommuneBook')) and (EventFlowSystemActor.CatalogItemFrom('FoxCommuneFood')):
+        run Sub_Event9()
+    else:
+        if not System.EventFlags['cPlayer:FoxCommunePlayLotteryTodayFlag']:
+            System.EventFlags['cPlayer:FoxCommunePlayLotteryTodayFlag'] = true
+            MainNpc.DecideEventReward('cFoxCommune')
+        elif EventFlowSystemActor.RandomChoice2(2) == 0:
+            run Sub_Event9()
+        else:
+            MainNpc.DecideEventReward('cFoxCommune')
+    MainNpc.SetItemName(1, 4, 0)
+
+flow PlayAgain():
+    if not EventFlowSystemActor.HasBellCount(500):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:007', false)
+    elif EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:008', false)
+    else:
+        EventFlowSystemActor.BellCountDown(500, true)
+        System.EventFlags['cLifeSupportAchievement:HowmuchBuyItem'] += 500
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:009', true)
+        run Draw_Lottery()
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:010', false)
+        run Item_Set()
+        run PrizeComment()
+        MainNpc.MessageSuspend()
+        MainNpc.SetDeliveryItem(1, false)
+        MainNpc.NpcDelivery(1, 'Default')
+        MainNpc.SetEventRewardToPlayerBaggage('cFree')
+        run FoodComment()
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:011', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:012', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:013', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run PlayAgain()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:005', false)
+            EventFlowSystemActor.UIMoneyDisappear()
+
+flow PrizeComment():
+    SubflowResults[2] = 0
+    if MainNpc.EventRewardItem(14627):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:100', false)
+    elif MainNpc.EventRewardItem(323):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:101', false)
+    elif MainNpc.EventRewardItem(321):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:102', false)
+    elif MainNpc.EventRewardItem(322):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:103', false)
+    elif MainNpc.EventRewardItem(14635):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:104', false)
+        SubflowResults[2] = 1
+    elif MainNpc.EventRewardItem(14836):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:105', false)
+        SubflowResults[2] = 1
+    elif MainNpc.EventRewardItem(14837):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:106', false)
+        SubflowResults[2] = 1
+    elif MainNpc.EventRewardItem(14734):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:107', false)
+        SubflowResults[2] = 1
+    elif MainNpc.EventRewardItem(14852):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:108', false)
+        SubflowResults[2] = 1
+    elif MainNpc.EventRewardItem(14853):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:109', false)
+        SubflowResults[2] = 1
+    elif MainNpc.EventRewardItem(14636):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:110', false)
+        SubflowResults[2] = 1
+    elif MainNpc.EventRewardItem(327):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:111', false)
+        SubflowResults[2] = 1
+    elif MainNpc.EventRewardItem(326):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:112', false)
+        SubflowResults[2] = 1
+    elif MainNpc.EventRewardItem(325):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:113', false)
+        SubflowResults[2] = 1
+    elif MainNpc.EventRewardItem(324):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:114', false)
+        SubflowResults[2] = 1
+    elif MainNpc.EventRewardItem(14638):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:116', false)
+        SubflowResults[2] = 2
+    elif MainNpc.EventRewardItem(14775):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:117', false)
+        SubflowResults[2] = 2
+    elif MainNpc.EventRewardItem(14776):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:118', false)
+        SubflowResults[2] = 2
+    elif MainNpc.EventRewardItem(14777):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:119', false)
+        SubflowResults[2] = 2
+    elif MainNpc.EventRewardItem(14778):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:120', false)
+        SubflowResults[2] = 2
+    elif MainNpc.EventRewardItem(14779):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:121', false)
+        SubflowResults[2] = 2
+    elif MainNpc.EventRewardItem(14780):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:122', false)
+        SubflowResults[2] = 2
+    elif MainNpc.EventRewardItem(14781):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:123', false)
+        SubflowResults[2] = 2
+    elif MainNpc.EventRewardItem(14641):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:125', false)
+    elif MainNpc.EventRewardItem(332):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:126', false)
+    elif MainNpc.EventRewardItem(334):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:127', false)
+    elif MainNpc.EventRewardItem(337):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:128', false)
+    elif MainNpc.EventRewardItem(14639):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:129', false)
+    elif MainNpc.EventRewardItem(14640):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:130', false)
+    elif MainNpc.EventRewardItem(14504):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:131', false)
+
+flow Root():
+    SubflowResults[0] = 2
+    Player.TurnBody(0, 0.0)
+    MainNpc.NpcAISetting(9, true)
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 0, 500, '')
+    run TalkBranch()
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run PlayAgain()
+    elif System.EventFlags['cPlayer:FoxCommunePlayLotteryTodayFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:005', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:004', false)
+
+local flow Sub_Event9():
+    switch EventFlowSystemActor.PercentChoice3(10, 75, 15):
+        case 0:
+            MainNpc.DecideEventReward('cFoxCommuneTool')
+        case 1:
+            MainNpc.DecideEventReward('cFoxCommuneFood')
+        case 2:
+            MainNpc.DecideEventReward('cFoxCommuneBook')
+
+flow TalkBranch():
+    if EventFlowSystemActor.EnvHourCompare(1, -1, true, true) == 0:
+        EventFlowSystemActor.UIMoneyAppear()
+        if System.EventFlags['cPlayer:FoxCommunePlayLotteryTodayFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_03_Commune_Lorrery:003', false)
+        else:
+            run SNPC_fox_11_Commune::CommonTalk()
+    else:
+        run SNPC_fox_11_Commune::CommonTalk()
+

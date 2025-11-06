@@ -1,0 +1,16 @@
+flow Root(NpadId: int = 0, ReadPadId: int = 0):
+    SubflowResults[19] = 3
+    run Obj_Common_AmiiboProcess::NFC_SettingChk()
+    EventFlowSystemActor.CheckNfpController(NpadId)
+    ReadPadId = NpadId
+    EventFlowSystemActor.ReadAmiibo(ReadPadId)
+    if EventFlowSystemActor.UIResultMenuDecide():
+        if EventFlowSystemActor.CheckErrorType(1):
+            run Obj_Common_AmiiboProcess::NFC_ReadError()
+        elif not EventFlowSystemActor.IsAcceptableAmiibo():
+            Player.OpenMessageWindow('TalkSys/SYS_Common_AmiiboError:101', false)
+        elif not EventFlowSystemActor.CheckAmiiboNPC('cNNPC'):
+            EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:307', false)
+        elif EventFlowSystemActor.CheckAmiiboNPC('cWherearenCustomer'):
+            EventFlowSystemActor.OpenMessageWindow('TalkObj/OBJ_WherearenAmiiboDevice:307', false)
+

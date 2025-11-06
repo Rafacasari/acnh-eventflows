@@ -1,0 +1,5 @@
+flow Root():
+    GeneralObject.StartAnimation('On', 'cTrigger')
+    run Ftr_Storeroom::StoreRoom_UseAtMyField()
+    GeneralObject.StartAnimation('Off', 'cTrigger')
+

@@ -1,0 +1,10 @@
+flow Root():
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:019', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:020', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_0_common:023', false)
+        MainNpc.SzaUgcReset('cCloth')
+        run SNPC_sza_00_Common::Sza_CmnSel_Again()
+    else:
+        run SNPC_sza_70_AboutVillager::AboutVillager_CmnCancel2()
+

@@ -1,0 +1,90 @@
+flow React_Quest_Sick():
+    if (not System.EventFlags['cPlayerTemp:SickQuestGossip']) and (not System.EventFlags['cPlayer:SickQuestFirst']):
+        MainNpc.SetNpcName(7, 0)
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Quest_Sick:001', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Quest_Sick:002', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Quest_Sick:003', false)
+        System.EventFlags['cPlayerTemp:SickQuestGossip'] = true
+        run NNPC_Talk_Situation::Facility_Chk()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow React_Quest_TreasureHunt():
+    run NNPC_Reaction_Sitting::StandingUp_Chk()
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Quest_TreasureHunt:001', true)
+    MainNpc.SetDeliveryItemAtRandom(2545, true, 'cVillageRemakePattern', 0)
+    MainNpc.NpcDelivery(0, 'Default')
+    EventFlowSystemActor.SystemDeletePlayerItem('cProgram', 1)
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Quest_TreasureHunt:002', false)
+    MainNpc.EventFlags['cNpcMemory:UncollectedFishishTreasureHunt'] = false
+    MainNpc.NpcAddFriendship(1)
+    run NNPC_Talk_Situation::Facility_Chk()
+    EventFlowSystemActor.ExitFlowchart()
+
+flow React_Quest_VisitN():
+    if not MainNpc.EventFlags['cNpcTemp:ReactionVisitNTalk']:
+        if EventFlowSystemActor.NpcQuestIsLimitOver('cVisit'):
+            if MainNpc.NpcVisitQuestFailureReason('cNpc') == 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Quest_VisitN:001', false)
+                MainNpc.NpcAddFriendship(-5)
+                MainNpc.NpcPlayReport('cVisitNPCResult', 2)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Quest_VisitN:003', false)
+                MainNpc.NpcPlayReport('cVisitNPCResult', 1)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Quest_VisitN:002', false)
+            MainNpc.NpcPlayReport('cVisitNPCResult', 1)
+        MainNpc.NpcQuestControl('cFinish')
+        MainNpc.EventFlags['cNpcTemp:ReactionVisitNTalk'] = true
+        run NNPC_Talk_Situation::Facility_Chk()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow React_Quest_VisitP():
+    if not MainNpc.EventFlags['cNpcTemp:ReactionVisitPTalk']:
+        if EventFlowSystemActor.NpcQuestIsLimitOver('cInvite'):
+            if MainNpc.NpcVisitQuestFailureReason('cPlayer') == 0:
+                run Sub_Event3()
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Quest_VisitP:003', false)
+                MainNpc.NpcPlayReport('cVisitPResult', 1)
+        else:
+            if EventFlowSystemActor.QuestFlags['cInviteCall']:
+                run Sub_Event3()
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Quest_VisitP:002', false)
+                MainNpc.NpcPlayReport('cVisitPResult', 1)
+        MainNpc.NpcQuestControl('cFinish')
+        MainNpc.EventFlags['cNpcTemp:ReactionVisitPTalk'] = true
+        EventFlowSystemActor.QuestFlags['cDoneInviteReaction'] = true
+        run NNPC_Talk_Situation::Facility_Chk()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow Root():
+    if (MainNpc.EventFlags['cNpcMemory:FirstMeetGreetAtThisVillage']) and (EventFlowSystemActor.IsMyVillage()):
+        run Treasure_ErrorChk()
+        switch MainNpc.NpcCanStartReactQuestTalk():
+            case 0:
+                run React_Quest_VisitN()
+            case 1:
+                run React_Quest_VisitP()
+            case 2:
+                if MainNpc.EventFlags['cNpcMemory:TalkCountToday'] >= 1:
+                    run React_Quest_Sick()
+            case 3:
+                if (MainNpc.EventFlags['cNpcMemory:UncollectedFishishTreasureHunt']) and (EventFlowSystemActor.HasTargetItem(2545, 1)):
+                    run React_Quest_TreasureHunt()
+
+local flow Sub_Event3():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Quest_VisitP:001', false)
+    MainNpc.NpcAddFriendship(-5)
+    MainNpc.NpcPlayReport('cVisitPResult', 2)
+
+flow Treasure_ErrorChk():
+    if (System.EventFlags['cLand:FinishTreasureQuestByRollback']) and (MainNpc.NpcIsQuestClient('cTreasure', false, true)):
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Quest_TreasureHunt:101', false)
+        System.EventFlags['cLand:FinishTreasureQuestByRollback'] = false
+        EventFlowSystemActor.ExitFlowchart()
+

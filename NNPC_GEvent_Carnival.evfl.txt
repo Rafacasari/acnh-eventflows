@@ -1,0 +1,254 @@
+flow Carnival_Chat():
+    if not EventFlowSystemActor.SystemCheckNowStage('cField'):
+        if EventFlowSystemActor.PercentChoice(80):
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:016', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:017', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:018', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:019', false)
+                case 4:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:020', false)
+        else:
+            switch EventFlowSystemActor.EnvTimeZone():
+                case `05:00-07:59`, `08:00-11:59`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:021', false)
+                case `12:00-15:59`, `16:00-18:59`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:022', false)
+                case `19:00-23:59`, `00:00-04:59`:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:023', false)
+    elif not EventFlowSystemActor.PercentChoice(80):
+        switch EventFlowSystemActor.EnvTimeZone():
+            case `05:00-07:59`, `08:00-11:59`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:012', false)
+            case `12:00-15:59`, `16:00-18:59`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:013', false)
+            case `19:00-23:59`, `00:00-04:59`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:014', false)
+    elif not ((EventFlowSystemActor.PlayerIsEquipItem(12025, 12023, 10911, 12024, 14242, 14241, 14240, 14016, 'cAny', false, true)) and ((EventFlowSystemActor.PlayerIsEquipItem(3548, 3542, 3541, 3543, 3545, 65534, 65534, 65534, 'cAny', true, true)) or (EventFlowSystemActor.PlayerIsEquipItem(9734, 2612, 9732, 9733, 65534, 65534, 65534, 65534, 'cAny', true, true))) and (EventFlowSystemActor.PercentChoice(20))):
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:007', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:008', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:009', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:010', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:011', false)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:005', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:006', false)
+
+flow Exchange_Feather():
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:026', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:027', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:028', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:029', false)
+        switch MainNpc.FlagNpcIntValue4(4, 'cNpcSave:CarnivalFeatherColor'):
+            case 0:
+                EventFlowSystemActor.UIItemSelectWindowHandling('cItemName', 3541, 'Feather', '', 'cItemSelect', false)
+            case 1:
+                EventFlowSystemActor.UIItemSelectWindowHandling('cItemName', 3542, 'Feather', '', 'cItemSelect', false)
+            case 2:
+                EventFlowSystemActor.UIItemSelectWindowHandling('cItemName', 3543, 'Feather', '', 'cItemSelect', false)
+            case 3:
+                EventFlowSystemActor.UIItemSelectWindowHandling('cItemName', 3545, 'Feather', '', 'cItemSelect', false)
+        if EventFlowSystemActor.UIResultMenuDecide():
+            if EventFlowSystemActor.CheckSelectUIItemNum(2):
+                if EventFlowSystemActor.CheckSelectUIItemNum(3):
+                    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 0, 3, '')
+                    SubflowResults[1] = 2
+                else:
+                    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 0, 2, '')
+                    SubflowResults[1] = 1
+            else:
+                EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 0, 1, '')
+                SubflowResults[1] = 0
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:034', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                MainNpc.MessageSuspend()
+                MainNpc.SetDeliveryItem(4, true)
+                MainNpc.NpcDelivery(0, '"Default"')
+                run Set_GetItem()
+                MainNpc.SetDeliveryItem(1, true)
+                MainNpc.NpcDelivery(1, '"Default"')
+                MainNpc.EventFlags['cNpcMemory:CarnvalExchangeFeatherFlag'] = true
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:030', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:031', false)
+            else:
+                run Sub_grp_Event64()
+        else:
+            run Sub_grp_Event64()
+    else:
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:032', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:033', false)
+
+flow Root():
+    switch EventFlowSystemActor.EventCheck('Carnival'):
+        case 1:
+            if (EventFlowSystemActor.SystemCheckNowStage('cField')) and (not MainNpc.EventFlags['cNpcMemory:CarnvalTalkOutdoorFlag']):
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:001', false)
+                MainNpc.EventFlags['cNpcMemory:CarnvalTalkOutdoorFlag'] = true
+                EventFlowSystemActor.ExitFlowchart()
+            else:
+                run Sub_Event69()
+        case 2:
+            run Sub_Event69()
+        default:
+            return
+
+flow Set_Feather():
+    switch MainNpc.FlagNpcIntValue4(4, 'cNpcSave:CarnivalFeatherColor'):
+        case 0:
+            EventFlowSystemActor.SetTagItemNameDirect(3541, 1, 0, 0)
+            switch EventFlowSystemActor.RandomChoice3(3):
+                case 0:
+                    SubflowResults[0] = 1
+                case 1:
+                    SubflowResults[0] = 2
+                case 2:
+                    SubflowResults[0] = 3
+        case 1:
+            EventFlowSystemActor.SetTagItemNameDirect(3542, 1, 0, 0)
+            switch EventFlowSystemActor.RandomChoice3(3):
+                case 0:
+                    SubflowResults[0] = 0
+                case 1:
+                    SubflowResults[0] = 2
+                case 2:
+                    SubflowResults[0] = 3
+        case 2:
+            EventFlowSystemActor.SetTagItemNameDirect(3543, 1, 0, 0)
+            switch EventFlowSystemActor.RandomChoice3(3):
+                case 0:
+                    SubflowResults[0] = 0
+                case 1:
+                    SubflowResults[0] = 1
+                case 2:
+                    SubflowResults[0] = 3
+        case 3:
+            EventFlowSystemActor.SetTagItemNameDirect(3545, 1, 0, 0)
+            switch EventFlowSystemActor.RandomChoice3(3):
+                case 0:
+                    SubflowResults[0] = 0
+                case 1:
+                    SubflowResults[0] = 1
+                case 2:
+                    SubflowResults[0] = 2
+
+flow Set_Feather2():
+    switch SubflowResults@4[0]:
+        case 0:
+            EventFlowSystemActor.SetTagItemNameDirect(3541, 1, 0, 1)
+        case 1:
+            EventFlowSystemActor.SetTagItemNameDirect(3542, 1, 0, 1)
+        case 2:
+            EventFlowSystemActor.SetTagItemNameDirect(3543, 1, 0, 1)
+        case 3:
+            EventFlowSystemActor.SetTagItemNameDirect(3545, 1, 0, 1)
+
+flow Set_GetItem():
+    switch SubflowResults@4[0]:
+        case 0:
+            switch SubflowResults@3[1]:
+                case 0:
+                    EventFlowSystemActor.SelectRewardItemDirect(3541, 1, 'cVillageRemakePattern', 0)
+                case 1:
+                    EventFlowSystemActor.SelectRewardItemDirect(3541, 2, 'cVillageRemakePattern', 0)
+                case 2:
+                    EventFlowSystemActor.SelectRewardItemDirect(3541, 3, 'cVillageRemakePattern', 0)
+        case 1:
+            switch SubflowResults@3[1]:
+                case 0:
+                    EventFlowSystemActor.SelectRewardItemDirect(3542, 1, 'cVillageRemakePattern', 0)
+                case 1:
+                    EventFlowSystemActor.SelectRewardItemDirect(3542, 2, 'cVillageRemakePattern', 0)
+                case 2:
+                    EventFlowSystemActor.SelectRewardItemDirect(3542, 3, 'cVillageRemakePattern', 0)
+        case 2:
+            switch SubflowResults@3[1]:
+                case 0:
+                    EventFlowSystemActor.SelectRewardItemDirect(3543, 1, 'cVillageRemakePattern', 0)
+                case 1:
+                    EventFlowSystemActor.SelectRewardItemDirect(3543, 2, 'cVillageRemakePattern', 0)
+                case 2:
+                    EventFlowSystemActor.SelectRewardItemDirect(3543, 3, 'cVillageRemakePattern', 0)
+        case 3:
+            switch SubflowResults@3[1]:
+                case 0:
+                    EventFlowSystemActor.SelectRewardItemDirect(3545, 1, 'cVillageRemakePattern', 0)
+                case 1:
+                    EventFlowSystemActor.SelectRewardItemDirect(3545, 2, 'cVillageRemakePattern', 0)
+                case 2:
+                    EventFlowSystemActor.SelectRewardItemDirect(3545, 3, 'cVillageRemakePattern', 0)
+
+local flow Sub_Event69():
+    run Set_Feather()
+    run Set_Feather2()
+    if (not MainNpc.EventFlags['cNpcMemory:CarnvalExchangeFeatherFlag']) and (not ((MainNpc.EventFlags['cNpcMemory:CarnvalExchangeFeatherTalkFlag']) and (EventFlowSystemActor.PercentChoice(60)))):
+        switch MainNpc.FlagNpcIntValue4(4, 'cNpcSave:CarnivalFeatherColor'):
+            case 0:
+                if EventFlowSystemActor.HasTargetItem(3541, 1):
+                    run Sub_Event70()
+                else:
+                    run Sub_grp_Event71()
+            case 1:
+                if EventFlowSystemActor.HasTargetItem(3542, 1):
+                    run Sub_Event70()
+                else:
+                    run Sub_grp_Event71()
+            case 2:
+                if EventFlowSystemActor.HasTargetItem(3543, 1):
+                    run Sub_Event70()
+                else:
+                    run Sub_grp_Event71()
+            case 3:
+                if EventFlowSystemActor.HasTargetItem(3545, 1):
+                    run Sub_Event70()
+                else:
+                    run Sub_grp_Event71()
+    else:
+        run Carnival_Chat()
+        EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_Event70():
+    MainNpc.EventFlags['cNpcMemory:CarnvalExchangeFeatherTalkFlag'] = true
+    run Exchange_Feather()
+    EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_grp_Event64():
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:032', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:033', false)
+
+local flow Sub_grp_Event71():
+    if MainNpc.EventFlags['cNpcMemory:CarnvalTalkWithoutFeatherFlag']:
+        run Carnival_Chat()
+        EventFlowSystemActor.ExitFlowchart()
+    elif EventFlowSystemActor.SystemCheckNowStage('cField'):
+        if (not EventFlowSystemActor.HasKindItem('cKind', 'Feather', '')) and (not EventFlowSystemActor.HasKindItem('cKind', 'RainbowFeather', '')) and (not EventFlowSystemActor.PlayerIsEquipItem(3548, 3542, 3541, 3543, 3545, 65534, 65534, 65534, 'cAny', true, false)):
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:002', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Carnival:003', false)
+        MainNpc.EventFlags['cNpcMemory:CarnvalTalkWithoutFeatherFlag'] = true
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        run Carnival_Chat()
+        EventFlowSystemActor.ExitFlowchart()
+

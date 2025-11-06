@@ -1,0 +1,46 @@
+flow End_Shopping():
+    run SNPC_rcm_00_Common::CmnCloseShoppingUI()
+    if EventFlowSystemActor.ShopLevel() == `InResServiceTent`:
+        run SNPC_rcm::Rcm_SeqClose()
+    else:
+        if System.EventFlags['cPlayerTemp:RcmShopshelfCheck']:
+            EventFlowSystemActor.CloseMarketShowcase()
+        run SNPC_rcm::Rcm_SeqClose()
+
+flow RcmHowToBookBuySel():
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:104', false)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run SNPC_rcm_00_Common::Rcm_Common_BuyCheckUI()
+        case 1:
+            if EventFlowSystemActor.MultiItemSelectInclude(14030, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+                if EventFlowSystemActor.CheckNearEvent(0, 0, 'Carnival', false):
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:3003', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:3001', false)
+                run RcmHowToBookBuySel()
+        case 2:
+            run SNPC_rcm_00_Common::Rcm_Groceries_Buy_Cancel()
+
+flow Root():
+    if EventFlowSystemActor.MultiItemSelectInclude(14030, 65534, 65534, 65534, 65534, 65534, 65534, 65534, 'cItemSelect'):
+        EventFlowSystemActor.SetTagFromSystem('cCarnivalMonth', 'cDegit', 0, 0, '')
+        EventFlowSystemActor.SetTagFromSystem('cCarnivalDay', 'cDegit', 0, 0, '')
+        if System.EventFlags['cPlayer:RcmChkReactionBook']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:101', false)
+        else:
+            if EventFlowSystemActor.CheckNearEvent(0, 0, 'Carnival', false):
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:3003', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:3001', false)
+            System.EventFlags['cPlayer:RcmChkReactionBook'] = true
+            System.EventFlags['cPlayer:RcmChkCarnivalFtr'] = true
+        run RcmHowToBookBuySel()
+        System.EventFlags['cPlayerTemp:RcmBoughtGrocery'] = true
+        EventFlowSystemActor.ReservePlayerTicketGetDemo('Player_GetDemo_MileExchange', 'Get_Emoticon_ByBook')
+        EventFlowSystemActor.GetReaction('cBook1_7')
+        System.EventFlags['cPlayer:BuyReactionBook17'] = true
+        run End_Shopping()
+    else:
+        run SNPC_rcm_00_Common::BuyCancelNoAsk()
+

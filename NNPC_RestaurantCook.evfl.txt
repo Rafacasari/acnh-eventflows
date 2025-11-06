@@ -1,0 +1,115 @@
+flow Cook():
+    if EventFlowSystemActor.IsInspectingWherearen():
+        run Sub_Event122()
+    else:
+        run ShareHouseMate_Chk()
+        if (System.EventFlags['cPlayer:MainmenuRecipe_v2']) and (not System.EventFlags['cWherearenPlayer:GetCookingRecipeToday']) and (MainNpc.NpcNowPosture() == 0):
+            run StartCookingRecipeEvent()
+        else:
+            run Sub_Event122()
+
+flow FacilityName_Chk():
+    if (EventFlowSystemActor.WherearenExistFacilityName('cRestaurant')) and (not EventFlowSystemActor.PercentChoice(80)):
+        EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cSelectFacility', 0, 'cRestaurant')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:303', false)
+        run KKFes_Chk()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow GiveReceipe_Chk():
+    MainNpc.NpcSetRewardRecipe(65534, true)
+    MainNpc.SetDeliveryItem(1, true)
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:113', false)
+        System.EventFlags['cWherearenPlayer:TraineeGiveItemFailed'] = true
+    else:
+        MainNpc.NpcDelivery(1, 'Default')
+        if MainNpc.IsNpcDIYRecipeCollected():
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:114', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:107', false)
+        System.EventFlags['cWherearenPlayer:GetCookingRecipeToday'] = true
+        System.EventFlags['cWherearenPlayer:TraineeGiveItemFailed'] = false
+    EventFlowSystemActor.ExitFlowchart()
+
+flow KKFes_Chk():
+    if (not EventFlowSystemActor.IsInspectingWherearen()) and (EventFlowSystemActor.WherearenKKFesStatus(false) == 2):
+        MainNpc.TurnNeck(10, true)
+        MainNpc.NpcKKFesJoinOpenMessage('TalkNNpc/B1_Bo/OneRoom/BO_Facility_KKFes:001')
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_KKFes:106', true)
+            run Demo_Common_Wherearen::ToKKFesDemoLive()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_KKFes:200', false)
+            EventFlowSystemActor.ExitFlowchart()
+
+flow Root():
+    if EventFlowSystemActor.IsInspectingWherearen():
+        run Sub_Event111()
+    else:
+        run ShareHouseMate_Chk()
+        if (System.EventFlags['cPlayer:MainmenuRecipe_v2']) and (not System.EventFlags['cWherearenPlayer:GetCookingRecipeToday']) and (MainNpc.NpcNowPosture() == 0):
+            run StartCookingRecipeEvent()
+        else:
+            run Sub_Event111()
+
+flow ShareHouseMate_Chk():
+    if EventFlowSystemActor.WherearenOrderStatus() == 1:
+        MainNpc.TurnNeck(10, false)
+        run NNPC_Spot_WherearenMainFieldVisitor::LookforHouseMate()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow StandSleep():
+    run NNPC_RestaurantCustomer::`StandSleep_2.1`()
+
+flow StartCookingRecipeEvent():
+    MainNpc.NpcSetRewardRecipe(65534, true)
+    MainNpc.SetItemName(1, 0, 0)
+    if System.EventFlags['cWherearenPlayer:TraineeGiveItemFailed']:
+        MainNpc.TurnBody(10, 0.0)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:115', false)
+        run GiveReceipe_Chk()
+    else:
+        MainNpc.TurnBody(11, 0.0)
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:101', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:102', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:103', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:104', false)
+            if MainNpc.IsNpcDIYRecipeCollected():
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:110', false)
+                switch EventFlowSystemActor.GeneralTalkChoice2():
+                    case 0, 1:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:111', false)
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:112', false)
+                        run GiveReceipe_Chk()
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:105', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:106', false)
+                    run GiveReceipe_Chk()
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:109', false)
+                    EventFlowSystemActor.ExitFlowchart()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_FacilityEvent_Restaurant:108', false)
+            EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_Event111():
+    MainNpc.WherearenSetTagFacilityNpcName('cRestaurantTrainee', false, false, 0)
+    run FacilityName_Chk()
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:301', false)
+    run KKFes_Chk()
+
+local flow Sub_Event122():
+    MainNpc.WherearenSetTagFacilityNpcName('cRestaurantTrainee', false, false, 0)
+    run FacilityName_Chk()
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Facility_Restaurant:302', false)
+    run KKFes_Chk()
+
+flow Walk():
+    run Root()
+

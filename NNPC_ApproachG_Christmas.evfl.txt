@@ -1,0 +1,14 @@
+flow Root():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Christmas:001', false)
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Christmas:003', false)
+        MainNpc.EventFlags['cNpcMemory:ChristmasCannotGetNnpcItemFlag'] = true
+        System.EventFlags['cPlayer:ChristmasWreathNoGetFlag'] = true
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        MainNpc.SetDeliveryItemAtRandom(13357, true, 'cVillageRemakePattern', 0)
+        MainNpc.NpcDelivery(1, 'Default')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachG_Christmas:002', false)
+        EventFlowSystemActor.SetChristmasWreathGetYear()
+        EventFlowSystemActor.ExitFlowchart()
+

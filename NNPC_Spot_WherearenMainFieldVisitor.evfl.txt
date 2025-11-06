@@ -1,0 +1,281 @@
+flow Approach():
+    run OrderStateChk()
+    switch SubflowResults@5[0]:
+        case 1:
+            MainNpc.EventFlags['cWherearenNpcMemory:HasAcquaintanceship'] = true
+            SubflowResults[1] = 1
+            if MainNpc.EventFlags['cWherearenNpcMemory:ApproachRefuse']:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:313', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:309', false)
+            switch EventFlowSystemActor.GeneralTalkChoice3():
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:310', true)
+                    run NPCOrder()
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:311', true)
+                    run PlayerProposal()
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:312', false)
+                    MainNpc.EventFlags['cWherearenNpcMemory:ApproachRefuse'] = true
+        case 2, 3:
+            run OrderStop()
+        case 4:
+            run LookforHouseMate()
+        default:
+            return
+
+flow ClosePhotoUI():
+    fork:
+        branch:
+            EventFlowSystemActor.UIWherearenIslandsMsgPhotoDisappear()
+        branch:
+            MainNpc.MessageSuspend()
+
+flow FromApproach():
+    run Event110()
+
+flow LookforHouseMate():
+    if (MainNpc.WherearenIsBuiltNpc()) and (MainNpc.WherearenIsNpcLiveTogether()):
+        run NNPC_Spot_WherearenMainField::SeaNPC_Chk()
+        if (EventFlowSystemActor.WherearenKKFesStatus(false) == 0) and (not MainNpc.WherearenNpcIsLocatedSea()):
+            fork:
+                branch:
+                    EventFlowSystemActor.UIWherearenIslandsMsgPhotoAppear('cJpegMainNpcActor', 0, false, 0.0, 0.0, '')
+                branch:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:205', false)
+            run ClosePhotoUI()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:205', false)
+            run ClosePhotoUI()
+    else:
+        EventFlowSystemActor.WherearenSetTagCustomerNpcName(false, 2)
+        if MainNpc.WherearenIsBuiltNpc():
+            run NNPC_Spot_WherearenMainField::SeaNPC_Chk()
+            if (EventFlowSystemActor.WherearenKKFesStatus(false) == 0) and (not MainNpc.WherearenNpcIsLocatedSea()):
+                fork:
+                    branch:
+                        EventFlowSystemActor.UIWherearenIslandsMsgPhotoAppear('cJpegMainNpcActor', 0, false, 0.0, 0.0, '')
+                    branch:
+                        if (MainNpc.IsVillagerNpc()) and (EventFlowSystemActor@sub.WherearenIsShareHouseOrderNpcVillagerNpc()):
+                            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:204_01', false)
+                        else:
+                            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:204', false)
+                run Sub_grp_Event9()
+            else:
+                if (MainNpc.IsVillagerNpc()) and (EventFlowSystemActor.WherearenIsShareHouseOrderNpcVillagerNpc()):
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:204_01', false)
+                    run Sub_grp_Event9()
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:204', false)
+                    run Sub_grp_Event9()
+        else:
+            if (MainNpc.IsVillagerNpc()) and (EventFlowSystemActor.WherearenIsShareHouseOrderNpcVillagerNpc()):
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:201_01', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:201', false)
+            run Sub_grp_Event9()
+
+flow NPCOrder():
+    run Event110()
+
+flow NPC_Emotion():
+    switch MainNpc.CheckNpcLook():
+        case 0, 3, 4:
+            MainNpc.CharacterEmoticonAction('Clapping', true, '', 0, false)
+        case 1, 5:
+            MainNpc.CharacterEmoticonAction('HappyDance', true, '', 0, false)
+        case 2, 6, 7:
+            MainNpc.CharacterEmoticonAction('Smiling', true, '', 0, false)
+
+flow NewBuild():
+    SubflowResults[1] = 0
+    run Demo_Common_Wherearen::KKFesCheck()
+    System.EventFlags['cWherearenPlayer:ProposeNPCHouse'] = false
+    if MainNpc.IsChocolateWherearenNpc():
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:306', false)
+    else:
+        if MainNpc.EventFlags['cWherearenNpcMemory:HasAcquaintanceship']:
+            if EventFlowSystemActor.WherearenKKFesStatus(false) == 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:101', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:108', false)
+        else:
+            if EventFlowSystemActor.WherearenKKFesStatus(false) == 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:100', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:107', false)
+            MainNpc.EventFlags['cWherearenNpcMemory:HasAcquaintanceship'] = true
+entrypoint Event18:
+    if System.EventFlags['cWherearenPlayer:Unlock_ThemeFreeEdit']:
+        if MainNpc.IsChocolateWherearenNpc():
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:308', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:105', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:104', true)
+                run NPCOrder()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:106', true)
+entrypoint Event32:
+                EventFlowSystemActor.SystemBGMVolumeFadeOut(0.800000011920929, 0, 0.0)
+                EventFlowSystemActor.SoundDuckingOn(54)
+                if SubflowResults@2[1] == 0:
+                    MainNpc.WherearenTakeOnNpcOrder('cNewHouse', '', '', '', '')
+                else:
+                    MainNpc.WherearenTakeOnNpcOrder('cNewHouse', '', '', '', 'cApproach')
+                EventFlowSystemActor.WherearenOrderCallback('cStart')
+                System.EventFlags['cWherearenPlayer:ProposeNPCHouse'] = true
+                run Sub_grp_Event88()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:103', false)
+    else:
+        if MainNpc.IsChocolateWherearenNpc():
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:307', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:102', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:104', true)
+entrypoint Event110:
+            EventFlowSystemActor.SystemBGMVolumeFadeOut(0.800000011920929, 0, 0.0)
+            EventFlowSystemActor.SoundDuckingOn(54)
+            if SubflowResults@2[1] == 0:
+                MainNpc.WherearenTakeOnNpcOrder('cNewHouse', '', '', '', '')
+            else:
+                MainNpc.WherearenTakeOnNpcOrder('cNewHouse', '', '', '', 'cApproach')
+            EventFlowSystemActor.WherearenOrderCallback('cStart')
+            run Sub_grp_Event88()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:103', false)
+
+flow NewBuildInFacility():
+    SubflowResults[1] = 0
+    System.EventFlags['cWherearenPlayer:ProposeNPCHouse'] = false
+    if MainNpc.EventFlags['cWherearenNpcMemory:HasAcquaintanceship']:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:108', false)
+        run Event18()
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:107', false)
+        MainNpc.EventFlags['cWherearenNpcMemory:HasAcquaintanceship'] = true
+        run Event18()
+
+flow OrderStateChk():
+    switch EventFlowSystemActor.WherearenOrderStatus():
+        case 0:
+            if System.EventFlags['cWherearenPlayer:Prohibit_NewOrder']:
+                SubflowResults[0] = 2
+            else:
+                SubflowResults[0] = 1
+        case 1:
+            if (EventFlowSystemActor.WherearenNpcOrderType() == 1) and (EventFlowSystemActor.WherearenLookForHousemateState() == 0):
+                SubflowResults[0] = 4
+        case 4:
+            SubflowResults[0] = 3
+        default:
+            return
+
+flow OrderStop():
+    if MainNpc.IsChocolateWherearenNpc():
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:306', false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:314', false)
+    else:
+        if MainNpc.EventFlags['cWherearenNpcMemory:HasAcquaintanceship']:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:101', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:100', false)
+            MainNpc.EventFlags['cWherearenNpcMemory:HasAcquaintanceship'] = true
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:116', false)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:117', false)
+
+flow PlayerProposal():
+    run Event32()
+
+flow PrivateMode():
+    switch EventFlowSystemActor.WherearenKKFesStatus(false):
+        case 0, 3:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:118', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:119', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:120', false)
+    MainNpc.EventFlags['cWherearenNpcMemory:HasAcquaintanceship'] = true
+
+flow Root():
+    if (MainNpc.IsChocolateWherearenNpc()) and (not MainNpc.EventFlags['cWherearenNpcMemory:Chocolate1stTalkDone']):
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:305', false)
+        MainNpc.EventFlags['cWherearenNpcMemory:Chocolate1stTalkDone'] = true
+        MainNpc.EventFlags['cWherearenNpcMemory:HasAcquaintanceship'] = true
+    elif EventFlowSystemActor.IsWherearenWorkMode():
+        run OrderStateChk()
+        switch SubflowResults@5[0]:
+            case 1:
+                run NewBuild()
+            case 2, 3:
+                run OrderStop()
+            case 4:
+                run LookforHouseMate()
+            default:
+                return
+    else:
+        run PrivateMode()
+
+flow Root_Init():
+    if ((not MainNpc.IsChocolateWherearenNpc()) or (MainNpc.EventFlags['cWherearenNpcMemory:Chocolate1stTalkDone'])) and (EventFlowSystemActor.WherearenKKFesStatus(false) == 2) and (EventFlowSystemActor.IsWherearenWorkMode()) and (EventFlowSystemActor.WherearenOrderStatus() == 0) and (not System.EventFlags['cWherearenPlayer:Prohibit_NewOrder']):
+        MainNpc.NpcAISetting(2, false)
+        MainNpc.NpcAISetting(3, false)
+
+flow SetOrderCamera():
+    EventFlowSystemActor.CameraReserveFirstStateCommand('Demo:OrderCut0', '', true)
+    EventFlowSystemActor.RequestWaterFallDucking(0)
+
+local flow Sub_grp_Event88():
+    fork:
+        branch:
+            Player.CharacterEmoticonAction('Assent', true, '', 0, false)
+            EventFlowSystemActor.SoundTriggerEmit('Demo_Oshigoto_Wipe', -1)
+        branch:
+            EventFlowSystemActor.WaitFrame(14)
+            run NPC_Emotion()
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.BGMPropertyControl(126)
+    if EventFlowSystemActor.SystemCheckNowStage('cWherearenMainIsland'):
+        EventFlowSystemActor.SoundFadeOutDuckingOn(12)
+        EventFlowSystemActor.FadeOut('cOrderWherearen', 'cOrderWherearen', 'cBlack', 1.0, 1.0, false)
+        MainNpc.ArrangeCharacterForOrder()
+        EventFlowSystemActor.SetWherearenPlayerRemoveBinderSeq(true, false)
+        EventFlowSystemActor.WaitToRequestOrderDemo()
+    else:
+        run SetOrderCamera()
+        EventFlowSystemActor.NextLPFadeTime(0.7300000190734863)
+        EventFlowSystemActor.SoundSceneChangeFadeOutDucking(10)
+        EventFlowSystemActor.SystemRequestChangeStage('cWherearenOrderDemo', 'cOrderWherearen', 'cOrderWherearen', 'cBlack', 1.0, 1.0)
+
+local flow Sub_grp_Event9():
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        if (MainNpc.IsVillagerNpc()) and (EventFlowSystemActor.WherearenIsShareHouseOrderNpcVillagerNpc()):
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:202_01', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:202', false)
+        run ClosePhotoUI()
+        if MainNpc.WherearenNpcOrderRelationKind() == 3:
+            MainNpc.WherearenSetHousemate()
+            EventFlowSystemActor.WherearenOrderCallback('cFinishLookForHousemate')
+            if EventFlowSystemActor.SystemCheckNowStage('cWherearenMainIsland'):
+                EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 1.0, 1.0, true)
+                MainNpc.ArrangeCharacterForOrder()
+                EventFlowSystemActor.SetWherearenPlayerRemoveBinderSeq(true, false)
+                EventFlowSystemActor.WaitFrame(3)
+            else:
+                if MainNpc.WherearenIsBuiltNpc():
+                    run ClosePhotoUI()
+                EventFlowSystemActor.CameraReserveFirstStateCommand('Demo:OrderCut0', '', true)
+                EventFlowSystemActor.RequestWaterFallDucking(2)
+                EventFlowSystemActor.ReserveSkipSceneStartDemo()
+                EventFlowSystemActor.SystemRequestChangeStage('cWherearenOrderDemo', 'cCircle', 'cCircle', 'cBlack', 1.0, 1.0)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/OneRoom/BO_Spot_WherearenMainField:203', false)
+        run ClosePhotoUI()
+

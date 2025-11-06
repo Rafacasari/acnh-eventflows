@@ -1,0 +1,137 @@
+flow Begin():
+    MainNpc.EventFlags['cNpcMemory:FinishVisitNToday'] = true
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:001', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Yes()
+            else:
+                run No()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:002', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Yes()
+            else:
+                run No()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:003', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Yes()
+            else:
+                run No()
+
+flow Begin_Ap():
+    MainNpc.EventFlags['cNpcMemory:FinishVisitNToday'] = true
+    if MainNpc.CheckNpcApproachType():
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:401', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.EventFlags['cNpcMemory:ApproachQuestOrdered'] = true
+            run Now()
+            EventFlowSystemActor.SetSharePlayChangeCondition(true)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:403', false)
+            MainNpc.NpcQuestControl('cFinish')
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:402', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.EventFlags['cNpcMemory:ApproachQuestOrdered'] = true
+            run Now()
+            EventFlowSystemActor.SetSharePlayChangeCondition(true)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:404', false)
+            MainNpc.NpcQuestControl('cFinish')
+
+flow Confirm():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:301', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:302', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:303', false)
+
+flow No():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:004', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:005', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:006', false)
+    MainNpc.NpcQuestControl('cFinish')
+
+flow Now():
+    if EventFlowSystemActor.EnvHourCompare(23, -1, true, true) == 0:
+        run QuestOrdered()
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:106', false)
+        MainNpc.NpcQuestControl('cFinish')
+
+flow QuestOrdered():
+    if MainNpc.EventFlags['cNpcMemory:VisitedCount'] < 1:
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:104', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:105', false)
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:101', true, false)
+        case 1:
+            MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:102', true, false)
+        case 2:
+            MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:103', true, false)
+    MainNpc.SystemSetVisitQuestKind('cNpc', 'cNow')
+    MainNpc.NpcQuestControl('cStart')
+    EventFlowSystemActor.SetSharePlayChangeCondition(true)
+    MainNpc.NpcAddFriendship(1)
+    MainNpc.ChangeNpcPlace('cTalkNpcHouse')
+    MainNpc.NpcPlayReport('cVisitNPCStart', 0)
+    EventFlowSystemActor.SystemRequestChangeStage('cTalkNpcHouse', 'cCircle', 'cCircle', 'cBlack', 1.0, 1.0)
+
+flow Tommorow():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:201', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:202', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:203', false)
+    if MainNpc.EventFlags['cNpcMemory:VisitedCount'] < 1:
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:207', false, false)
+        else:
+            MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:208', false, false)
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:204', false, false)
+            case 1:
+                MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:205', false, false)
+            case 2:
+                MainNpc.QuestStartOpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:206', false, false)
+    MainNpc.SystemSetVisitQuestKind('cNpc', 'cTomorrow')
+    MainNpc.NpcQuestControl('cStart')
+    MainNpc.NpcAddFriendship(1)
+    MainNpc.NpcPlayReport('cVisitNPCStart', 0)
+
+flow Yes():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:007', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Now()
+            else:
+                run Tommorow()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:008', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Now()
+            else:
+                run Tommorow()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Begin:009', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Now()
+            else:
+                run Tommorow()
+

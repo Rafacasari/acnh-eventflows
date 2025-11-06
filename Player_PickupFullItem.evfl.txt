@@ -1,0 +1,36 @@
+flow CannotPickupLadder_NetHost():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:014', false)
+
+flow CannotPickupVine_NetHost():
+    Player.OpenMessageWindow('TalkSys/SYS_Telepathy:014', false)
+
+flow PickupBell_FullItem():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:014', false)
+
+flow PickupFence_FullItem():
+    run PickupFtr_FullItem()
+
+flow PickupFieldIconWherearenMain_FullItem():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:015', false)
+
+flow PickupFixLadder_FullItem():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:018', false)
+
+flow PickupFlower_FullItem():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:011', false)
+
+flow PickupFtr_FullItem():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:013', false)
+
+flow PickupVegetable_FullItem():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:012', false)
+
+flow PickupVine_FullItem():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:019', false)
+
+flow PickupWeedLightWherearenMain_FullItem():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:020', false)
+
+flow ScoopDigPlant_ItemFull():
+    run PickupFtr_FullItem()
+

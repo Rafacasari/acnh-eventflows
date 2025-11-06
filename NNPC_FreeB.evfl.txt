@@ -1,0 +1,221 @@
+flow Furniture_Chk():
+    MainNpc.SelectFreeBFurnitureFurniture()
+    if MainNpc.NpcHasFreeMessage('cFreeBFurniture'):
+        MainNpc.SetItemName(17, 0, 0)
+        MainNpc.NpcOpenFreeMessage('cFreeBFurniture')
+        EventFlowSystemActor.ExitFlowchart()
+
+flow ItemN_Chk():
+    if not MainNpc.EventFlags['cNpcMemory:TalkItemNNow']:
+        switch MainNpc.CheckNpcTool():
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemN:001', false)
+                run Sub_Event95()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemN:002', false)
+                run Sub_Event95()
+            case 3:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemN:003', false)
+                run Sub_Event95()
+            case 4:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemN:004', false)
+                run Sub_Event95()
+            case 5:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemN:005', false)
+                run Sub_Event95()
+            default:
+                return
+
+flow ItemP_Chk():
+    if not MainNpc.EventFlags['cNpcMemory:TalkItemPNow']:
+        switch EventFlowSystemActor.SystemCheckPlayerTool():
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:001', false)
+                run Sub_Event105()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:002', false)
+                run Sub_Event105()
+            case 3:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:003', false)
+                run Sub_Event105()
+            case 4:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:004', false)
+                run Sub_Event105()
+            case 5:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:005', false)
+                run Sub_Event105()
+            case 6:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:006', false)
+                run Sub_Event105()
+            case 8:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:015', false)
+                run Sub_Event105()
+            case 9:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:016', false)
+                run Sub_Event105()
+            case 10:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:007', false)
+                run Sub_Event105()
+            case 11:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:008', false)
+                run Sub_Event105()
+            case 12:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:009', false)
+                run Sub_Event105()
+            case 13:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:010', false)
+                run Sub_Event105()
+            case 14:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:012', false)
+                run Sub_Event105()
+            case 15:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:014', false)
+                run Sub_Event105()
+            case 16:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:017', false)
+                run Sub_Event105()
+            case 17:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:018', false)
+                run Sub_Event105()
+            case 18:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:019', false)
+                run Sub_Event105()
+            case 19:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:020', false)
+                run Sub_Event105()
+            case 20:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:021', false)
+                run Sub_Event105()
+            case 21:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:022', false)
+                run Sub_Event105()
+            case 22:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_ItemP:013', false)
+                run Sub_Event105()
+            default:
+                return
+
+flow Reselection_Seasons():
+    switch EventFlowSystemActor.EnvSeason():
+        case `Spring`:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Seasons:001', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Seasons:005', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Seasons:009', false)
+        case `Summer`:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Seasons:002', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Seasons:006', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Seasons:010', false)
+        case `Autumn`:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Seasons:003', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Seasons:007', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Seasons:011', false)
+        case `Winter`:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Seasons:004', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Seasons:008', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Seasons:012', false)
+    MainNpc.EventFlags['cNpcMemory:TalkSeasonsNow'] = true
+    MainNpc.EventFlags['cNpcMemory:TalkReSelectLast'] = 1
+    EventFlowSystemActor.ExitFlowchart()
+
+flow Reselection_Weather():
+    switch MainNpc.EnvWeatherNNpcTalkCustom():
+        case `Fine`:
+            MainNpc.NpcSelectFreeTalk('cFineWeather', 'cWildCard', '', '', 'TalkNNpc/B1_Bo/Free/BO_FreeB_Weather', '', '', '', true)
+        case `Cloudy`:
+            MainNpc.NpcSelectFreeTalk('cCloudWeather', 'cWildCard', '', '', 'TalkNNpc/B1_Bo/Free/BO_FreeB_Weather', '', '', '', true)
+        case `Rain`:
+            MainNpc.NpcSelectFreeTalk('cRainWeather', 'cWildCard', '', '', 'TalkNNpc/B1_Bo/Free/BO_FreeB_Weather', '', '', '', true)
+        case `HeavyRain`:
+            MainNpc.NpcSelectFreeTalk('cRainWeather', 'cHardRainWeather', 'cWildCard', '', 'TalkNNpc/B1_Bo/Free/BO_FreeB_Weather', '', '', '', true)
+        case `Snow`:
+            MainNpc.NpcSelectFreeTalk('cSnowWeather', 'cWildCard', '', '', 'TalkNNpc/B1_Bo/Free/BO_FreeB_Weather', '', '', '', true)
+        case `HeavySnow`:
+            MainNpc.NpcSelectFreeTalk('cSnowWeather', 'cHardSnowWeather', 'cWildCard', '', 'TalkNNpc/B1_Bo/Free/BO_FreeB_Weather', '', '', '', true)
+        case `Blossom`:
+            MainNpc.NpcSelectFreeTalk('cFineWeather', 'cBlossomShower', 'cWildCard', '', 'TalkNNpc/B1_Bo/Free/BO_FreeB_Weather', '', '', '', true)
+    MainNpc.EventFlags['cNpcMemory:TalkWeatherNow'] = true
+    MainNpc.EventFlags['cNpcMemory:TalkReSelectLast'] = 3
+    EventFlowSystemActor.ExitFlowchart()
+
+flow Seasons_Chk():
+    if not MainNpc.EventFlags['cNpcMemory:TalkSeasonsNow']:
+        run Reselection_Seasons()
+
+flow SpotSP_Chk():
+    if (not System.EventFlags['cPlayerTemp:TalkSpotSPNowAnyone']) and (MainNpc.NpcHasFreeMessage('cFreeBSpot')):
+        run NNPC_FreeH::Progress_FreeBSpot()
+        MainNpc.NpcOpenFreeMessage('cFreeBSpot')
+        System.EventFlags['cPlayerTemp:TalkSpotSPNowAnyone'] = true
+        EventFlowSystemActor.ExitFlowchart()
+
+flow Spot_Chk():
+    if (not MainNpc.EventFlags['cNpcMemory:TalkSpotNow']) and (not MainNpc.NpcHasFreeMessage('cFreeBSpot')):
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Spot:001', false)
+        MainNpc.EventFlags['cNpcMemory:TalkSpotNow'] = true
+        EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_Event105():
+    MainNpc.EventFlags['cNpcMemory:TalkItemPNow'] = true
+    EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_Event64():
+    MainNpc.EventFlags['cNpcMemory:TalkWeatherSPNow'] = true
+    EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_Event95():
+    MainNpc.EventFlags['cNpcMemory:TalkItemNNow'] = true
+    EventFlowSystemActor.ExitFlowchart()
+
+flow WeatherSP_Chk():
+    if not MainNpc.EventFlags['cNpcMemory:TalkWeatherSPNow']:
+        switch EventFlowSystemActor.EnvSpecialWeather():
+            case `HeavyShower_MorningBefore`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Weather:101', false)
+                run Sub_Event64()
+            case `HeavyShower_AfternoonBefore`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Weather:102', false)
+                run Sub_Event64()
+            case `HeavyShower_During`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Weather:103', false)
+                run Sub_Event64()
+            case `Rainbow`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Weather:104', false)
+                run Sub_Event64()
+            case `DoubleRainbow`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Weather:105', false)
+                run Sub_Event64()
+            case `AuroraBorealis_Before1800`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Weather:106', false)
+                run Sub_Event64()
+            case `AuroraBorealis`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Weather:107', false)
+                run Sub_Event64()
+            case `SpecialWeather8`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Weather:108', false)
+                run Sub_Event64()
+            case `SpecialWeather9`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Free/BO_FreeB_Weather:109', false)
+                run Sub_Event64()
+            default:
+                return
+
+flow Weather_Chk():
+    if not MainNpc.EventFlags['cNpcMemory:TalkWeatherNow']:
+        run Reselection_Weather()
+

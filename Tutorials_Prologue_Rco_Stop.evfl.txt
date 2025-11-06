@@ -1,0 +1,12 @@
+flow Rco_StopBbs():
+    if System.EventFlags['cPlayer:PrologueDone1stTalkAtPlaza']:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue4_Orientation3:111_21', false)
+    else:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue4_Orientation3:111_20', false)
+
+flow Root():
+    if System.EventFlags['cPlayer:PlayerPocketUIEnable']:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue4_Orientation3:111_10', false)
+    else:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue4_Orientation3:111_00', false)
+

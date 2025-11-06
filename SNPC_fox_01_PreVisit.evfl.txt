@@ -1,0 +1,172 @@
+flow BeforeOpen():
+    if not EventFlowSystemActor.IsMyVillage():
+        if System.EventFlags['cPlayerVisit:FoxTalkFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:161', false)
+        else:
+            System.EventFlags['cPlayerVisit:FoxTalkFlag'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:160', false)
+    elif not System.EventFlags['cPlayer:FoxTalkTodayFlag']:
+        System.EventFlags['cPlayer:FoxTalkTodayFlag'] = true
+        System.EventFlags['cPlayer:FoxPreVisitWantSellFlag'] = false
+        if System.EventFlags['cPlayer:TunekichiTalkBefore']:
+            if System.EventFlags['cPlayer:FoxTalkOnlyStandShopFlag']:
+                System.EventFlags['cPlayer:FoxTalkOnlyStandShopFlag'] = false
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:101_01', false)
+            else:
+                if System.EventFlags['cPlayer:FoxPreVisitBuyArtFlag']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:102_01', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:102_02', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:103', false)
+        else:
+            System.EventFlags['cPlayer:TunekichiTalkBefore'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:101', false)
+        if EventFlowSystemActor.NetHasVisitor():
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:106', false)
+        else:
+            run OpenShip()
+    elif EventFlowSystemActor.NetHasVisitor():
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:107', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:104', false)
+        run OpenShip()
+
+flow BuyArtAgain(ArgPrice: int):
+    if EventFlowSystemActor.HasBellCount(ArgPrice):
+        run Event24()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:008', false)
+
+flow BuyArtCmnChk():
+    if (not System.EventFlags['cLand:Museum2ConstructionToday']) and (not System.EventFlags['cLand:MuseumGrowupEnable2']) and (System.EventFlags['cPlayer:OwlPaintingQuestExplain']) and (not System.EventFlags['cLand:FoxPreVisitAlreadyBuyToday']) and (not System.EventFlags['cPlayer:FoxPreVisitBuyArtMaxFlag']):
+        SubflowResults[0] = 1
+
+flow BuyArtFirst(ArgPrice: int):
+    System.EventFlags['cPlayer:FoxPreVisitWantSellFlag'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:003_01', false)
+    EventFlowSystemActor.UIMoneyAppear()
+    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:003_02', false)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:004', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+                EventFlowSystemActor.UIMoneyDisappear()
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:007', false)
+                return
+            elif EventFlowSystemActor.HasBellCount(ArgPrice):
+entrypoint Event24:
+                if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:009', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:005', false)
+                    MainNpc.SetDeliveryItemAtRandom(2114, false, 'cVillageRemakePattern', 0)
+                    MainNpc.NpcDelivery(0, 'Default')
+                    EventFlowSystemActor.BellCountDown(ArgPrice, true)
+                    MainNpc.SetDeliveryItem(34, true)
+                    MainNpc.NpcDelivery(1, 'Default')
+                    EventFlowSystemActor.UIMoneyDisappear()
+                    if System.EventFlags['cPlayer:FoxPreVisitBuyArtFlag']:
+                        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:021', false)
+                        System.EventFlags['cPlayer:FoxPreVisitBuyArtMaxFlag'] = true
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:006', false)
+                        System.EventFlags['cPlayer:FoxPreVisitBuyArtFlag'] = true
+                    System.EventFlags['cPlayer:FoxPreVisitWantSellFlag'] = false
+                    System.EventFlags['cLand:FoxPreVisitAlreadyBuyToday'] = true
+                return
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:008', false)
+
+flow OpenShip():
+    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:105', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:105_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:105_02', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:105_03', true)
+    System.EventFlags['cPlayer:FoxInvitedShipFlag'] = true
+    System.EventFlags['cLand:FoxMovedToMarket'] = true
+    EventFlowSystemActor.WaitFrame(10)
+    EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 0.800000011920929, 0.800000011920929, true)
+    EventFlowSystemActor.WaitFrame(30)
+    MainNpc.NpcRequestAction(3)
+    EventFlowSystemActor.FadeIn(true)
+
+flow PreVisit(ArtPrice: int = 0):
+    if EventFlowSystemActor.IsMyVillage():
+        run BuyArtCmnChk()
+        if System.EventFlags['cPlayer:FoxPreVisitBuyArtFlag']:
+            ArtPrice = 49800
+        else:
+            ArtPrice = 4980
+        MainNpc.SetItemName(34, 0, 0)
+        EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 0, ArtPrice, '')
+        if not System.EventFlags['cPlayer:FoxTalkTodayFlag']:
+            if System.EventFlags['cPlayer:TunekichiTalkBefore']:
+                System.EventFlags['cPlayer:FoxTalkTodayFlag'] = true
+                if System.EventFlags['cPlayer:FoxTalkOnlyStandShopFlag']:
+                    System.EventFlags['cPlayer:FoxTalkOnlyStandShopFlag'] = false
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:001_01', false)
+                    run Sub_grp_Event127(ArtPrice=ArtPrice)
+                elif (System.EventFlags['cPlayer:TalkFoxCommuneOpenEvent']) or (System.EventFlags['cPlayer:FoxCommuneTalkExplainFlag']):
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:001_02', false)
+                    run Sub_grp_Event127(ArtPrice=ArtPrice)
+                elif System.EventFlags['cPlayer:FoxPreVisitBuyArtFlag']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:016', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:015', false)
+            else:
+                System.EventFlags['cPlayer:TunekichiTalkBefore'] = true
+                System.EventFlags['cPlayer:FoxTalkTodayFlag'] = true
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:001', false)
+                run Sub_grp_Event127(ArtPrice=ArtPrice)
+        elif System.EventFlags['cPlayer:FoxPreVisitWantSellFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:011', false)
+            if SubflowResults@2[0] == 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:014', false)
+                System.EventFlags['cPlayer:FoxPreVisitWantSellFlag'] = false
+            else:
+                EventFlowSystemActor.UIMoneyAppear()
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:012', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run BuyArtAgain(ArgPrice=ArtPrice)
+                else:
+                    EventFlowSystemActor.UIMoneyDisappear()
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:013', false)
+        elif SubflowResults@2[0] == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:050', false)
+        else:
+            if System.EventFlags['cPlayer:FoxPreVisitBuyArtFlag']:
+                if EventFlowSystemActor.HasKindItem('cFilter', '', 'OwlDonation1_5'):
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:050', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:017', false)
+                    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                        System.EventFlags['cPlayer:FoxPreVisitWantSellFlag'] = true
+                        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:019', false)
+                        EventFlowSystemActor.UIMoneyAppear()
+                        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:019_01', false)
+                        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                            run BuyArtAgain(ArgPrice=ArtPrice)
+                        else:
+                            EventFlowSystemActor.UIMoneyDisappear()
+                            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:020', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:018', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:010', false)
+                run BuyArtFirst(ArgPrice=ArtPrice)
+    elif System.EventFlags['cPlayerVisit:FoxTalkFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:061', false)
+    else:
+        System.EventFlags['cPlayerVisit:FoxTalkFlag'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:060', false)
+
+local flow Sub_grp_Event127(ArtPrice: int):
+    if SubflowResults@2[0] != 0:
+        run BuyArtFirst(ArgPrice=ArtPrice)
+    elif System.EventFlags['cPlayer:OwlPaintingQuestExplain']:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:002_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_01_PreVisit:002_02', false)
+

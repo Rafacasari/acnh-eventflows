@@ -1,0 +1,16 @@
+flow Bpt_Chk_FinishFortunes():
+    if not System.EventFlags['cPlayer:Bpt_FinishFortune_Today']:
+        if System.EventFlags['cPlayer:Bpt_FinishCompatibilityToday']:
+            SubflowResults[0] = 1
+    elif System.EventFlags['cPlayer:Bpt_FinishCompatibilityToday']:
+        MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:013', false)
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        SubflowResults[0] = 2
+
+flow Bpt_Chk_Have1000Bell():
+    if not EventFlowSystemActor.HasBellCount(1000):
+        MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:012', false)
+        EventFlowSystemActor.UIMoneyDisappear()
+        EventFlowSystemActor.ExitFlowchart()
+

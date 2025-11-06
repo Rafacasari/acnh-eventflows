@@ -1,0 +1,51 @@
+flow Root():
+    switch MainNpc.CheckNpcLook():
+        case 0:
+            SubflowResults[0] = 0
+        case 1:
+            SubflowResults[0] = 1
+        case 2, 3:
+            SubflowResults[0] = 0
+        case 4:
+            SubflowResults[0] = 2
+        case 5:
+            SubflowResults[0] = 1
+        case 6:
+            SubflowResults[0] = 2
+        case 7:
+            SubflowResults[0] = 1
+    MainNpc.EventFlags['cNpcMemory:AppF_MoveinGiftOccured'] = true
+    if MainNpc.EventFlags['cNpcMemory:TalkCountToday'] < 1:
+        switch EventFlowSystemActor.EnvTimeZone():
+            case `05:00-07:59`, `08:00-11:59`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachF_First:001_01', false)
+            case `12:00-15:59`, `16:00-18:59`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachF_First:001_02', false)
+            case `19:00-23:59`, `00:00-04:59`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachF_First:001_03', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachF_First:001_04', false)
+    if MainNpc.EventFlags['cNpcMemory:FirstGreetingAtNpcHome']:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachF_First:002', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachF_First:003', false)
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachF_First:008', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachF_First:004', false)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachF_First:005', true)
+        switch SubflowResults@3[0]:
+            case 0:
+                MainNpc.NpcDecideRewardByCondition(11, 0, false, true)
+            case 1:
+                MainNpc.NpcDecideRewardByCondition(7, 0, false, true)
+            case 2:
+                MainNpc.NpcDecideRewardByCondition(9, 250, true, true)
+        MainNpc.SetItemName(1, 0, 0)
+        MainNpc.SetDeliveryItem(1, true)
+        MainNpc.WrapDeliveryItem('cPresentBox')
+        MainNpc.NpcDelivery(1, 'Keep')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachF_First:006', false)
+        MainNpc.NpcDelivery(2, 'Default')
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Approach/BO_ApproachF_First:007', false)
+

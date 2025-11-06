@@ -1,0 +1,83 @@
+flow EntryPoint_DeleteFuture():
+    EventFlowSystemActor.UIMsgCardAdrHandling('cOneselfFuture')
+    if EventFlowSystemActor.ExistUnfinishMail():
+        EventFlowSystemActor.ChangeAddressUnfinishMail()
+        run EntryPoint_EditFuture()
+    else:
+        EventFlowSystemActor.UIMoneyDisappear()
+        EventFlowSystemActor.UIMsgCardSelectHandling()
+        if EventFlowSystemActor.UIResultMenuDecide():
+            run EntryPoint_EditFuture()
+        else:
+            run Obj_MessageCardRack::EntryPoint_CancelNega()
+
+flow EntryPoint_EditFuture():
+    EventFlowSystemActor.UIMoneyDisappear()
+    EventFlowSystemActor.UIMsgCardEditTextHandling('')
+    if EventFlowSystemActor.UIResultMenuDecide():
+        EventFlowSystemActor.SaveSetFromUIResult('cMsgCard')
+        EventFlowSystemActor.UIDateCreate('cFutureDate')
+        DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:401', true)
+        run EntryPoint_WrongDate()
+    else:
+        run Obj_MessageCardRack::EntryPoint_EditCancel()
+
+flow EntryPoint_SendFuture():
+    EventFlowSystemActor.UIMoneyDisappear()
+    if EventFlowSystemActor.ReservedFutureMail():
+        DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:415', true)
+        EventFlowSystemActor.UIFutureMsgCardHandling()
+        if EventFlowSystemActor.UIManageFutureMessage():
+            DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:803', false)
+            EventFlowSystemActor.UIMoneyDisappear()
+        elif not EventFlowSystemActor.ReservedFutureMailWithPresent():
+            EventFlowSystemActor.DeleteFutureMail()
+            if EventFlowSystemActor.ExistUnfinishMail():
+                DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:420_01', false)
+            else:
+                DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:420', true)
+            run EntryPoint_DeleteFuture()
+        elif EventFlowSystemActor.CanReturnToPocketFutureMailPresent():
+            EventFlowSystemActor.ReturnToPocketFutureMailPresent()
+            EventFlowSystemActor.DeleteFutureMail()
+            if EventFlowSystemActor.ExistUnfinishMail():
+                DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:421_01', false)
+            else:
+                DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:421', true)
+            run EntryPoint_DeleteFuture()
+        else:
+            DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:416', true)
+    else:
+        DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:210_03', false)
+        if EventFlowSystemActor.ExistUnfinishMail():
+            DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:220_02', false)
+            run EntryPoint_DeleteFuture()
+        else:
+            DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:220_01', false)
+            run EntryPoint_DeleteFuture()
+
+flow EntryPoint_WrongDate():
+    EventFlowSystemActor.UIDateHandling('cDate')
+    if EventFlowSystemActor.UIResultMenuDecide():
+        EventFlowSystemActor.SetTagFromUIResult('cSetYMD', 0)
+        DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:402', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            EventFlowSystemActor.UIMoneyAppear()
+            if EventFlowSystemActor.HasBellCount(200):
+                DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:500', true)
+                EventFlowSystemActor.BellCountDown(-200, false)
+                EventFlowSystemActor.ReserveFutureMail()
+                EventFlowSystemActor.WaitFrame(10)
+                DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:502', false)
+                EventFlowSystemActor.UIMoneyDisappear()
+            else:
+                DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:510', false)
+                EventFlowSystemActor.UIMoneyDisappear()
+                run Obj_MessageCardRack::EntryPoint_EditKeepByNoMoney()
+        else:
+            DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:410', true)
+            run EntryPoint_WrongDate()
+    else:
+        DynamicCast_dod.OpenMessageWindow('TalkSNpc/dod/SP_dod_50_PostOffice:521', false)
+        run Obj_MessageCardRack::EntryPoint_EditKeepByNoMoney()
+

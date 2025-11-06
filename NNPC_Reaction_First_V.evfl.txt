@@ -1,0 +1,35 @@
+flow FirstV_Acquaintance():
+    if MainNpc.EventFlags['cNpcMemory:SameLand']:
+        if not MainNpc.NpcIsQuestClient('cSick', false, false):
+            if (not MainNpc.NpcLivingDays(1)) and (MainNpc.NpcIsMovingRoom() == 0):
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_FirstV_Acquaintance:001', false)
+                run Sub_Event13()
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_FirstV_Acquaintance:002', false)
+                run Sub_Event13()
+    elif not MainNpc.NpcIsQuestClient('cSick', false, false):
+        if (not MainNpc.NpcLivingDays(1)) and (MainNpc.NpcIsMovingRoom() == 0):
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_FirstV_Acquaintance:003', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_FirstV_Acquaintance:004', false)
+        run Sub_Event13()
+
+flow FirstV_Stranger():
+    if not MainNpc.NpcIsQuestClient('cSick', false, false):
+        if (not MainNpc.NpcLivingDays(1)) and (MainNpc.NpcIsMovingRoom() == 0):
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_FirstV_Stranger:001', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_FirstV_Stranger:002', false)
+        MainNpc.SetNpcFeel('cNormal', 120, false)
+        MainNpc.EventFlags['cNpcMemory:HasAcquaintanceship'] = true
+        MainNpc.EventFlags['cNpcMemory:FirstMeetGreetAtThisVillage'] = true
+        MainNpc.EventFlags['cNpcMemory:FirstMeetGreetAtThisVillageToday'] = true
+        EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_Event13():
+    MainNpc.SetNpcFeel('cNormal', 120, false)
+    MainNpc.EventFlags['cNpcMemory:HasAcquaintanceship'] = true
+    MainNpc.EventFlags['cNpcMemory:FirstMeetGreetAtThisVillage'] = true
+    MainNpc.EventFlags['cNpcMemory:FirstMeetGreetAtThisVillageToday'] = true
+    EventFlowSystemActor.ExitFlowchart()
+

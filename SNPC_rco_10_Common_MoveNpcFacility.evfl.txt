@@ -1,0 +1,460 @@
+flow CheckBellPocket(Type: int):
+    if not EventFlowSystemActor.HasBellCount(10000):
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:031', false)
+        EventFlowSystemActor.ExitFlowchart()
+    elif EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:032', false)
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        switch SubflowResults@5[3]:
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:021', true)
+                run Sub_Event170(Type=Type)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:023', true)
+                run Sub_Event170(Type=Type)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:022', true)
+                run Sub_Event170(Type=Type)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:024', true)
+                run Sub_Event170(Type=Type)
+            case 4:
+                EventFlowSystemActor.BellCountDown(10000, true)
+                System.EventFlags['cPlayer:RcoBuildMovingPurchase_v200'] = true
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:025', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:026', false)
+
+flow HaveMoveHousingKit():
+    EventFlowSystemActor.UIMoneyAppear()
+    EventFlowSystemActor.StructureMoveSetTag(0, 0)
+    EventFlowSystemActor.StructureMoveSetTag(1, 1)
+    switch SubflowResults@7[1]:
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:101', false)
+            run Sub_grp_Event21()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:103', false)
+            run Sub_grp_Event21()
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:102', false)
+            run Sub_grp_Event21()
+        case 5:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:104', false)
+            run Sub_grp_Event21()
+        case 6:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:105', false)
+            run Sub_grp_Event21()
+        default:
+            return
+
+flow MoveCampSite(ItemPrice: int = 0):
+    SubflowResults[3] = 4
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:015', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        EventFlowSystemActor.NpcEventItemSet(6841, 'cTalk', 0, ItemPrice)
+        run CheckBellPocket(Type=6)
+        EventFlowSystemActor.SetItemToPocket(6841, 1)
+        EventFlowSystemActor.StructureMoveSaveIndex(0)
+        System.EventFlags['cLand:RcoMoveReservedAnyone'] = 1
+        System.EventFlags['cLand:RcoMoveReservedKind'] = 6
+        System.EventFlags['cPlayer:RcoMoveSomeBuiding'] = true
+        EventFlowSystemActor.UIMoneyDisappear()
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        run MoveSelCancel()
+
+flow MoveFacilityChk():
+    if EventFlowSystemActor.MuseumLevel() in (`BlathersNotMovedIn`, `BlathersTent`):
+        if System.EventFlags['cLand:TailorBuilt']:
+            if System.EventFlags['cLand:CampSiteBuilt']:
+                SubflowResults[2] = 6
+            else:
+                SubflowResults[2] = 2
+        elif System.EventFlags['cLand:CampSiteBuilt']:
+            SubflowResults[2] = 3
+        else:
+            SubflowResults[2] = 0
+    elif System.EventFlags['cLand:TailorBuilt']:
+        if System.EventFlags['cLand:CampSiteBuilt']:
+            SubflowResults[2] = 7
+        else:
+            SubflowResults[2] = 4
+    elif System.EventFlags['cLand:CampSiteBuilt']:
+        SubflowResults[2] = 5
+    else:
+        SubflowResults[2] = 1
+
+flow MoveMuseum(ItemPrice: int = 0):
+    SubflowResults[3] = 1
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:013', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        EventFlowSystemActor.NpcEventItemSet(5361, 'cTalk', 0, ItemPrice)
+        run CheckBellPocket(Type=8)
+        EventFlowSystemActor.SetItemToPocket(5361, 1)
+        EventFlowSystemActor.StructureMoveSaveIndex(0)
+        System.EventFlags['cLand:RcoMoveReservedAnyone'] = 1
+        System.EventFlags['cLand:RcoMoveReservedKind'] = 3
+        System.EventFlags['cPlayer:RcoMoveSomeBuiding'] = true
+        EventFlowSystemActor.UIMoneyDisappear()
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        run MoveSelCancel()
+
+flow MoveNPCHouse(ItemPrice: int = 0):
+    SubflowResults[3] = 0
+    if Player.HasNoAcquaintance():
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:034_01', false)
+        EventFlowSystemActor.UIMoneyDisappear()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:011', false)
+        EventFlowSystemActor.UIMsgCardAdrHandling('cNpcRemoval')
+        if EventFlowSystemActor.UIResultMenuDecide():
+            EventFlowSystemActor.SetTagFromUIResult('cSelectNpcName', 0)
+            if EventFlowSystemActor.IsSelectedNpcMoveInToday():
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:033', false)
+                EventFlowSystemActor.UIMoneyDisappear()
+            elif EventFlowSystemActor.IsSelectedNpcMoveOutDecided():
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:034', false)
+                EventFlowSystemActor.UIMoneyDisappear()
+            elif EventFlowSystemActor.IsUISelectNpcSick():
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:034_02', false)
+                EventFlowSystemActor.UIMoneyDisappear()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:011_01', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run CheckBellPocket(Type=6)
+                    EventFlowSystemActor.UpdateUISelectedNpcLastTalkDate()
+                    EventFlowSystemActor.SetMovingItemNNPCToPokect()
+                    EventFlowSystemActor.StructureMoveSaveIndex(0)
+                    EventFlowSystemActor.StructureMoveSaveIndex(1)
+                    EventFlowSystemActor.NpcQuitMoveOutProposal()
+                    System.EventFlags['cLand:RcoMoveReservedAnyone'] = 1
+                    System.EventFlags['cLand:RcoMoveReservedKind'] = 2
+                    System.EventFlags['cPlayer:RcoMoveSomeBuiding'] = true
+                    EventFlowSystemActor.UIMoneyDisappear()
+                    EventFlowSystemActor.ExitFlowchart()
+                else:
+                    run MoveSelCancel()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:004', false)
+            EventFlowSystemActor.UIMoneyDisappear()
+
+flow MoveSelCancel():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:003', false)
+    EventFlowSystemActor.UIMoneyDisappear()
+
+flow MoveShop(ItemPrice: int = 0):
+    SubflowResults[3] = 2
+    if (not System.EventFlags['cLand:MarketRemodelingFlag2']) and (not System.EventFlags['cLand:MarketConstruction2']):
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:012', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            EventFlowSystemActor.NpcEventItemSet(5360, 'cTalk', 0, ItemPrice)
+            run CheckBellPocket(Type=7)
+            EventFlowSystemActor.SetItemToPocket(5360, 1)
+            EventFlowSystemActor.StructureMoveSaveIndex(0)
+            System.EventFlags['cLand:RcoMoveReservedAnyone'] = 1
+            System.EventFlags['cLand:RcoMoveReservedKind'] = 4
+            System.EventFlags['cPlayer:RcoMoveSomeBuiding'] = true
+            EventFlowSystemActor.UIMoneyDisappear()
+            EventFlowSystemActor.ExitFlowchart()
+        else:
+            run MoveSelCancel()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:035', false)
+        EventFlowSystemActor.UIMoneyDisappear()
+
+flow MoveTailor(ItemPrice: int = 0):
+    SubflowResults[3] = 3
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:014', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        EventFlowSystemActor.NpcEventItemSet(5359, 'cTalk', 0, ItemPrice)
+        run CheckBellPocket(Type=9)
+        EventFlowSystemActor.SetItemToPocket(5359, 1)
+        EventFlowSystemActor.StructureMoveSaveIndex(0)
+        System.EventFlags['cLand:RcoMoveReservedAnyone'] = 1
+        System.EventFlags['cLand:RcoMoveReservedKind'] = 5
+        System.EventFlags['cPlayer:RcoMoveSomeBuiding'] = true
+        EventFlowSystemActor.UIMoneyDisappear()
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        run MoveSelCancel()
+
+flow PreProposalMoveHouse(Type: int):
+    EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 1.0, 1.0, true)
+    EventFlowSystemActor.SoundDuckingOn(71)
+    Player.PlayerChangeDemoState('cSharePlaySubHideUntilDemoEnd')
+    EventFlowSystemActor.SetupActorPosition(Type)
+    EventFlowSystemActor.CameraSetDemoParam('LandReadjust', '', 'Npc:rco', false, false, false, 0)
+    Player.TurnNeck(11, false)
+    Player.TurnBody(12, 45.0)
+    MainNpc.TurnNeck(11, false)
+    MainNpc.TurnBody(12, 0.0)
+    DynamicCast_LandReadjustNpc.TurnNeck(11, false)
+    MainNpc.SmartPhone(3)
+    MainNpc.SmartPhone(1)
+    MainNpc.NpcAISetting(4, false)
+    EventFlowSystemActor.FadeIn(true)
+
+flow ProposalMoveHouse():
+    MainNpc.TurnNeck(1, false)
+    switch SubflowResults@5[3]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:051', false)
+            DynamicCast_LandReadjustNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_Office:001', false)
+            run Sub_Event178()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:053', false)
+            DynamicCast_LandReadjustNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:062', false)
+            run Sub_Event178()
+        case 2:
+            DynamicCast_LandReadjustNpc.SetNpcName(0, 0)
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:052', false)
+            DynamicCast_LandReadjustNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:061', false)
+            run Sub_Event178()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:054', false)
+            DynamicCast_LandReadjustNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:063', false)
+            run Sub_Event178()
+        default:
+            return
+
+flow Root():
+    EventFlowSystemActor.UIMoneyAppear()
+    run SNPC_rco_10_Common_Move::MoveBuildStateChk()
+    run SNPC_rco_10_Common_Move::MoveBuildKindChk()
+    switch SubflowResults@3[0]:
+        case 0:
+            run SelectBuilding()
+        case 1:
+            if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+                switch SubflowResults@7[1]:
+                    case 1:
+                        run SNPC_rco_10_Common_Move::MoveBuildError()
+                    case 2, 3, 4, 5, 6:
+                        run HaveMoveHousingKit()
+                    default:
+                        return
+            else:
+                run SNPC_rco_10_Common_Move::MoveBuildError()
+        case 2:
+            run SNPC_rco_10_Common_Move::MoveBuildError()
+
+flow SelectBuilding():
+    EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 0, 10000, '')
+    if System.EventFlags['cPlayer:RcoTalkAboutMoveBuilding']:
+        run Sub_Event2()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:001', false)
+        System.EventFlags['cPlayer:RcoTalkAboutMoveBuilding'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:001_00_01', false)
+        if not System.EventFlags['cPlayer:RcoTalkAboutMoveMyHome']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:001_00_02', false)
+            System.EventFlags['cPlayer:RcoTalkAboutMoveMyHome'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:001_01', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Sub_Event2()
+        else:
+            run MoveSelCancel()
+
+local flow Sub_Event170(Type: int):
+    MainNpc.SmartPhone(0)
+    MainNpc.SmartPhone(4)
+    EventFlowSystemActor.WaitFrame(10)
+    MainNpc.SmartPhoneSE(2, 'Phone_Control')
+    EventFlowSystemActor.WaitFrame(10)
+    MainNpc.SmartPhone(2)
+    run PreProposalMoveHouse(Type=Type)
+    run ProposalMoveHouse()
+
+local flow Sub_Event178():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:071', true)
+    Player.CharacterEmoticonAction('Assent', true, '', 0, false)
+    EventFlowSystemActor.WaitFrame(45)
+    EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 1.0, 1.0, true)
+    EventFlowSystemActor.SoundDuckingOff(71)
+    DynamicCast_LandReadjustNpc.NpcReservrForErase()
+    MainNpc.NpcAISetting(4, true)
+    MainNpc.TurnNeck(10, false)
+    Player.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+    Player.TurnBody(0, 0.0)
+    fork:
+        branch:
+            Player.PlayerWaitTurn()
+        branch:
+            EventFlowSystemActor.WaitFrame(20)
+    EventFlowSystemActor.FadeIn(true)
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:081', false)
+    EventFlowSystemActor.BellCountDown(10000, true)
+    System.EventFlags['cPlayer:RcoBuildMovingPurchase_v200'] = true
+    switch SubflowResults@5[3]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:082', false)
+        case 1, 2, 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:082_01', false)
+        default:
+            return
+
+local flow Sub_Event18():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:111', false)
+    if System.EventFlags['cPlayer:RcoBuildMovingPurchase_v200']:
+        EventFlowSystemActor.BellCountDown(10000, false)
+    else:
+        EventFlowSystemActor.BellCountDown(50000, false)
+    switch SubflowResults@7[1]:
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:112', false)
+            run Sub_Event24()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:112_01', false)
+            run Sub_Event24()
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:112_02', false)
+            run Sub_Event24()
+        case 5:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:112_03', false)
+            run Sub_Event24()
+        case 6:
+            run Sub_Event24()
+        default:
+            return
+
+local flow Sub_Event2():
+    run MoveFacilityChk()
+    switch SubflowResults@8[2]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:1000', false)
+            switch EventFlowSystemActor.GeneralTalkChoice3():
+                case 0:
+                    run MoveNPCHouse()
+                case 1:
+                    run MoveShop()
+                case 2:
+                    run MoveSelCancel()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:1001', false)
+            switch EventFlowSystemActor.GeneralTalkChoice4():
+                case 0:
+                    run MoveNPCHouse()
+                case 1:
+                    run MoveShop()
+                case 2:
+                    run MoveMuseum()
+                case 3:
+                    run MoveSelCancel()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:1002', false)
+            switch EventFlowSystemActor.GeneralTalkChoice4():
+                case 0:
+                    run MoveNPCHouse()
+                case 1:
+                    run MoveShop()
+                case 2:
+                    run MoveTailor()
+                case 3:
+                    run MoveSelCancel()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:1003', false)
+            switch EventFlowSystemActor.GeneralTalkChoice4():
+                case 0:
+                    run MoveNPCHouse()
+                case 1:
+                    run MoveShop()
+                case 2:
+                    run MoveCampSite()
+                case 3:
+                    run MoveSelCancel()
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:1004', false)
+            switch EventFlowSystemActor.GeneralTalkChoice5():
+                case 0:
+                    run MoveNPCHouse()
+                case 1:
+                    run MoveShop()
+                case 2:
+                    run MoveMuseum()
+                case 3:
+                    run MoveTailor()
+                case 4:
+                    run MoveSelCancel()
+        case 5:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:1005', false)
+            switch EventFlowSystemActor.GeneralTalkChoice5():
+                case 0:
+                    run MoveNPCHouse()
+                case 1:
+                    run MoveShop()
+                case 2:
+                    run MoveMuseum()
+                case 3:
+                    run MoveCampSite()
+                case 4:
+                    run MoveSelCancel()
+        case 6:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:1006', false)
+            switch EventFlowSystemActor.GeneralTalkChoice5():
+                case 0:
+                    run MoveNPCHouse()
+                case 1:
+                    run MoveShop()
+                case 2:
+                    run MoveTailor()
+                case 3:
+                    run MoveCampSite()
+                case 4:
+                    run MoveSelCancel()
+        case 7:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:1007', false)
+            switch EventFlowSystemActor.GeneralTalkChoice6():
+                case 0:
+                    run MoveNPCHouse()
+                case 1:
+                    run MoveShop()
+                case 2:
+                    run MoveMuseum()
+                case 3:
+                    run MoveTailor()
+                case 4:
+                    run MoveCampSite()
+                case 5:
+                    run MoveSelCancel()
+
+local flow Sub_Event24():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:112_04', false)
+    System.EventFlags['cLand:RcoMoveReservedAnyone'] = 0
+    System.EventFlags['cLand:RcoMoveReservedKind'] = 0
+    System.EventFlags['cPlayer:RcoMoveSomeBuiding'] = false
+    EventFlowSystemActor.StructureMoveSaveIndex(2)
+    EventFlowSystemActor.UIMoneyDisappear()
+
+local flow Sub_grp_Event21():
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        switch SubflowResults@7[1]:
+            case 2:
+                EventFlowSystemActor.DeleteTargetItem(5357, 1, false)
+                run Sub_Event18()
+            case 3:
+                EventFlowSystemActor.DeleteTargetItem(5361, 1, false)
+                run Sub_Event18()
+            case 4:
+                EventFlowSystemActor.DeleteTargetItem(5360, 1, false)
+                run Sub_Event18()
+            case 5:
+                EventFlowSystemActor.DeleteTargetItem(5359, 1, false)
+                run Sub_Event18()
+            case 6:
+                EventFlowSystemActor.DeleteTargetItem(6841, 1, false)
+                run Sub_Event18()
+            default:
+                return
+    else:
+        switch SubflowResults@7[1]:
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:113', false)
+                EventFlowSystemActor.UIMoneyDisappear()
+            case 3, 4, 5, 6:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_13_Infra_MoveStructure:113_01', false)
+                EventFlowSystemActor.UIMoneyDisappear()
+            default:
+                return
+

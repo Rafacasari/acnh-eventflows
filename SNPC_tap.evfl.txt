@@ -1,0 +1,907 @@
+flow About_DiscloseLeaveTap():
+    if System.EventFlags['cLand:IsDisclosedMyDream']:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3500', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            SubflowResults[4] = 0
+            SubflowResults[5] = 0
+        else:
+            SubflowResults[4] = 1
+            SubflowResults[5] = 1
+    else:
+        if System.EventFlags['cLand:IsUploadDisclosedMyDream']:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3506', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                SubflowResults[4] = 1
+                SubflowResults[5] = 2
+            else:
+                SubflowResults[4] = 0
+                SubflowResults[5] = 2
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3501', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                SubflowResults[4] = 1
+                SubflowResults[5] = 0
+            else:
+                SubflowResults[4] = 0
+                SubflowResults[5] = 1
+    run Change_DiscloseLeaveTap()
+
+flow About_MyDream():
+    EventFlowSystemActor.SetTagFromSystem('cCurrentDreamingAddress', 'cDegit', 0, 0, '')
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3002', false)
+entrypoint Event494:
+    switch EventFlowSystemActor.GeneralTalkChoice5():
+        case 0:
+            run Update_Dream()
+        case 1:
+            run About_PublishNo()
+        case 2:
+            run About_DiscloseLeaveTap()
+        case 3:
+            run Delete_Dream()
+        case 4:
+            run ReturnSelect()
+
+flow About_PublishNo():
+    if System.EventFlags['cPlayer:TapDiscloseDreamLandID']:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3401', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Stay_PublishNo()
+        else:
+            System.EventFlags['cPlayer:TapDiscloseDreamLandID'] = false
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3404', false)
+            EventFlowSystemActor.SaveSimpleSave('cAll')
+            run Return_About_MyDream()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3402', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Stay_PublishNo()
+        else:
+            System.EventFlags['cPlayer:TapDiscloseDreamLandID'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3405', false)
+            EventFlowSystemActor.SaveSimpleSave('cAll')
+            run Return_About_MyDream()
+
+flow AskRetrySearch():
+    if System.EventFlags['cPlayer:TapUnlockFavorite']:
+        run ReturnSelectSearchMode()
+    elif System.EventFlags['cPlayer:TapUnlockLeaveTap']:
+        run ReturnSelectMenuNoFavoriteLlist()
+    else:
+        run ReturnInputNo()
+
+flow Caution_Parental():
+    switch SubflowResults@3[1]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1041', false)
+            run ReturnSelect()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2041', false)
+            run ReturnSelect()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3341', false)
+            run Return_About_MyDream()
+
+flow Change_DiscloseLeaveTap():
+    if SubflowResults@2[4] == 0:
+        switch SubflowResults@3[5]:
+            case 0:
+                System.EventFlags['cLand:IsDisclosedMyDream'] = false
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3503', false)
+                run RunSetting()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3505', false)
+                run RunSetting()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3505', false)
+                run OnlySaveSetting()
+    else:
+        switch SubflowResults@3[5]:
+            case 0:
+                System.EventFlags['cLand:IsDisclosedMyDream'] = true
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3504', false)
+entrypoint Event559:
+                run Send_DiscloseSetting()
+entrypoint Event460:
+                EventFlowSystemActor.SaveSimpleSave('cAll')
+                run Return_About_MyDream()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3502', false)
+                run RunSetting()
+            case 2:
+                System.EventFlags['cLand:IsDisclosedMyDream'] = true
+                System.EventFlags['cLand:IsUploadDisclosedMyDream'] = false
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3504', false)
+                run ShortCutFirstLeaveTapUpload()
+                run Return_About_MyDream()
+
+flow CloseLeaveTap():
+    run Event469()
+
+flow ConnectionMsg_End():
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.MessageUnlockNext()
+
+flow ConnectionMsg_Save():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:001', false)
+    EventFlowSystemActor.SaveSimpleSave('cAll')
+
+flow ConnectionMsg_Start():
+    EventFlowSystemActor.MessageLockNext(1)
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Network:001', false)
+
+flow DLStart_FavoriteList():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1006', false)
+    Player.PlayerStartAnimeBedWait()
+    EventFlowSystemActor.ChangeSwitchIdrDreamAromaPot(true)
+    run ConnectionMsg_Start()
+    switch SubflowResults@4[2]:
+        case 0:
+            run DownloadDream_FavoriteList()
+        case 1:
+            run SearchDream_FavoriteList()
+        case 2:
+            run SearchDream_LeaveTap()
+        case 3:
+            run DownloadDream_SearchByIslandName()
+
+flow DLStart_LeaveTap():
+    run DLStart_FavoriteList()
+
+flow DLStart_SearchByIslandName():
+    run DLStart_FavoriteList()
+
+flow DL_NetErrorOccur():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1032', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+        run ReturnSelect()
+    elif System.EventFlags['cPlayer:TapUnlockFavorite']:
+        run ReturnSelectSearchMode()
+    else:
+        run ReturnSelectMenuNoFavoriteLlist()
+
+flow Delete_Dream():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3301', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run Return_Delete()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3306', false)
+        run Return_About_MyDream()
+
+flow Delete_NetErrorOccur():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3331', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run Return_Delete()
+    else:
+        run Return_About_MyDream()
+
+flow DownloadDream_FavoriteList():
+    EventFlowSystemActor.NetDownloadDream()
+    run ConnectionMsg_End()
+    if EventFlowSystemActor.CheckErrorType(2):
+        EventFlowSystemActor.ChangeSwitchIdrDreamAromaPot(false)
+        Player.PlayerStartAnimeBedWaitWithHandsClaspedOpenEyes()
+        run DL_NetErrorOccur()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1006_01', true)
+        EventFlowSystemActor.CameraReserveFirstStateCommand('Demo:InDreamZoomIn', '', false)
+        EventFlowSystemActor.CameraSetDemoParam('InIdrDreamZoomIn', 'InIdrDreamZoomInOut', 'Player', false, false, false, 0)
+        EventFlowSystemActor.TapSmoke('cIdrDreamSmoke')
+        EventFlowSystemActor.WaitFrame(90)
+        EventFlowSystemActor.NextLPFadeOff()
+        EventFlowSystemActor.SystemBGMVolumeFadeOut(10.0, 2, 0.0)
+        EventFlowSystemActor.SoundSceneChangeFadeOutDucking(0)
+        EventFlowSystemActor.NetGoToDream()
+        EventFlowSystemActor.SystemRequestChangeStage('cDreamDemo', 'cNormalFader', 'cNormalFader', 'cWhite', 0.10000000149011612, 1.0)
+
+flow DownloadDream_LeaveTapList():
+    run DownloadDream_FavoriteList()
+
+flow DownloadDream_SearchByIslandName():
+    run DownloadDream_FavoriteList()
+
+flow Download_Dream():
+    if System.EventFlags['cPlayer:DreamFirstExplain']:
+        run ReturnConnectInternet()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1011', false)
+        System.EventFlags['cPlayer:TapUnlockSearchByIslandName'] = true
+        System.EventFlags['cPlayer:TapUnlockLeaveTap'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1000_01', false)
+        System.EventFlags['cPlayer:DreamFirstExplain'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1001', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run ReturnConnectInternet()
+        else:
+            run ReturnSelect()
+
+flow ErrOccur_AdressGet():
+    run ConnectionMsg_End()
+    EventFlowSystemActor.DreamUploadEffect('cOff')
+    Player.PlayerStartAnimeBedWaitWithHandsClaspedOpenEyes()
+    run UL_NetErrorOccur()
+
+flow Error_MyIslandDream():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1033', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run AskRetrySearch()
+    else:
+        run ReturnSelect()
+
+flow Error_NotFound():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1057', false)
+    run Event69()
+
+flow Error_NotGotDream():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1063', false)
+    run Event69()
+
+flow Error_NotGotSearched():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1076', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run ReturnToSearchByIslandName()
+    else:
+        run ReturnSelect()
+
+flow Exit_ThisScene():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:003', true)
+    EventFlowSystemActor.NextLPFadeOff()
+    EventFlowSystemActor.SystemBGMVolumeFadeOut(4.5, 0, 0.0)
+    EventFlowSystemActor.SoundSceneChangeFadeOutDucking(1)
+    EventFlowSystemActor.FadeOut('cDream', 'cDream', 'cBlack', 1.0, 1.0, true)
+    EventFlowSystemActor.SystemRequestChangeStage('cDreamDemo', 'cDream', 'cDream', 'cBlack', 1.0, 1.0)
+
+flow ExplainSearchByIslandName():
+    if not System.EventFlags['cPlayer:TapUnlockSearchByIslandName']:
+        if SubflowResults@2[6] == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1074_01', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1074_02', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1074_03', false)
+        System.EventFlags['cPlayer:TapUnlockSearchByIslandName'] = true
+
+flow FavoriteList_Error_Cmn():
+    run ConnectionMsg_End()
+    EventFlowSystemActor.ChangeSwitchIdrDreamAromaPot(false)
+    Player.PlayerStartAnimeBedWaitWithHandsClaspedOpenEyes()
+
+flow FirstLeaveTapSetting():
+    if not System.EventFlags['cPlayer:TapUnlockLeaveTap']:
+        switch SubflowResults@4[3]:
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1060', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1066', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    System.EventFlags['cLand:IsDisclosedMyDream'] = true
+                    run FirstLeaveTapUpload()
+                    System.EventFlags['cPlayer:TapUnlockLeaveTap'] = true
+                else:
+entrypoint Event469:
+                    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1070', false)
+                    System.EventFlags['cLand:IsUploadDisclosedMyDream'] = true
+                    System.EventFlags['cLand:IsDisclosedMyDream'] = false
+                    EventFlowSystemActor.SaveSimpleSave('cAll')
+                    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1071', false)
+                    System.EventFlags['cPlayer:TapUnlockLeaveTap'] = true
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1066', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    System.EventFlags['cLand:IsDisclosedMyDream'] = true
+                    run FirstLeaveTapUpload()
+                    System.EventFlags['cPlayer:TapUnlockLeaveTap'] = true
+                else:
+entrypoint Event469:
+                    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1070', false)
+                    System.EventFlags['cLand:IsUploadDisclosedMyDream'] = true
+                    System.EventFlags['cLand:IsDisclosedMyDream'] = false
+                    EventFlowSystemActor.SaveSimpleSave('cAll')
+                    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1071', false)
+                    System.EventFlags['cPlayer:TapUnlockLeaveTap'] = true
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1060', false)
+                System.EventFlags['cPlayer:TapUnlockLeaveTap'] = true
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2100', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2101', false)
+                    System.EventFlags['cLand:IsDisclosedMyDream'] = true
+                    run UploadMetaLeaveTap()
+                    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2102', false)
+                    System.EventFlags['cPlayer:TapUnlockLeaveTap'] = true
+                else:
+                    run CloseLeaveTap()
+
+flow FirstLeaveTapUpload():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1067', false)
+    run ShortCutFirstLeaveTapUpload()
+
+flow FirstLeaveTapUploadError():
+    run ConnectionMsg_End()
+    EventFlowSystemActor.DreamUploadEffect('cOff')
+    Player.PlayerStartAnimeBedWaitWithHandsClaspedOpenEyes()
+    if EventFlowSystemActor.YMD(2061, 1, 1, 'cNowTime') == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2103', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3133', false)
+
+flow Go_About_MyDream5():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3002_02', false)
+    run Event494()
+
+flow LeaveTap_Error_Cmn():
+    run FavoriteList_Error_Cmn()
+
+flow Network_Signin():
+    EventFlowSystemActor.CheckFreeCommunication(true)
+    if EventFlowSystemActor.IsApprovedFreeCommunication():
+        run System_ServerRegistration::UserRegist(WithLogin=false, Terminate=false, WithSave=true)
+    else:
+        run Caution_Parental()
+
+flow Network_Signin_SkipSave():
+    EventFlowSystemActor.CheckFreeCommunication(true)
+    if EventFlowSystemActor.IsApprovedFreeCommunication():
+        run System_ServerRegistration::UserRegist(WithLogin=false, Terminate=false, WithSave=false)
+    else:
+        run Caution_Parental()
+
+flow OnlySaveSetting():
+    run Event460()
+
+flow Receive_Explanation():
+    System.EventFlags['cPlayer:TapSelWhereAreHere'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:4000', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:4001', false)
+entrypoint Event209:
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:4002', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:4002_00', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:4011', false)
+            run Return_Select_Explanation()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:4003', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:4003_01', false)
+            if System.EventFlags['cPlayer:MyDesignExchangeFirstAccess']:
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:4003_02', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:4003_03', false)
+            run Return_Select_Explanation()
+        case 2:
+            run ReturnSelect()
+
+flow ReturnConnectInternet():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1002', false)
+    SubflowResults[1] = 0
+    run Network_Signin()
+    if SubflowResults@2[0] != 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1032', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run ReturnConnectInternet()
+        else:
+            run ReturnSelect()
+    elif System.EventFlags['cPlayer:TapUnlockFavorite']:
+        run ReturnSelectSearchMode()
+    elif EventFlowSystemActor.NetHasDreamLogList():
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1051', false)
+        System.EventFlags['cPlayer:TapUnlockFavorite'] = true
+        run ReturnSelectSearchMode()
+    else:
+        run ReturnSelectMenuNoFavoriteLlist()
+
+flow ReturnInputNo():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1003', false)
+    EventFlowSystemActor.UISoftwareKeyboardHandling('cDreamSearchAddressId', true)
+    if not EventFlowSystemActor.UIResultMenuDecide():
+        if System.EventFlags['cPlayer:TapUnlockFavorite']:
+            run ReturnSelectSearchMode()
+        else:
+            run ReturnSelect()
+    elif EventFlowSystemActor.IsMatchedOwnDreamIdAndInputDreamId():
+        run Error_MyIslandDream()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1004', false)
+        run ConnectionMsg_Start()
+        EventFlowSystemActor.NetSearchDream('cDreamID')
+        run ConnectionMsg_End()
+        if EventFlowSystemActor.CheckErrorType(2):
+            run DL_NetErrorOccur()
+        elif EventFlowSystemActor.NetIsFoundDreamLand('cDreamID'):
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1005', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run DLStart_FavoriteList()
+            else:
+                run AskRetrySearch()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1031', false)
+entrypoint Event69:
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run AskRetrySearch()
+            else:
+                run ReturnSelect()
+
+flow ReturnIslandNameSearchList():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1009', false)
+    run Event614()
+
+flow ReturnSelect():
+    if (System.EventFlags['cLand:EnableMyDream']) and (System.EventFlags['cPlayer:TapULFirstExplain']):
+        run ReturnSelect_HaveMyDream()
+    else:
+        run ReturnSelect_NoMyDream()
+
+flow ReturnSelectMenuNoFavoriteLlist():
+    SubflowResults[6] = 1
+    run ExplainSearchByIslandName()
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1073', false)
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            SubflowResults[2] = 0
+            run ReturnInputNo()
+        case 1:
+            SubflowResults[2] = 3
+            run ReturnToSearchByIslandName()
+        case 2:
+            SubflowResults[2] = 2
+            run ReturnToLeaveTap()
+        case 3:
+            run ReturnSelect()
+
+flow ReturnSelectMenuWithFavoriteLlist():
+    SubflowResults[6] = 0
+    run ExplainSearchByIslandName()
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1072', false)
+    switch EventFlowSystemActor.GeneralTalkChoice5():
+        case 0:
+            SubflowResults[2] = 0
+            run ReturnInputNo()
+        case 1:
+            SubflowResults[2] = 3
+            run ReturnToSearchByIslandName()
+        case 2:
+            SubflowResults[2] = 2
+            run ReturnToLeaveTap()
+        case 3:
+            SubflowResults[2] = 1
+            run ReturnShowFavoriteList()
+        case 4:
+            run ReturnSelect()
+
+flow ReturnSelectSearchMode():
+    SubflowResults[3] = 0
+    run FirstLeaveTapSetting()
+    run ReturnSelectMenuWithFavoriteLlist()
+
+flow ReturnSelect_HaveMyDream():
+    if System.EventFlags['cPlayer:TapSelWhereAreHere']:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:002_07', false)
+        run Event42()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:002_03', false)
+        run Event42()
+
+flow ReturnSelect_NoMyDream():
+    if System.EventFlags['cPlayer:TapSelWhereAreHere']:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:002_06', false)
+        run Event3()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:002_02', false)
+        run Event3()
+
+flow ReturnShowFavoriteList():
+    if EventFlowSystemActor.NetHasDreamLogList():
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1055', false)
+        EventFlowSystemActor.UIDreamFavoriteListHandling()
+        if not EventFlowSystemActor.UIResultMenuDecide():
+            run ReturnSelectSearchMode()
+        elif EventFlowSystemActor.UIIsMyDreamIDFromList():
+            run Error_MyIslandDream()
+        else:
+            EventFlowSystemActor.SetTagFromUIResult('cDreamingListTownName', 0)
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1056', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run DLStart_FavoriteList()
+            else:
+                run ReturnShowFavoriteList()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1077', false)
+        run ReturnSelectSearchMode()
+
+flow ReturnToLeaveTap():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1062', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run DLStart_LeaveTap()
+    elif System.EventFlags['cPlayer:TapUnlockFavorite']:
+        run ReturnSelectMenuWithFavoriteLlist()
+    else:
+        run ReturnSelectMenuNoFavoriteLlist()
+
+flow ReturnToSearchByIslandName():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1075', false)
+    EventFlowSystemActor.UISoftwareKeyboardHandling('cDreamSearchIslandName', true)
+    EventFlowSystemActor.SetTagFromUIResult('cLandNameFromSwkbd', 0)
+    if EventFlowSystemActor.UIResultMenuDecide():
+        EventFlowSystemActor.SetTagFromUIResult('cLandNameFromSwkbd', 0)
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1007', false)
+        run ConnectionMsg_Start()
+        EventFlowSystemActor.NetSearchDream('cLandName')
+        run ConnectionMsg_End()
+        if EventFlowSystemActor.CheckErrorType(2):
+            run SearchByIslandName_Error_Cmn()
+            run DL_NetErrorOccur()
+        elif EventFlowSystemActor.NetIsFoundDreamLand('cLandName'):
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1007_01', false)
+entrypoint Event614:
+            EventFlowSystemActor.UIDreamIslandSearchResultHandling()
+            if EventFlowSystemActor.UIResultMenuDecide():
+                EventFlowSystemActor.SetTagFromUIResult('cDreamSearchLandName', 0)
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1008', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run DLStart_SearchByIslandName()
+                else:
+                    run ReturnIslandNameSearchList()
+            else:
+                run ReturnSelectSearchMode()
+        else:
+            run SearchByIslandName_Error_Cmn()
+            run Error_NotGotSearched()
+    elif System.EventFlags['cPlayer:TapUnlockFavorite']:
+        run ReturnSelectSearchMode()
+    else:
+        run ReturnSelect()
+
+flow ReturnUpload():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2004', false)
+    SubflowResults[1] = 1
+    run Network_Signin_SkipSave()
+    if SubflowResults@2[0] == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2005', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2005_01', false)
+        Player.PlayerStartAnimeBedWait()
+        EventFlowSystemActor.DreamUploadEffect('cOn')
+        run ConnectionMsg_Start()
+        if EventFlowSystemActor.HasDreamID():
+            run UploadMyDream()
+        else:
+            EventFlowSystemActor.GetDreamID()
+            if EventFlowSystemActor.CheckErrorType(2):
+                run ErrOccur_AdressGet()
+            else:
+                run UploadMyDream()
+    else:
+        run UL_NetErrorOccur()
+
+flow Return_About_MyDream():
+    run Go_About_MyDream5()
+
+flow Return_Delete():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3304', false)
+    SubflowResults[1] = 2
+    run Network_Signin_SkipSave()
+    if SubflowResults@2[0] == 0:
+        EventFlowSystemActor.MessageLockNext(1)
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:008', false)
+        fork:
+            branch:
+                EventFlowSystemActor.NetDeleteDream()
+            branch:
+                EventFlowSystemActor@wait.WaitFrame(60)
+        if EventFlowSystemActor.CheckErrorType(2):
+            run ConnectionMsg_End()
+            run Delete_NetErrorOccur()
+        else:
+            System.EventFlags['cPlayer:TapDreamDeleteToday'] = true
+            System.EventFlags['cLand:EnableMyDream'] = false
+            System.EventFlags['cLand:IsDisclosedMyDream'] = false
+            System.EventFlags['cPlayer:TapSendThankyouLetter'] = false
+            run ConnectionMsg_Save()
+            run ConnectionMsg_End()
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3305', false)
+            run ReturnSelect()
+    else:
+        run Delete_NetErrorOccur()
+
+flow Return_Select_Explanation():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:4001_01', false)
+    run Event209()
+
+flow Return_Update_MyDream():
+    run Event127()
+
+flow Root():
+    EventFlowSystemActor.CameraSetDemoParam('InIdrDreamZoomOut', '', 'Player', false, false, false, 0)
+    Player.TurnNeck(11, false)
+    if System.EventFlags['cLandTemp:TapIndoorPos']:
+        EventFlowSystemActor.WaitFrame(20)
+        Player.PlayerStartAnimeBedWaitWithHandsClaspedOpenEyes()
+        EventFlowSystemActor.WaitFrame(10)
+        run Sub_grp_Event10()
+    else:
+        EventFlowSystemActor.WaitFrame(30)
+        MainNpc.NpcChangeNameStatus(1)
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:001', true)
+        fork:
+            branch:
+                MainNpc.NpcChangeHeadCtrlMode('cNoLook', true)
+                MainNpc.NpcRailMove(0, false, false, 0, 1, 0)
+                MainNpc.TurnBody(12, 60.0)
+                MainNpc.NpcWaitTurn()
+            branch:
+                EventFlowSystemActor.WaitFrame(30)
+                EventFlowSystemActor.WaitFrame(120)
+                Player.PlayerStartAnimeBedWaitWithHandsClaspedOpenEyes()
+        run Sub_grp_Event10()
+
+flow RunSetting():
+    run Event559()
+
+flow SearchByIslandName_Error_Cmn():
+    run FavoriteList_Error_Cmn()
+
+flow SearchDream_FavoriteList():
+    EventFlowSystemActor.NetSearchDream('cLogList')
+    if EventFlowSystemActor.CheckErrorType(2):
+        run FavoriteList_Error_Cmn()
+        run DL_NetErrorOccur()
+    elif EventFlowSystemActor.NetIsFoundDreamLand('cLogList'):
+        run DownloadDream_FavoriteList()
+    else:
+        run FavoriteList_Error_Cmn()
+        run Error_NotFound()
+
+flow SearchDream_LeaveTap():
+    EventFlowSystemActor.NetSearchDream('cAutoDefault')
+    if EventFlowSystemActor.CheckErrorType(2):
+        run LeaveTap_Error_Cmn()
+        run DL_NetErrorOccur()
+    elif EventFlowSystemActor.NetIsFoundDreamLand('cAutoDefault'):
+        run DownloadDream_LeaveTapList()
+    else:
+        EventFlowSystemActor.NetSearchDream('cAutoAll')
+        if EventFlowSystemActor.CheckErrorType(2):
+            run LeaveTap_Error_Cmn()
+            run DL_NetErrorOccur()
+        elif EventFlowSystemActor.NetIsFoundDreamLand('cAutoAll'):
+            run DownloadDream_LeaveTapList()
+        else:
+            run LeaveTap_Error_Cmn()
+            run Error_NotGotDream()
+
+flow Send_DiscloseSetting():
+    run UploadMetaLeaveTap()
+
+flow ShortCutFirstLeaveTapUpload():
+    SubflowResults[1] = 1
+    run Network_Signin_SkipSave()
+    if SubflowResults@2[0] == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3103', false)
+        Player.PlayerStartAnimeBedWait()
+        EventFlowSystemActor.DreamUploadEffect('cOn')
+        run ConnectionMsg_Start()
+        EventFlowSystemActor.NetUploadDream()
+        if EventFlowSystemActor.CheckErrorType(2):
+            run FirstLeaveTapUploadError()
+        else:
+            run ConnectionMsg_Save()
+            run ConnectionMsg_End()
+            EventFlowSystemActor.DreamUploadEffect('cOff')
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1068', false)
+            Player.PlayerStartAnimeBedWaitWithHandsClaspedOpenEyes()
+            EventFlowSystemActor.SetTagFromSystem('cCurrentDreamingAddress', 'cDegit', 0, 0, '')
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:1069', false)
+    else:
+        run FirstLeaveTapUploadError()
+
+flow Stay_PublishNo():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3403', false)
+    run Return_About_MyDream()
+
+local flow Sub_grp_Event10():
+    if System.EventFlags['cPlayer:TapDreamFirstTalk']:
+        if System.EventFlags['cPlayer:TapDreamTalkToday']:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:001_06', false)
+        else:
+            System.EventFlags['cPlayer:TapDreamTalkToday'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:001_05', false)
+        if (System.EventFlags['cLand:EnableMyDream']) and (EventFlowSystemActor.NetIsDreamUploader()):
+            SubflowResults[3] = 0
+        else:
+            SubflowResults[3] = 2
+        run FirstLeaveTapSetting()
+    else:
+        System.EventFlags['cPlayer:TapDreamFirstTalk'] = true
+        System.EventFlags['cPlayer:TapDreamTalkToday'] = true
+        System.EventFlags['cPlayer:TapUpdatedDreamFirstTalk'] = true
+        EventFlowSystemActor.WaitFrame(10)
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:001_01', false)
+        switch EventFlowSystemActor.GeneralTalkChoice2():
+            case 0, 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:001_02', true)
+                switch EventFlowSystemActor.GeneralTalkChoice2():
+                    case 0, 1:
+                        MainNpc.NpcChangeNameStatus(0)
+                        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:001_03', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:001_04', false)
+    if (System.EventFlags['cLand:EnableMyDream']) and (System.EventFlags['cPlayer:TapULFirstExplain']):
+        if System.EventFlags['cPlayer:TapSelWhereAreHere']:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:002_05', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:002_01', false)
+entrypoint Event42:
+        switch EventFlowSystemActor.GeneralTalkChoice4():
+            case 0:
+                run Download_Dream()
+            case 1:
+                run About_MyDream()
+            case 2:
+                run Receive_Explanation()
+            case 3:
+                run Exit_ThisScene()
+    else:
+        if System.EventFlags['cPlayer:TapSelWhereAreHere']:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:002_04', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:002', false)
+entrypoint Event3:
+        switch EventFlowSystemActor.GeneralTalkChoice4():
+            case 0:
+                run Download_Dream()
+            case 1:
+                run Upload_Dream()
+            case 2:
+                run Receive_Explanation()
+            case 3:
+                run Exit_ThisScene()
+
+flow UGCNotice():
+    if EventFlowSystemActor.PlayerVillagerCount(2):
+        MainNpc.OpenMessageWindow('Dialog/DIALOG_Msg:0831', true)
+    else:
+        MainNpc.OpenMessageWindow('Dialog/DIALOG_Msg:0830', true)
+
+flow UL_NetErrorOccur():
+    if EventFlowSystemActor.YMD(2061, 1, 1, 'cNowTime') == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2031', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run ReturnUpload()
+        else:
+            run ReturnSelect()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2036', false)
+        run ReturnSelect()
+
+flow Update_Dream():
+    if System.EventFlags['cPlayer:TapDreamUploadToday']:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3132', false)
+        run Return_About_MyDream()
+    elif System.EventFlags['cPlayer:TapTalkAboutMydesignShowcase']:
+        run Update_MyDream_Step2()
+    elif System.EventFlags['cPlayer:MyDesignExchangeFirstAccess']:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2034', false)
+        System.EventFlags['cPlayer:TapTalkAboutMydesignShowcase'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2035', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Return_Update_MyDream()
+        else:
+            run ReturnSelect()
+    else:
+        run Update_MyDream_Step2()
+
+flow Update_MyDream_Step2():
+    MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3101', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+entrypoint Event127:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3102', false)
+        SubflowResults[1] = 1
+        run Network_Signin_SkipSave()
+        if SubflowResults@2[0] == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3103', false)
+            Player.PlayerStartAnimeBedWait()
+            EventFlowSystemActor.DreamUploadEffect('cOn')
+            run ConnectionMsg_Start()
+            EventFlowSystemActor.NetUploadDream()
+            if EventFlowSystemActor.CheckErrorType(2):
+                run ConnectionMsg_End()
+                EventFlowSystemActor.DreamUploadEffect('cOff')
+                Player.PlayerStartAnimeBedWaitWithHandsClaspedOpenEyes()
+                run Update_NetErrorOccur()
+            else:
+                System.EventFlags['cPlayer:TapDreamUploadToday'] = true
+                System.EventFlags['cLand:EnableMyDream'] = true
+                System.EventFlags['cPlayer:TapSendThankyouLetter'] = true
+                run ConnectionMsg_Save()
+                run ConnectionMsg_End()
+                EventFlowSystemActor.DreamUploadEffect('cOff')
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3104', false)
+                Player.PlayerStartAnimeBedWaitWithHandsClaspedOpenEyes()
+                EventFlowSystemActor.SetTagFromSystem('cCurrentDreamingAddress', 'cDegit', 0, 0, '')
+                MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3105', false)
+                run ReturnSelect()
+        else:
+            run Update_NetErrorOccur()
+    else:
+        run Return_About_MyDream()
+
+flow Update_NetErrorOccur():
+    if EventFlowSystemActor.YMD(2061, 1, 1, 'cNowTime') == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3131', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Return_Update_MyDream()
+        else:
+            run Return_About_MyDream()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:3133', false)
+        run Return_About_MyDream()
+
+flow UploadMetaLeaveTap():
+    SubflowResults[1] = 1
+    run Network_Signin()
+    if SubflowResults@2[0] == 0:
+        EventFlowSystemActor.NetUpdateDreamMeta()
+        switch EventFlowSystemActor.CheckErrorType(2):
+            default:
+                return
+
+flow UploadMyDream():
+    EventFlowSystemActor.NetUploadDream()
+    if EventFlowSystemActor.CheckErrorType(2):
+        run ErrOccur_AdressGet()
+    else:
+        System.EventFlags['cPlayer:TapDiscloseDreamLandID'] = true
+        System.EventFlags['cLand:EnableMyDream'] = true
+        System.EventFlags['cPlayer:TapDreamUploadToday'] = true
+        System.EventFlags['cPlayer:TapSendThankyouLetter'] = true
+        run ConnectionMsg_Save()
+        run ConnectionMsg_End()
+        EventFlowSystemActor.DreamUploadEffect('cOff')
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2006', false)
+        Player.PlayerStartAnimeBedWaitWithHandsClaspedOpenEyes()
+        EventFlowSystemActor.SetTagFromSystem('cCurrentDreamingAddress', 'cDegit', 0, 0, '')
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2007', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2008', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2009', false)
+        SubflowResults[3] = 3
+        System.EventFlags['cPlayer:TapUnlockLeaveTap'] = false
+        run FirstLeaveTapSetting()
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2010', false)
+        run ReturnSelect()
+
+flow Upload_Dream():
+    if System.EventFlags['cPlayer:TapDreamDeleteToday']:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2033', false)
+        run ReturnSelect()
+    elif System.EventFlags['cPlayer:TapDreamUploadToday']:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2032', false)
+        run ReturnSelect()
+    elif not System.EventFlags['cPlayer:TapULFirstExplain']:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2001', true)
+        run UGCNotice()
+        System.EventFlags['cPlayer:TapULFirstExplain'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2002', false)
+        if System.EventFlags['cPlayer:MyDesignExchangeFirstAccess']:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2002_01', false)
+            System.EventFlags['cPlayer:TapTalkAboutMydesignShowcase'] = true
+        if System.EventFlags['cLand:EnableMyDream']:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2003_01', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Return_Update_MyDream()
+            else:
+                run ReturnSelect()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2003', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run ReturnUpload()
+            else:
+                run ReturnSelect()
+    elif System.EventFlags['cPlayer:TapTalkAboutMydesignShowcase']:
+        run ReturnUpload()
+    elif System.EventFlags['cPlayer:MyDesignExchangeFirstAccess']:
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2034', false)
+        System.EventFlags['cPlayer:TapTalkAboutMydesignShowcase'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/tap/SP_tap:2035', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run ReturnUpload()
+        else:
+            run ReturnSelect()
+    else:
+        run ReturnUpload()
+

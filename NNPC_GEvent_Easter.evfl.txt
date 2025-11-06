@@ -1,0 +1,177 @@
+flow AAA():
+    if not MainNpc.EventFlags['cNpcMemory:EasterTalkOutdoorFlag']:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:110', false)
+        MainNpc.EventFlags['cNpcMemory:EasterTalkOutdoorFlag'] = true
+        EventFlowSystemActor.ExitFlowchart()
+    elif (MainNpc.HaveExchangeEgg()) and (not MainNpc.EventFlags['cNpcMemory:EasterExchangeEggFlag']) and (not ((MainNpc.EventFlags['cNpcMemory:EasterExchangeEggTalkFlag']) and (EventFlowSystemActor.PercentChoice(60)))):
+        MainNpc.EventFlags['cNpcMemory:EasterExchangeEggTalkFlag'] = true
+        run EasterNpc_ExchangeEgg()
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        run EasterNpc_Chat()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow EarthEgg():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:101', false)
+    run Sub_Event6()
+
+flow EasterNpc_Chat():
+    if MainNpc.CheckNpcTool() not in (0, 1, 2, 4, 5):
+        if EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true) in (0, 1):
+            run GeneralTalk1()
+        else:
+            run WaterEgg()
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        run GeneralTalk1()
+    elif EventFlowSystemActor.PercentChoice(10):
+        run WaterEgg()
+    else:
+        switch MainNpc.CheckNpcLook():
+            case 0:
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    run EarthEgg()
+                else:
+                    run SkyEgg()
+            case 1:
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    run WoodEgg()
+                else:
+                    run LeafEgg()
+            case 2:
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    run SkyEgg()
+                else:
+                    run LeafEgg()
+            case 3:
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    run StoneEgg()
+                else:
+                    run LeafEgg()
+            case 4:
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    run EarthEgg()
+                else:
+                    run WoodEgg()
+            case 5:
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    run StoneEgg()
+                else:
+                    run WoodEgg()
+            case 6:
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    run EarthEgg()
+                else:
+                    run StoneEgg()
+            case 7:
+                if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                    run SkyEgg()
+                else:
+                    run LeafEgg()
+
+flow EasterNpc_ExchangeEgg():
+    MainNpc.SetEasterExchangeEgg()
+    MainNpc.SetItemNameUpdate('cEasterExchangeEgg', 'cItem', 0)
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:111', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:112', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:113', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:114', false)
+        EventFlowSystemActor.UIItemSelectWindowHandling('cEasterExchangeEgg', 65534, '', '', 'cItemSelect', false)
+        if EventFlowSystemActor.UIResultMenuDecide():
+            MainNpc.SetItemName(4, 0, 1)
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:120', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                if MainNpc.EasterCanExchangeEgg():
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:121', false)
+                    MainNpc.MessageSuspend()
+                    MainNpc.SetDeliveryItem(4, false)
+                    EventFlowSystemActor.DeleteSelectUIItem(3)
+                    MainNpc.NpcDelivery(0, '"Default"')
+                    MainNpc.NpcSetRewardEasterExchangeEgg()
+                    MainNpc.SetDeliveryItem(1, true)
+                    MainNpc.NpcDelivery(1, '"Default"')
+                    MainNpc.EventFlags['cNpcMemory:EasterExchangeEggFlag'] = true
+                    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:116', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:117', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:122', false)
+            else:
+                run Sub_grp_Event87()
+        else:
+            run Sub_grp_Event87()
+    else:
+        run Sub_grp_Event87()
+
+flow GeneralTalk1():
+    if not EventFlowSystemActor.IsMyVillage():
+        run GeneralTalk2()
+    elif EventFlowSystemActor.NetIsConnected():
+        run GeneralTalk2()
+    elif System.EventFlags['cPlayer:PynGetFinalMissionRecipeFlag']:
+        run GeneralTalk2()
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true) == 0:
+        run GeneralTalk2()
+    else:
+        if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:011', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:012', false)
+        EventFlowSystemActor.ExitFlowchart()
+
+flow GeneralTalk2():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:001', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:002', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:003', false)
+    EventFlowSystemActor.ExitFlowchart()
+
+flow LeafEgg():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:105', false)
+    run Sub_Event6()
+
+flow Root():
+    if (EventFlowSystemActor.SystemCheckNowStage('cField')) and (EventFlowSystemActor.EventCheck('Easter') in (1, 2)):
+        run AAA()
+
+flow SkyEgg():
+    if EventFlowSystemActor.NetIsConnected():
+        run WaterEgg()
+        return
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:104', false)
+        run Sub_Event6()
+
+flow StoneEgg():
+    if System.EventFlags['cPlayer:MainmenuRndDailyQuest']:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:102', false)
+        run Sub_Event6()
+    else:
+        run WaterEgg()
+        return
+
+local flow Sub_Event6():
+    EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_grp_Event87():
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:118', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:119', false)
+
+flow WaterEgg():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:106', false)
+    run Sub_Event6()
+
+flow WoodEgg():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/GEvent/BO_GEvent_Easter:103', false)
+    run Sub_Event6()
+

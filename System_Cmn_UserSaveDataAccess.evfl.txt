@@ -1,0 +1,50 @@
+flow Cmn_UserAcc_Connect():
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.MessageLockNext(1)
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:005', false)
+    fork:
+        branch:
+            if SubflowResults@2[1] != 0:
+                EventFlowSystemActor.ResetNA()
+            if EventFlowSystemActor.IsSelectedVillageLeader():
+                EventFlowSystemActor.ReconnectPlayerVIllager('cVillageLeader')
+            else:
+                EventFlowSystemActor.ReconnectPlayerVIllager('cSpecified')
+            EventFlowSystemActor.SavePlayerRegionLanguageUpdate()
+            EventFlowSystemActor.SaveSimpleSave('cAll')
+        branch:
+            EventFlowSystemActor@Sub.WaitFrame(60)
+    EventFlowSystemActor.MessageUnlockNext()
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:006', false)
+    EventFlowSystemActor.MessageSuspend()
+
+flow Cmn_UserAcc_ResetOnline():
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.MessageLockNext(1)
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:007', false)
+    fork:
+        branch:
+            EventFlowSystemActor.ResetNA()
+            EventFlowSystemActor.SavePlayerRegionLanguageUpdate()
+            EventFlowSystemActor.SaveSimpleSave('cAll')
+        branch:
+            EventFlowSystemActor@Sub.WaitFrame(60)
+    EventFlowSystemActor.MessageUnlockNext()
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:006', false)
+    EventFlowSystemActor.MessageSuspend()
+
+flow Cmn_User_Delete():
+    EventFlowSystemActor.MessageLockNext(1)
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:002', false)
+    fork:
+        branch:
+            if SubflowResults@2[0] == 0:
+                EventFlowSystemActor.SaveRemove('cPlayer')
+            else:
+                EventFlowSystemActor.SaveRemove('cSpecifiedPlayer')
+        branch:
+            EventFlowSystemActor@Sub.WaitFrame(60)
+    EventFlowSystemActor.MessageUnlockNext()
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:003', true)
+    EventFlowSystemActor.MessageSuspend()
+

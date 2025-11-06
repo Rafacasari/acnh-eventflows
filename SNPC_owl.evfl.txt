@@ -1,0 +1,258 @@
+flow `1stTalkAtMuseum3`():
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:001', false)
+    if System.EventFlags['cLand:MuseumCafeConstruction_3_OpenDay']:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:031', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:031_01', false)
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:032', false)
+        run Sub_Event149()
+    else:
+        if System.EventFlags['cPlayer:Owl1stTalkMuseum1']:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:032_01', false)
+            run Sub_Event149()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:041', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:042', false)
+            if EventFlowSystemActor.MuseumComplete():
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1502', false)
+                System.EventFlags['cPlayer:FutaExplanationDonationComp'] = true
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1501', false)
+            System.EventFlags['cPlayer:OwlMultiDonateExplain'] = true
+            System.EventFlags['cPlayer:Owl1stTalkMuseum1'] = true
+            System.EventFlags['cPlayer:Owl1stTalkMuseum2'] = true
+            System.EventFlags['cPlayer:OwlShowFossilMyself'] = true
+    System.EventFlags['cPlayer:Owl1stTalkMuseum3'] = true
+
+flow Asleep():
+    System.EventFlags['cPlayerTemp:OwlWokeHimUp'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:001', false)
+    MainNpc.NpcSetAIBlackBoard('IsSleep', 0)
+    MainNpc.SetDefaultWaitAs('cDefault')
+    MainNpc.TurnBody(10, 0.0)
+    if System.EventFlags['cPlayer:FutaTalkedWhenAsleep']:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:003', false)
+        switch EventFlowSystemActor.MuseumLevel():
+            case `BlathersTent`:
+                run SNPC_owl_10_Tent::Root()
+            case `BlathersMuseumNoArt`, `BlathersMuseumArt`, `BlathersCafe`:
+                run OwlTalkAfterWakeup()
+                System.EventFlags['cPlayerTemp:OwlWokeHimUp'] = false
+            default:
+                return
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:002', false)
+        System.EventFlags['cPlayer:FutaTalkedWhenAsleep'] = true
+        System.EventFlags['cPlayerTemp:OwlWokeHimUp'] = false
+        run Owl_Talk_CommonTalk()
+
+flow Chk_CafeEventReport():
+    if (not System.EventFlags['cPlayer:MuseumCafeEv_4_ReportedToOwl']) and (System.EventFlags['cPlayer:MuseumCafeEv_3_ConfirmedVisitingTown']):
+        run SNPC_owl_30_CafeEvent_2_Report::Root()
+        EventFlowSystemActor.ExitFlowchart()
+
+flow NoTopic():
+    run SNPC_owl_25_Museum_Poster::Owl_GetPoster()
+    run SNPC_owl_25_Museum_Poster::Chk_PosterSelUnlock()
+    if System.EventFlags['cPlayer:MuseumPosterUnlockBuySel']:
+        if EventFlowSystemActor.MuseumComplete():
+            if System.EventFlags['cPlayerTemp:OwlWokeHimUp']:
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:016', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:1008', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:1010', false)
+            run SNPC_owl_00_Common::Comp_Direct_2()
+        else:
+            if System.EventFlags['cPlayerTemp:OwlWokeHimUp']:
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:016', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:1007', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:1009', false)
+            run SNPC_owl_00_Common::Select4_Direct_2()
+    elif EventFlowSystemActor.MuseumComplete():
+        if System.EventFlags['cPlayerTemp:OwlWokeHimUp']:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:016', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:018', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:012', false)
+        run SNPC_owl_00_Common::Comp_Direct()
+    else:
+        if System.EventFlags['cPlayerTemp:OwlWokeHimUp']:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:016', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:017', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:013', false)
+        run SNPC_owl_00_Common::Select4_Direct()
+
+flow OwlTalkAfterWakeup():
+    run Chk_CafeEventReport()
+    if System.EventFlags['cPlayer:OwlFinished1stTalk']:
+        SubflowResults[4] = 1
+        if System.EventFlags['cPlayer:FutaTalkedInMuseumToday']:
+            run SNPC_owl_23_Museum_DiveFish::ChkCompReport()
+            run SNPC_owl_24_Museum_StampRally::From2ndTime()
+            run SNPC_owl_22_Museum_RenualQuest::BeforeRenualQuest()
+            run SNPC_owl_00_Common::SkipMultiDonateNoticeAtComp()
+            if not EventFlowSystemActor.MuseumComplete():
+                if not System.EventFlags['cLand:OwlFoundFossil']:
+                    run SNPC_owl_10_Tent::Sel_NoFoundFossil()
+                elif not System.EventFlags['cPlayer:OwlShowFossilMyself']:
+                    System.EventFlags['cPlayer:OwlShowFossilMyself'] = true
+                    System.EventFlags['cPlayer:OwlMultiDonateExplain'] = true
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:052', false)
+                elif not System.EventFlags['cPlayer:OwlMultiDonateExplain']:
+                    System.EventFlags['cPlayer:OwlMultiDonateExplain'] = true
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:051', false)
+                elif EventFlowSystemActor.NetHasVisitor():
+                    run NoTopic()
+                else:
+                    run SNPC_owl_23_Museum_DiveFish::Root()
+            elif System.EventFlags['cPlayer:FutaExplanationDonationComp']:
+                if (System.EventFlags['cLand:OwlFoundDiveFish']) and (not System.EventFlags['cPlayer:OwlShowDiveFishReport']):
+                    System.EventFlags['cPlayer:OwlShowDiveFishReport'] = true
+                run SNPC_owl_22_Museum_RenualQuest::Root()
+            else:
+                run SNPC_owl_25_Museum_Poster::Owl_Poster_CompJudge()
+                if System.EventFlags['cPlayerTemp:OwlGetPosterCount'] < 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:014', false)
+                    System.EventFlags['cPlayer:FutaExplanationDonationComp'] = true
+                    run SNPC_owl_00_Common::Comp_Direct()
+                else:
+                    System.EventFlags['cPlayer:OwlShowDiveFishReport'] = true
+                    run SNPC_owl_25_Museum_Poster::Owl_GetPoster()
+        else:
+            run Owl_Talk_Today1stChk()
+    else:
+        run SNPC_owl_21_Museum_FirstTimeTalk::Root()
+
+flow Owl_Talk_CommonTalk():
+    switch EventFlowSystemActor.MuseumLevel():
+        case `BlathersTent`:
+            run SNPC_owl_10_Tent::Root()
+        case `BlathersMuseumNoArt`, `BlathersMuseumArt`, `BlathersCafe`:
+            if MainNpc.NpcBlackBoard('IsSleep', 1):
+                run Asleep()
+            else:
+                run OwlTalkAfterWakeup()
+        default:
+            return
+
+flow Owl_Talk_Today1stChk():
+    System.EventFlags['cPlayer:FutaTalkedInMuseumToday'] = true
+    switch EventFlowSystemActor.MuseumLevel():
+        case `BlathersNotMovedIn`, `BlathersTent`, `BlathersMuseumNoArt`:
+            if System.EventFlags['cPlayer:Owl1stTalkMuseum1']:
+                run SNPC_owl_00_Common::CmnTodayTalk1st()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:001', false)
+                if System.EventFlags['cLand:Museum2BuiltToday']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:001_01', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:001_02', false)
+                if System.EventFlags['cPlayer:OwlDonationDone']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:002_01', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:002_02', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:003', false)
+                if not System.EventFlags['cLand:OwlFoundFossil']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:004_02', false)
+                    System.EventFlags['cPlayer:Owl1stTalkMuseum1'] = true
+                elif System.EventFlags['cPlayer:OwlShowFossilMyself']:
+                    if System.EventFlags['cLand:OwlFoundDiveFish']:
+                        if EventFlowSystemActor.MuseumComplete():
+                            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1502', false)
+                            System.EventFlags['cPlayer:FutaExplanationDonationComp'] = true
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1501', false)
+                    else:
+                        if EventFlowSystemActor.MuseumComplete():
+                            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:004_04', false)
+                            System.EventFlags['cPlayer:FutaExplanationDonationComp'] = true
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:004_01', false)
+                    System.EventFlags['cPlayer:OwlMultiDonateExplain'] = true
+                    System.EventFlags['cPlayer:Owl1stTalkMuseum1'] = true
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:004_03', false)
+                    System.EventFlags['cPlayer:OwlShowFossilMyself'] = true
+                    if System.EventFlags['cLand:OwlFoundDiveFish']:
+                        if EventFlowSystemActor.MuseumComplete():
+                            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1502', false)
+                            System.EventFlags['cPlayer:FutaExplanationDonationComp'] = true
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1501', false)
+                    else:
+                        if EventFlowSystemActor.MuseumComplete():
+                            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:004_04', false)
+                            System.EventFlags['cPlayer:FutaExplanationDonationComp'] = true
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:004_01', false)
+                    System.EventFlags['cPlayer:OwlMultiDonateExplain'] = true
+                    System.EventFlags['cPlayer:Owl1stTalkMuseum1'] = true
+        case `BlathersMuseumArt`:
+            if System.EventFlags['cPlayer:Owl1stTalkMuseum2']:
+                run SNPC_owl_00_Common::CmnTodayTalk1st()
+            elif System.EventFlags['cLand:Museum2BuiltSkippedMuseum1']:
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:001', false)
+                if System.EventFlags['cLand:Museum3BuiltToday']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:001_01', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:001_02', false)
+                if System.EventFlags['cPlayer:OwlDonationDone']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:002_01', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:002_02', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:003', false)
+                if EventFlowSystemActor.MuseumRoomDonateNum(1, 3):
+                    if EventFlowSystemActor.MuseumKindDonateRate(100, 'cKindArt'):
+                        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1003', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1002', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1001', false)
+                run SkipMuseum1Process()
+                if System.EventFlags['cLand:OwlFoundFossil']:
+                    System.EventFlags['cPlayer:OwlShowFossilMyself'] = true
+                    if System.EventFlags['cLand:OwlFoundDiveFish']:
+                        if EventFlowSystemActor.MuseumComplete():
+                            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1502', false)
+                            System.EventFlags['cPlayer:FutaExplanationDonationComp'] = true
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1501', false)
+                    else:
+                        if EventFlowSystemActor.MuseumComplete():
+                            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:004_04', false)
+                            System.EventFlags['cPlayer:FutaExplanationDonationComp'] = true
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:004_01', false)
+                    System.EventFlags['cPlayer:OwlMultiDonateExplain'] = true
+                    System.EventFlags['cPlayer:Owl1stTalkMuseum1'] = true
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1004', false)
+                    System.EventFlags['cPlayer:Owl1stTalkMuseum1'] = true
+            else:
+                run SNPC_owl_22_Museum_RenualQuest::AfterRenualQuest()
+        case `BlathersCafe`:
+            if System.EventFlags['cPlayer:Owl1stTalkMuseum3']:
+                run SNPC_owl_00_Common::CmnTodayTalk1st()
+            else:
+                run `1stTalkAtMuseum3`()
+
+flow Root():
+    System.EventFlags['cPlayerTemp:OwlWokeHimUp'] = false
+    if EventFlowSystemActor.IsMyVillage():
+        run Owl_Talk_CommonTalk()
+    else:
+        run SNPC_owl_90_OtherTown::Root()
+
+flow SkipMuseum1Process():
+    System.EventFlags['cPlayer:Owl1stTalkMuseum2'] = true
+    System.EventFlags['cPlayer:OwlPaintingDiveFish'] = true
+    System.EventFlags['cLand:OwlFoundDiveFish'] = true
+    System.EventFlags['cPlayer:OwlShowDiveFishReport'] = true
+
+local flow Sub_Event149():
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:033', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_30_CafeEvent:034', false)
+

@@ -1,0 +1,460 @@
+flow CallFacilityNPC():
+    if EventFlowSystemActor.WherearenFacilityOrderType() == 0:
+        if EventFlowSystemActor.WherearenFacilityTypeOnOrder() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:112', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:112_01', false)
+        EventFlowSystemActor.UIPostCastHandling()
+        EventFlowSystemActor.SystemBGMVolumeFadeOut(0.10000000149011612, 0, 0.0)
+        EventFlowSystemActor.WaitFrame(3)
+        EventFlowSystemActor.SoundTriggerEmit('Demo_Complete_Edit', -1)
+        EventFlowSystemActor.WaitFrame(33)
+        EventFlowSystemActor.BGMPropertyControl(184)
+        switch EventFlowSystemActor.WherearenFacilityTypeOnOrder():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:113', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:113_01', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:113_02', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:113_03', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:113_04', false)
+    else:
+        EventFlowSystemActor.WaitFrame(13)
+        EventFlowSystemActor.BGMPropertyControl(184)
+        switch EventFlowSystemActor.WherearenFacilityTypeOnOrder():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:113_06', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:113_07', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:113_08', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:113_09', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:113_10', false)
+    run SetFacilityName()
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.SoundDuckingOn(60)
+    EventFlowSystemActor.SoundDuckingOn(62)
+    EventFlowSystemActor.SoundTriggerEmit('Demo_RequestOkay', -1)
+    fork:
+        branch:
+            EventFlowSystemActor.SoundTriggerEmit('Demo_Edit_Finish_Facility', -1)
+        branch:
+            Player.CharacterEmoticonAction('RequestOkay', true, '', 0, false)
+        branch:
+            MainNpc.CharacterEmoticonAction('RequestOkay', true, '', 0, false)
+    EventFlowSystemActor.SoundDuckingOff(62)
+    EventFlowSystemActor.RequestCompleteDemoBGMDucking()
+    System.EventFlags['cWherearenPlayer:IsFacilityEditEndIndoorDemo'] = 1
+    if EventFlowSystemActor.SystemCheckNowStage('cWherearenFacilityEntrance'):
+        EventFlowSystemActor.EditSceneBGMEnd()
+        EventFlowSystemActor.FadeOut('cOrderDemoLogoWherearen', 'cOrderDemoLogoWherearen', 'cBlack', 1.0, 1.0, true)
+        EventFlowSystemActor.SetWherearenPlayerRemoveBinderSeq(false, false)
+        if EventFlowSystemActor.WherearenFacilityTypeOnOrder() not in (0, 1, 2, 3):
+            EventFlowSystemActor.ReplaceWherearenTorso()
+        EventFlowSystemActor.ReserveDemoFtrAction()
+        EventFlowSystemActor.WaitFrame(30)
+        EventFlowSystemActor.WherearenOperateNpcWithoutOfficer('cCreateForNpcOrder')
+        EventFlowSystemActor.SetNpcAIBlackBoardByLabel('otg', 'ReqVisible', 1, 0)
+        EventFlowSystemActor.SetNpcAIBlackBoardByLabel('NpcPlayer', 'ReqCompDemo', 1, 1)
+    else:
+        EventFlowSystemActor.CameraReserveFirstStateCommand('Demo:Complete_Intro_0', 'Place:SafeArea', true)
+        EventFlowSystemActor.ReserveSystemFlowDemo('NNPC_Spot_WherearenCompleteDemo', 'HiddenPlayer', false, false, false)
+        EventFlowSystemActor.SetWherearenPlayerRemoveBinderSeq(false, true)
+        System.EventFlags['cLandTemp:ReserveFaderKeep'] = true
+        System.EventFlags['cPlayerTemp:WHEREAREN_CameraDemoReserve'] = true
+        EventFlowSystemActor.EditSceneBGMEnd()
+        EventFlowSystemActor.SystemRequestChangeStage('cWherearenFacilityCompleteDemo', 'cOrderDemoLogoWherearen', 'cOrderDemoLogoWherearen', 'cBlack', 1.0, 1.0)
+
+flow Check(PreCheck: bool):
+    SubflowResults[0] = 0
+    if not EventFlowSystemActor.WherearenEditEndTerms('cPlacedAllMustItem'):
+        if not PreCheck:
+            EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cUnplacedMustItemRoom', 0, '')
+            switch EventFlowSystemActor.WherearenFacilityTypeOnOrder():
+                case 0, 4:
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:105_01', false)
+                case 1, 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:105', false)
+                case 3:
+                    if (not EventFlowSystemActor.WherearenIsExpandedFacility('cCafe')) and (EventFlowSystemActor.WherearenFacilityOrderType() in (0, 1)):
+                        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:105_01', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:105', false)
+    elif not EventFlowSystemActor.WherearenEditEndTerms('cIsEnteredCafe2FonExpandOrder'):
+        if PreCheck:
+            SubflowResults[0] = 2
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:119', false)
+    elif EventFlowSystemActor.WherearenEditEndTerms('cPlacedOverLimit'):
+        if (not PreCheck) and (EventFlowSystemActor.WherearenFacilityTypeOnOrder() == 4):
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:108', false)
+    elif not EventFlowSystemActor.WherearenEditEndTerms('cCanPlaceNpcAllRoom'):
+        if PreCheck:
+            if not EventFlowSystemActor.WherearenEditEndTerms('cCanNotPlaceNpcNowRoom'):
+                SubflowResults[0] = 2
+        elif EventFlowSystemActor.WherearenEditEndTerms('cCanNotPlaceNpcNowRoom'):
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:106', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:107', false)
+    elif PreCheck:
+        SubflowResults[0] = 1
+    else:
+        run PostEditEvent()
+        if EventFlowSystemActor.WherearenFacilityTypeOnOrder() in (0, 1, 2, 3):
+            run EditEnd()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:104_01', false)
+            switch EventFlowSystemActor.GeneralTalkChoice6():
+                case 0:
+                    EventFlowSystemActor.WherearenSetShopTailorClothType('cCute')
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:104_03', false)
+                case 1:
+                    EventFlowSystemActor.WherearenSetShopTailorClothType('cSimple')
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:104_04', false)
+                case 2:
+                    EventFlowSystemActor.WherearenSetShopTailorClothType('cElegant')
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:104_05', false)
+                case 3:
+                    EventFlowSystemActor.WherearenSetShopTailorClothType('cCool')
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:104_06', false)
+                case 4:
+                    EventFlowSystemActor.WherearenSetShopTailorClothType('cActive')
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:104_07', false)
+                case 5:
+                    EventFlowSystemActor.WherearenSetShopTailorClothType('cNone')
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:104_02', false)
+            if (EventFlowSystemActor.WherearenFacilityOrderType() != 0) and (EventFlowSystemActor.WherearenIsChangedShopTailorClothType()):
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:104_08', false)
+            run EditEnd()
+
+flow EditEnd():
+    EventFlowSystemActor.WherearenOrderCallback('cEditEnd')
+    run CallFacilityNPC()
+
+flow Gate():
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:201', false)
+
+flow NPCCheckAct():
+    EventFlowSystemActor.MessageSuspend()
+    if MainNpc.NpcIsSitting() not in (0, 1, 2, 3, 5):
+        MainNpc.TurnNeck(11, false)
+        MainNpc.TurnBody(17, 0.0)
+    EventFlowSystemActor.WaitFrame(20)
+
+flow PostEditEvent():
+    System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = false
+    switch EventFlowSystemActor.WherearenFacilityTypeOnOrder():
+        case 0:
+            if System.EventFlags['cWherearenPlayer:SeqSchoolEditOngoing']:
+                run SNPC_otg_15_WherearenEvent_School::PostEdit()
+                System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+        case 1:
+            if System.EventFlags['cWherearenPlayer:SeqHospitalEditOngoing']:
+                run SNPC_otg_20_WherearenEvent_Hospital::PostEdit()
+                System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+        case 2, 3:
+            if System.EventFlags['cWherearenPlayer:SeqRestaurantEditOngoing']:
+                run SNPC_otg_19_WherearenEvent_RestaurantCafe::PostEdit()
+                System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+        case 4:
+            if System.EventFlags['cWherearenPlayer:SeqTailorEditOngoing']:
+                run SNPC_otg_21_WherearenEvent_Tailor::PostEdit()
+                System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+
+flow PreEditEvent():
+    System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = false
+    run ReactionEnterFacility()
+    switch EventFlowSystemActor.WherearenFacilityTypeOnOrder():
+        case 0:
+            if System.EventFlags['cWherearenPlayer:SeqSchoolEditOngoing']:
+                run SNPC_otg_15_WherearenEvent_School::PreEdit()
+                System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+        case 1:
+            if System.EventFlags['cWherearenPlayer:SeqHospitalEditOngoing']:
+                run SNPC_otg_20_WherearenEvent_Hospital::PreEdit()
+                System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+        case 2:
+            if System.EventFlags['cWherearenPlayer:SeqRestaurantEditOngoing']:
+                if System.EventFlags['cWherearenPlayer:Unlock_Faclility_Restaurant']:
+                    run SNPC_otg_19_WherearenEvent_RestaurantCafe::PreEdit_LaterRestaurant()
+                    System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+                else:
+                    run SNPC_otg_19_WherearenEvent_RestaurantCafe::PreEdit()
+                    System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+        case 3:
+            if System.EventFlags['cWherearenPlayer:SeqRestaurantEditOngoing']:
+                if System.EventFlags['cWherearenPlayer:Unlock_Faclility_Cafe']:
+                    run SNPC_otg_19_WherearenEvent_RestaurantCafe::PreEdit_LaterCafe()
+                    System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+                else:
+                    run SNPC_otg_19_WherearenEvent_RestaurantCafe::PreEdit()
+                    System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+        case 4:
+            if System.EventFlags['cWherearenPlayer:SeqTailorEditOngoing']:
+                run SNPC_otg_21_WherearenEvent_Tailor::PreEdit()
+                System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+
+flow PreExtension():
+    if (not EventFlowSystemActor.IsResumeWherearenOrder()) and (EventFlowSystemActor.WherearenFacilityOrderType() == 2):
+        MainNpc.TurnBody(10, 0.0)
+        EventFlowSystemActor.WaitFrame(5)
+        Player.TurnBody(0, 0.0)
+        switch EventFlowSystemActor.WherearenFacilityTypeOnOrder():
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:002_03', false)
+                System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:002_01', false)
+                System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:002_02', false)
+                System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone'] = true
+            default:
+                return
+
+flow ReInput():
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:123_06', false)
+    run Event184()
+
+flow ReactionEnterFacility():
+    MainNpc.TurnNeck(11, false)
+    MainNpc.NpcAISetPos(0.0, 10.0, 0.0, true, false)
+    MainNpc.TurnBody(12, 180.0)
+    MainNpc.NpcWaitTurn()
+    fork:
+        branch:
+            EventFlowSystemActor.FadeIn(true)
+        branch:
+            Player.PlayerMoveToTarget(true, 0.0, -20.0, 0.0, 0.0, false, '')
+        branch:
+            MainNpc.NpcMoveDirection(180.0, 10.0, 0, false, true)
+    MainNpc.TurnNeck(10, false)
+
+flow ReactionStartTakePicture():
+    EventFlowSystemActor.SoundDuckingOff(57)
+    EventFlowSystemActor.SoundDuckingOff(60)
+    EventFlowSystemActor.BGMPropertyControl(149)
+    MainNpc.NpcWarpCreatePos()
+    fork:
+        branch:
+            MainNpc.NpcChangeHeadCtrlMode('cNoLook', true)
+            MainNpc.TurnBody(12, 180.0)
+        branch:
+            Player.TurnBody(12, 180.0)
+    EventFlowSystemActor.BGMPropertyControl(181)
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.HousingDeliveryPhotographyBGMStart()
+    EventFlowSystemActor.FadeIn(true)
+    fork:
+        branch:
+            MainNpc.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+            MainNpc.TurnBody(10, 180.0)
+            MainNpc.NpcWaitTurn()
+            MainNpc.NpcChangeHeadCtrlMode('cPlayer', false)
+        branch:
+            Player.CharacterEmoticonAction('EmotEnd', true, '', 0, false)
+            Player.TurnBody(0, 180.0)
+
+flow Root():
+    if System.EventFlags['cPlayerTemp:WHREAREN_IsFacilityEndDemoTakePicture']:
+        run UnderShooting()
+    elif EventFlowSystemActor.WherearenFacilityOrderType() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:101', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                run Sub_Event294()
+            case 1:
+                run Sub_Event214()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:103', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:114', false)
+        switch EventFlowSystemActor.GeneralTalkChoice4():
+            case 0:
+                run Sub_Event294()
+            case 1:
+                run Sub_Event214()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:109', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:110', true)
+                    EventFlowSystemActor.WherearenOrderCallback('cCancel')
+                    EventFlowSystemActor.WherearenOrderCallback('cReturnToMainIsland')
+                    System.EventFlags['cPlayerTemp:WHEREAREN_OtgTalkReserve_Office'] = true
+                    EventFlowSystemActor.SystemRequestChangeStage('cWherearenOfficeReturn', 'cCircle', 'cCircle', 'cBlack', 1.0, 1.0)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:111', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:103', false)
+
+flow SetFacilityName():
+    EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cSelectFacilityNormal', 0, 'cEditNow')
+    if EventFlowSystemActor.WherearenFacilityOrderType() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:123_01', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Sub_Event88()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:123_09', false)
+    elif EventFlowSystemActor.WherearenExistFacilityName('cEditNow'):
+        EventFlowSystemActor.WherearenSetTagRunningOrderTheme('cSelectFacility', 0, 'cEditNow')
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:124_01', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Sub_Event88()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:124_03', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:124_02', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            run Sub_Event88()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:123_09', false)
+
+flow SettingFinishRoomEdit():
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.WherearenOrderCallback('cPhotoModeEnd')
+    EventFlowSystemActor.SystemBGMVolumeFadeOut(0.5, 0, 0.0)
+    EventFlowSystemActor.WaitFrame(15)
+    EventFlowSystemActor.HousingDeliveryPhotographyBGMEnd()
+    System.EventFlags['cPlayerTemp:WHREAREN_IsFacilityEndDemoTakePicture'] = false
+    EventFlowSystemActor.WherearenOrderCallback('cCompleteDemoStart')
+    EventFlowSystemActor.ReserveNpcCommand('WherearenCeremony')
+    System.EventFlags['cPlayerTemp:WHREAREN_IsFacilityEndDemoCeremony'] = true
+    EventFlowSystemActor.SoundTriggerEmit('Demo_Oshigoto_Wipe', -1)
+    EventFlowSystemActor.WaitFrame(6)
+    EventFlowSystemActor.NextLPFadeTime(0.7300000190734863)
+    EventFlowSystemActor.SoundSceneChangeFadeOutDucking(10)
+    EventFlowSystemActor.SystemRequestChangeStage('cWherearenFacilityCeremony', 'cOrderWherearen', 'cOrderWherearen', 'cBlack', 1.0, 1.0)
+
+flow StartTakePicture():
+    run ReactionStartTakePicture()
+    if EventFlowSystemActor.WherearenFacilityOrderType() == 0:
+        switch EventFlowSystemActor.WherearenFacilityTypeOnOrder():
+            case 0:
+                MainNpc.WherearenSetTagFacilityNpcName('cSchoolTeacher', true, true, 0)
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:122', false)
+            case 1:
+                MainNpc.WherearenSetTagFacilityNpcName('cHospitalDoctor', true, true, 0)
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:122_02', false)
+            case 2:
+                MainNpc.WherearenSetTagFacilityNpcName('cRestaurantCook', true, true, 0)
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:122_03', false)
+            case 3:
+                MainNpc.WherearenSetTagFacilityNpcName('cCafeWaiter', true, true, 0)
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:122_04', false)
+            case 4:
+                MainNpc.WherearenSetTagFacilityNpcName('cTailorClerk', true, true, 0)
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:122_05', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:122_01', false)
+    System.EventFlags['cPlayerTemp:WHREAREN_IsFacilityEndDemoTakePicture'] = true
+    EventFlowSystemActor.BGMPropertyControl(180)
+    EventFlowSystemActor.WherearenOrderCallback('cPhotoModeStart')
+
+local flow Sub_Event214():
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:102', false)
+    EventFlowSystemActor.UICustomFacilityHandling('cAfterTheSecond')
+    if EventFlowSystemActor.UIResultMenuDecide():
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:115', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:115_01', false)
+
+local flow Sub_Event294():
+    run Check(PreCheck=true)
+    switch SubflowResults@3[0]:
+        case 0:
+            run NPCCheckAct()
+        case 1:
+            if EventFlowSystemActor.WherearenFacilityOrderType() != 0:
+                EventFlowSystemActor.SystemBGMVolumeFadeOut(0.10000000149011612, 0, 0.0)
+                EventFlowSystemActor.WaitFrame(3)
+                EventFlowSystemActor.SoundTriggerEmit('Demo_Complete_Edit', -1)
+            EventFlowSystemActor.MessageSuspend()
+        case 2:
+            EventFlowSystemActor.MessageSuspend()
+            EventFlowSystemActor.WaitFrame(20)
+    run Check(PreCheck=false)
+
+local flow Sub_Event88():
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:123_02', false)
+entrypoint Event184:
+    switch EventFlowSystemActor.WherearenFacilityTypeOnOrder():
+        case 0:
+            EventFlowSystemActor.UISoftwareKeyboardFacilitiesNameHandling(0, true)
+        case 1:
+            EventFlowSystemActor.UISoftwareKeyboardFacilitiesNameHandling(1, true)
+        case 2:
+            EventFlowSystemActor.UISoftwareKeyboardFacilitiesNameHandling(2, true)
+        case 3:
+            EventFlowSystemActor.UISoftwareKeyboardFacilitiesNameHandling(3, true)
+        case 4:
+            EventFlowSystemActor.UISoftwareKeyboardFacilitiesNameHandling(4, true)
+    if EventFlowSystemActor.UIResultMenuDecide():
+        EventFlowSystemActor.SetTagFromUIResult('cWherearenSwkbdFacilityName', 0)
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:123_03', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:123_04', false)
+            EventFlowSystemActor.SaveSetFromUIResult('cFacilitiesName')
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:123_05', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run ReInput()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:123_08', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:123_07', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:123_08', false)
+        else:
+            run ReInput()
+
+flow UnderShooting():
+    if EventFlowSystemActor.WherearenFacilityOrderType() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:117', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            if (EventFlowSystemActor.WherearenFacilityTypeOnOrder() not in (0, 1, 2, 4)) and (not System.EventFlags['cWherearenPlayer:CompleteAppearanceCafe']):
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:126', true)
+                run SettingFinishRoomEdit()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:123', true)
+                run SettingFinishRoomEdit()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:118', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:117_01', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:124', false)
+                run SettingFinishRoomEdit()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:125', true)
+                EventFlowSystemActor.WherearenOrderCallback('cPhotoModeEnd')
+                System.EventFlags['cPlayerTemp:WHREAREN_IsFacilityEndDemoTakePicture'] = false
+                EventFlowSystemActor.WherearenOrderCallback('cCompleteDemoStart')
+                EventFlowSystemActor.WherearenOrderCallback('cCompleteDemoEnd')
+                EventFlowSystemActor.WherearenOrderCallback('cReturnToMainIsland')
+                System.EventFlags['cPlayerTemp:WHEREAREN_OtgTalkReserve_Office'] = true
+                EventFlowSystemActor.HousingDeliveryPhotographyBGMEnd()
+                EventFlowSystemActor.SystemRequestChangeStage('cWherearenOfficeReturn', 'cCircle', 'cCircle', 'cBlack', 1.0, 1.0)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:118_01', false)
+
+flow Visit():
+    System.EventFlags['cPlayerTemp:WHEREAREN_OtgTalkReserve_Facility'] = false
+    if System.EventFlags['cPlayerTemp:WHREAREN_IsFacilityEndDemoTakePicture']:
+        run StartTakePicture()
+    else:
+        run PreEditEvent()
+        if not System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone']:
+            run PreExtension()
+            if not System.EventFlags['cPlayerTemp:WHEREAREN_PostEditEventDone']:
+                MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_13_WherearenFacility:001', false)
+        EventFlowSystemActor.UIMainMenuSetInvalidFrame(80)
+        EventFlowSystemActor.UIThemeAppear('cFacility')
+        EventFlowSystemActor.WherearenOrderCallback('cEditStart')
+        EventFlowSystemActor.SetWherearenPlayerRemoveBinderSeq(false, false)
+

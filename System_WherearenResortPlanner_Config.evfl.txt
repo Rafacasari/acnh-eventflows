@@ -1,0 +1,65 @@
+flow EntryPoint_AuthorID():
+    if System.EventFlags['cPlayer:WHEREAREN_DisclosePlannerID']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_PhoneApp:402', true)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            System.EventFlags['cPlayer:WHEREAREN_DisclosePlannerID'] = false
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_PhoneApp:405', true)
+        else:
+            run EntryPoint_Setting_Continue()
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_PhoneApp:403', true)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            System.EventFlags['cPlayer:WHEREAREN_DisclosePlannerID'] = true
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_PhoneApp:406', true)
+        else:
+            run EntryPoint_Setting_Continue()
+    run EntryPoint_Repetition()
+
+flow EntryPoint_Cancel():
+    EventFlowSystemActor.MessageLockNext(1)
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_PhoneApp:418', false)
+    EventFlowSystemActor.NetWherearenUploadProfile(true, false)
+    EventFlowSystemActor.UploadProfile(true, false)
+    EventFlowSystemActor.MessageUnlockNext()
+    EventFlowSystemActor.MessageSuspend()
+
+flow EntryPoint_PickupSet():
+    if System.EventFlags['cPlayer:WHEREAREN_Pickup_Disclose']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_PhoneApp:407', true)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            System.EventFlags['cPlayer:WHEREAREN_Pickup_Disclose'] = false
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_PhoneApp:409', true)
+        else:
+            run EntryPoint_Setting_Continue()
+    else:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_PhoneApp:408', true)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            System.EventFlags['cPlayer:WHEREAREN_Pickup_Disclose'] = true
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_PhoneApp:410', true)
+        else:
+            run EntryPoint_Setting_Continue()
+    run EntryPoint_Repetition()
+
+flow EntryPoint_Repetition():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_PhoneApp:411', true)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run EntryPoint_AuthorID()
+        case 1:
+            run EntryPoint_PickupSet()
+        case 2:
+            run EntryPoint_Cancel()
+
+flow EntryPoint_Setting_Continue():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_PhoneApp:404', true)
+
+flow Root():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_PhoneApp:401', true)
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            run EntryPoint_AuthorID()
+        case 1:
+            run EntryPoint_PickupSet()
+        case 2:
+            run EntryPoint_Cancel()
+

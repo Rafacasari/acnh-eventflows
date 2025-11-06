@@ -1,0 +1,20 @@
+flow Root():
+    if EventFlowSystemActor.NetIsDreaming():
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:112_02', false)
+        EventFlowSystemActor.SetCheckResultStructureDoor(CheckResult=1)
+    elif EventFlowSystemActor.IsDuringBusinessHours('Tailor'):
+        if EventFlowSystemActor.EnvHourOverGrowUp():
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:112_01', false)
+            EventFlowSystemActor.SetCheckResultStructureDoor(CheckResult=1)
+        else:
+            EventFlowSystemActor.SetCheckResultStructureDoor(CheckResult=0)
+    else:
+        if System.EventFlags['cLand:RegulationType2']:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:112_00_01', false)
+        else:
+            if System.EventFlags['cLand:RegulationType3']:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:112_00_02', false)
+            else:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Door:112', false)
+        EventFlowSystemActor.SetCheckResultStructureDoor(CheckResult=1)
+

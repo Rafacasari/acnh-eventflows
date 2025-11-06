@@ -1,0 +1,130 @@
+flow Chk_CommuneShopStatus():
+    if (EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneSloDonation') != 0) and (EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneCmlDonation') != 0) and (EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneFoxDonation') != 0) and (EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneBptDonation') != 0) and (EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneSkkDonation') != 0) and (EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneAlpDonation') != 0) and (EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneTtlDonation') != 0):
+        SubflowResults[0] = 2
+    else:
+        SubflowResults[0] = 0
+        if not ((EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneSloDonation') in (0, 1)) and (EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneCmlDonation') in (0, 1)) and (EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneFoxDonation') in (0, 1)) and (EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneBptDonation') in (0, 1)) and (EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneSkkDonation') in (0, 1)) and (EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneAlpDonation') in (0, 1)) and (EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneTtlDonation') != 2)):
+            SubflowResults[0] = 1
+
+flow FadeOut():
+    run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+    Player.PlayerDemoTurn('cSouth')
+    Player.PlayerWaitTurn()
+    EventFlowSystemActor.NpcWarpCommune()
+    run AI_NPC_Spn_Commune::Spn_Pos()
+    EventFlowSystemActor.PooWarpCommune(false)
+    run AI_NPC_Poo_Commune::Poo_Pos()
+    MainNpc.SetupWorkMotionForSpnPoo()
+    EventFlowSystemActor.AlpSetupKeepBuckBox()
+    EventFlowSystemActor.StoreNormalCamera(true, '')
+    EventFlowSystemActor.SoundDuckingOff(69)
+    EventFlowSystemActor.WaitFrame(30)
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=false)
+
+flow NormalCommuneExpansion():
+    run Event2()
+
+flow Root():
+    EventFlowSystemActor.SoundDuckingOn(69)
+    EventFlowSystemActor.CameraSetDemoParam('CommuneExpansion', 'cDefault', 'Npc:spn', false, false, false, 0)
+    run Chk_CommuneShopStatus()
+    run ShopOpenEventSkip()
+    SubNpc.TurnBody(10, 180.0)
+    if not System.EventFlags['cPlayer:SpnFirstTalkedAtCommuneIsland']:
+        if System.EventFlags['cPlayer:SpnExpandEventAfterJuneBride']:
+            MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:011', false)
+        else:
+            if System.EventFlags['cPlayer:SpnTalkAtHomelandToday']:
+                MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:1001', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:1002', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:1003', false)
+        if SubflowResults@3[0] in (0, 1):
+            MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:1004', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:1004_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:1005', false)
+        SubNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:003', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:004', false)
+        if SubflowResults@3[0] in (0, 1):
+            MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:1006', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:1006_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:1007', true)
+        System.EventFlags['cPlayer:SpnFirstTalkedAtCommuneIsland'] = true
+        run Sub_Event43()
+    elif SubflowResults@3[0] in (0, 1):
+        if System.EventFlags['cPlayer:SpnExpandEventAfterJuneBride']:
+            MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:011', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:001', false)
+        switch SubflowResults@3[0]:
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:001_01', false)
+                run Event2()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:021_01', false)
+                run Event2()
+            default:
+                return
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:041', false)
+entrypoint Event2:
+        MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:002', false)
+        SubNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:003', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:004', false)
+        if SubflowResults@3[0] in (0, 1):
+            switch SubflowResults@3[0]:
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:005', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:006', false)
+                    run Sub_Event7()
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:025', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:026', false)
+                    run Sub_Event7()
+                default:
+                    return
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:044', true)
+            run Sub_Event43()
+
+flow Root_Init():
+    MainNpc.NpcAITalkSubCastEntry('poo', 1)
+
+flow ShopOpenEventSkip():
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneSloDonation') not in (0, 1):
+        System.EventFlags['cPlayer:DoneCommuneSloOpenEvent'] = true
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneCmlDonation') not in (0, 1):
+        System.EventFlags['cPlayer:DoneCommuneCmlOpenEvent'] = true
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneFoxDonation') not in (0, 1):
+        System.EventFlags['cPlayer:DoneCommuneFoxOpenEvent'] = true
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneBptDonation') not in (0, 1):
+        System.EventFlags['cPlayer:DoneCommuneBptOpenEvent'] = true
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneSkkDonation') not in (0, 1):
+        System.EventFlags['cPlayer:DoneCommuneSkkOpenEvent'] = true
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneAlpDonation') not in (0, 1):
+        System.EventFlags['cPlayer:DoneCommuneAlpOpenEvent'] = true
+    if EventFlowSystemActor.FlagSystemIntValue3(3, 'cLand:CommuneTtlDonation') == 2:
+        System.EventFlags['cPlayer:DoneCommuneTtlOpenEvent'] = true
+
+local flow Sub_Event43():
+    System.EventFlags['cLand:CompleteCommuneExpandEvent'] = true
+    System.EventFlags['cPlayer:ReserveCommuneExpansion'] = false
+    System.EventFlags['cPlayer:SpnTalkAtCommuneToday'] = true
+    System.EventFlags['cPlayer:PooTalkFirst'] = true
+    System.EventFlags['cPlayer:PooTalkToday'] = true
+    System.EventFlags['cPlayer:PooTalkFirstToday'] = true
+    System.EventFlags['cPlayer:CommuneCompleteExpandEvent_Player'] = true
+    System.EventFlags['cPlayer:SpnSendMailCommuneExpansion'] = true
+    System.EventFlags['cLand:UnlockCommuneExpandedBGM'] = true
+    if SubflowResults@3[0] != 0:
+        System.EventFlags['cPlayer:SpnCommuneATMNoticeDone'] = true
+    run FadeOut()
+
+local flow Sub_Event7():
+    MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:007', false)
+    switch EventFlowSystemActor.GeneralTalkChoice2():
+        case 0, 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/spn/SP_spn_11_Commune_LandExpansion:008', true)
+            run Sub_Event43()
+

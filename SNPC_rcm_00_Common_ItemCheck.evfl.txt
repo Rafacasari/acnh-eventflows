@@ -1,0 +1,68 @@
+flow BlackFriday():
+    if (EventFlowSystemActor.ShopLevel() == `NooksCrannyUpgraded`) and (EventFlowSystemActor.TermEventNow('BlackFriday', false)) and (not System.EventFlags['cPlayerTemp:RcmTalkSceneFlag']):
+        if EventFlowSystemActor.IsMyVillage():
+            if not System.EventFlags['cPlayer:NoticeBlackFridayToday']:
+                System.EventFlags['cPlayer:NoticeBlackFridayToday'] = true
+                run Sub_Event52()
+        elif not System.EventFlags['cPlayerVisit:NoticeBlackFriday']:
+            System.EventFlags['cPlayerVisit:NoticeBlackFriday'] = true
+            run Sub_Event52()
+
+flow ChkCeilingFtr():
+    if (EventFlowSystemActor.SelectItemIsCeiling('cItemSelect')) and (not System.EventFlags['cPlayer:UnlockInterior_CeilingFurniture']):
+        if System.EventFlags['cPlayerTemp:ShopCheckCeilingFtrNonLicense']:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4105', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4101', false)
+        if System.EventFlags['cPlayer:HasLookMyHouseExplain']:
+            if EventFlowSystemActor.IsMyVillage():
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4102', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4103', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:4104', false)
+        System.EventFlags['cPlayerTemp:ShopCheckCeilingFtrNonLicense'] = true
+        EventFlowSystemActor.ExitFlowchart()
+
+flow ChkHarvestFtrFirst():
+    if System.EventFlags['cPlayer:CheckHarvestFtrInStore']:
+        run Event46()
+        return
+    else:
+        System.EventFlags['cPlayer:CheckHarvestFtrInStore'] = true
+        if EventFlowSystemActor.PlayerHasCraftRecipe('HarvestFtr', 65534):
+            run Event46()
+            return
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:2001', false)
+            run BlackFriday()
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:2002', false)
+            run SNPC_rcm_00_Common::Rcm_Common_BuyCheck()
+
+flow Root():
+    MainNpc.ShopCheckItemSet('CheckItemIndex', 'cMamekichi')
+    EventFlowSystemActor.SetTagFromUIResult('cItemName', 0)
+    EventFlowSystemActor.SetTagFromUIResult('cRcShopItemPrice', 0)
+    MainNpc.TurnNeck(13, false)
+    Player.TurnNeck(13, false)
+    if (not System.EventFlags['cPlayer:RcmExplainToy']) and (EventFlowSystemActor.MultiFromItemSelectInclude('Christmas_ShopLv2', '', '', '', '', '', '', '', 'cItemSelect')):
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:145', false)
+        System.EventFlags['cPlayer:RcmExplainToy'] = true
+    run ChkCeilingFtr()
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:101', false)
+    if EventFlowSystemActor.MultiFromItemSelectInclude('Harvest', '', '', '', '', '', '', '', 'cItemSelect'):
+        run ChkHarvestFtrFirst()
+    else:
+entrypoint Event46:
+        run BlackFriday()
+        if MainNpc.RcmBuySelectType() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:103', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:102', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:103', false)
+        run SNPC_rcm_00_Common::Rcm_Common_BuyCheck()
+
+local flow Sub_Event52():
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_00_common:3008', false)
+    System.EventFlags['cPlayerTemp:RcmTalkSceneFlag'] = true
+

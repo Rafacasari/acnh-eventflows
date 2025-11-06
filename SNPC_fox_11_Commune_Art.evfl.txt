@@ -1,0 +1,94 @@
+flow CheckItemSet():
+    MainNpc.ShopCheckItemSet('CheckItemIndex', 'cCommuneIslandGallery')
+    EventFlowSystemActor.SetTagFromUIResult('cItemName', 0)
+    EventFlowSystemActor.SetTagFromUIResult('cFoxPrice', 0)
+
+flow LookArtMode():
+    EventFlowSystemActor.UIMoneyDisappear()
+    EventFlowSystemActor.MessageSuspend()
+    EventFlowSystemActor.RunCheckArtCamera()
+    EventFlowSystemActor.HoldGalleryCamera()
+    EventFlowSystemActor.UIMoneyAppear()
+
+flow Main():
+    if MainNpc.FoxIsSoldOut():
+        if MainNpc.FoxCheckItemBuyPlayer():
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:014', false)
+            run Sub_grp_Event58()
+        else:
+            EventFlowSystemActor.SetTagFromSystem('cCommuneFoxGalleryBuyPlayerName', 'cDegit', 0, 0, '')
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:015', false)
+            run Sub_grp_Event58()
+    elif System.EventFlags['cPlayer:FoxCommuneBuyArtTodayFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:016', false)
+        run Sub_grp_Event58()
+    elif System.EventFlags['cPlayer:FoxBuyArtTodayFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:017', false)
+        run Sub_grp_Event58()
+    else:
+        EventFlowSystemActor.UIMoneyAppear()
+        if MainNpc.FoxItemCheck():
+            MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:005', false)
+        else:
+            MainNpc.FoxItemCheck()
+            if System.EventFlags['cPlayerTemp:FoxCheckArtCount'] < 1:
+                if System.EventFlags['cPlayer:FoxCommuneTalkBeforeFlag']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:006', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:001', false)
+            else:
+                switch EventFlowSystemActor.RandomChoice3(3):
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:003', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:004', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:002', false)
+            System.EventFlags['cPlayerTemp:FoxCheckArtCount'] += 1
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                run Sub_grp_Event30()
+            case 1:
+                run LookArtMode()
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:007', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run Sub_grp_Event30()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:008', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:009', false)
+
+flow Root():
+    EventFlowSystemActor.CommuneTrailerSetCulling('skk', 'cON')
+    SubflowResults[0] = 1
+    run SNPC_fox_11_Commune::CommonTalk()
+    run CheckItemSet()
+    run Main()
+    EventFlowSystemActor.UIMoneyDisappear()
+    EventFlowSystemActor.CommuneTrailerSetCulling('skk', 'cOFF')
+    EventFlowSystemActor.StoreNormalCamera(false, '')
+
+local flow Sub_grp_Event30():
+    if MainNpc.ShopHasBellCount(1.0):
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:011', false)
+        MainNpc.ShopBuyDone(false, false, false, false)
+        EventFlowSystemActor.WaitFrame(20)
+        MainNpc.FoxSoldOutTagVisible()
+        EventFlowSystemActor.WaitFrame(20)
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:012', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:013', false)
+        MainNpc.FoxSetBuyItem()
+        System.EventFlags['cLand:FoxCommuneArtStockCount'] += 1
+        System.EventFlags['cPlayer:FoxBuyArtTodayFlag'] = true
+        System.EventFlags['cPlayer:FoxCommuneBuyArtTodayFlag'] = true
+        System.EventFlags['cLifeSupportAchievement:BuyatTsunekichiShop'] += 1
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:010', false)
+
+local flow Sub_grp_Event58():
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run LookArtMode()
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:018', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/fox/SP_fox_04_Art:019', false)
+

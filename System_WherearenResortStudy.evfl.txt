@@ -1,0 +1,10 @@
+flow StageStart():
+    EventFlowSystemActor.WherearenStartStudyEditMode()
+    EventFlowSystemActor.SystemFaderRelease()
+    EventFlowSystemActor.WaitFaderSleep()
+    if not System.EventFlags['cPlayer:NoticeAboutRoomSketch']:
+        EventFlowSystemActor.UIPhotoIslandInteriorEditGuideOff()
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:5124', false)
+        System.EventFlags['cPlayer:NoticeAboutRoomSketch'] = true
+        EventFlowSystemActor.UIPhotoIslandInteriorEditGuideOn()
+

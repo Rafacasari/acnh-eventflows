@@ -1,0 +1,76 @@
+flow Chk_Enable_Evaluation():
+    if System.EventFlags['cLand:IslandEvaluationUnlock']:
+        System.EventFlags['cPlayer:IslandEvaluationUnlockMyself'] = true
+        System.EventFlags['cPlayer:SzaHeardAboutIslandEvaluation'] = true
+
+flow Chk_Enable_Regulation():
+    if System.EventFlags['cLand:v200_Enabled_ChangeRegulation']:
+        System.EventFlags['cPlayer:ExplainIslandRegulation'] = true
+
+flow Sza_EvaluationExplanation():
+    if System.EventFlags['cPlayer:SzaTalkAtOfficeToday']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:000_01_02', false)
+    else:
+        System.EventFlags['cPlayer:SzaTalkAtOfficeToday'] = true
+        SubflowResults[15] = 1
+        run SNPC_sza_00_Common::Sza_Common_Greet()
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:000_01_01', false)
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:000_02', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_50_IslandEvaluation:000_02_01', false)
+        System.EventFlags['cPlayer:IslandEvaluationUnlockMyself'] = true
+    System.EventFlags['cPlayer:SzaHeardAboutIslandEvaluation'] = true
+    SubflowResults[0] = 1
+
+flow Sza_RegulationExplanation():
+    if SubflowResults@2[1] == 0:
+        if System.EventFlags['cPlayer:SzaTalkAtOfficeToday']:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_60_aboutisland_03_Regulation:1001_01', false)
+        else:
+            System.EventFlags['cPlayer:SzaTalkAtOfficeToday'] = true
+            SubflowResults[15] = 1
+            run SNPC_sza_00_Common::Sza_Common_Greet()
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_60_aboutisland_03_Regulation:1001', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_60_aboutisland_03_Regulation:1001_02', false)
+    if System.EventFlags['cPlayer:PAAboutUnlockIslandRegulation']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_60_aboutisland_03_Regulation:1002_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_60_aboutisland_03_Regulation:1002', false)
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_60_aboutisland_03_Regulation:1003', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_60_aboutisland_03_Regulation:1003_01', false)
+    System.EventFlags['cPlayer:ExplainIslandRegulation'] = true
+    System.EventFlags['cPlayer:PAAboutUnlockIslandRegulation'] = true
+    SubflowResults[0] = 1
+
+flow TalkFirst():
+    System.EventFlags['cPlayer:SzaTaled1stTime'] = true
+    System.EventFlags['cPlayer:SzaTalkAtOfficeToday'] = true
+    if System.EventFlags['cPlayer:OfficeSzaIntroduction']:
+        if System.EventFlags['cPlayerTemp:RcoOfficeFirstTalkNow']:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_2_Office:001_01', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_2_Office:001_02', false)
+    else:
+        if System.EventFlags['cPlayer:SzaTalkFirstNotOffice']:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_2_Office:022', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_2_Office:021_01', false)
+            if System.EventFlags['cPlayer:FirstPlayAfterPlayerMake']:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_2_Office:021_02', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_2_Office:021_03', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_2_Office:002', false)
+    run Chk_Enable_Evaluation()
+    run Chk_Enable_Regulation()
+    if not EventFlowSystemActor.NetHasVisitor():
+        MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_2_Office:002_02', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/SP_sza_2_Office:003', false)
+            run SNPC_sza_00_Common::szaNormalSeq()
+        else:
+            run SNPC_sza_00_Common::Sza_Cmn_Cancel()
+

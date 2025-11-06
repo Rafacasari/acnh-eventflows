@@ -1,0 +1,71 @@
+flow Root():
+    if (MainNpc.EventFlags['cNpcSave:PlayerNamePhrase']) and (not SubNpc.EventFlags['cNpcSave:PlayerNamePhrase']) and (not MainNpc.IsSamePhrase()):
+        MainNpc.NpcCopyPhrase()
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:201', false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:202', false)
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:203', false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:204', false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:205', false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:206', false)
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:207', false)
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, false) == 0:
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:001', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:002', false)
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:003', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:004', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:005', false)
+            case 1:
+                SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:006', false)
+            case 2:
+                SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:007', false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:008', false)
+        Player.TurnNeck(1, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:009', false)
+    else:
+        Player.TurnNeck(0, false)
+        MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:101', false)
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious4(4, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:102', false)
+                SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:103', false)
+                Player.TurnNeck(0, false)
+                MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:104', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:105', false)
+                SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:106', false)
+                Player.TurnNeck(0, false)
+                MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:107', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:108', false)
+                SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:109', false)
+                Player.TurnNeck(0, false)
+                MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:110', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:111', false)
+                SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:112', false)
+                Player.TurnNeck(0, false)
+                MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:113', false)
+        SubNpc.TurnNeck(10, false)
+        EventFlowSystemActor.WaitFrame(8)
+        SubNpc.CharacterEmoticonAction('Eh', true, '', 0, false)
+        SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:114', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.TurnBody(10, 0.0)
+            Player.TurnNeck(0, false)
+            MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:115', false)
+            Player.TurnNeck(1, false)
+            SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:116', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:117', false)
+            Player.TurnNeck(1, false)
+            SubNpc.OpenMessageWindow('TalkNNpc/G2_Ge/Conv/GE_Conv_OT:118', false)
+

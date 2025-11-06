@@ -1,0 +1,23 @@
+flow BigbagPresent():
+    EventFlowSystemActor.SetChristmasPresentNpcTag()
+    switch EventFlowSystemActor.CheckChristmasSantaPresentsNum():
+        case 0:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Player:704', false)
+        case 1:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Player:703_03', false)
+        case 2:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Player:703_02', false)
+        case 3:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Player:703_01', false)
+        case 4:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Player:702', false)
+
+flow LostProperty():
+    EventFlowSystemActor.UIMessageWindowForPocket()
+
+flow Treasure():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Player:104', false)
+
+flow UnclearLostProperty():
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Player:105', false)
+

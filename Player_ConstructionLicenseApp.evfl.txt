@@ -1,0 +1,291 @@
+flow CheckCliffNotice():
+    run Event35()
+
+flow CheckManualList():
+    if System.EventFlags['cPlayer:GetLicenseRiver']:
+        if System.EventFlags['cPlayer:GetLicenseCliff']:
+            SubflowResults[0] = 3
+        else:
+            SubflowResults[0] = 1
+    elif System.EventFlags['cPlayer:GetLicenseCliff']:
+        SubflowResults[0] = 2
+    else:
+        SubflowResults[0] = 0
+
+flow CheckNotice():
+    if not System.EventFlags['cPlayer:Mobile1stBoot_IslandCreater']:
+        EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:5111', false)
+        System.EventFlags['cPlayer:Mobile1stBoot_IslandCreater'] = true
+    if System.EventFlags['cPlayer:ConstructionWorkToday']:
+        if System.EventFlags['cPlayer:NoticeAboutLicenseRiver']:
+entrypoint Event35:
+            if (not System.EventFlags['cPlayer:NoticeAboutLicenseCliff']) and (System.EventFlags['cPlayer:GetLicenseCliff']):
+                MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:223', false)
+                System.EventFlags['cPlayer:NoticeAboutLicenseCliff'] = true
+                run Sub_grp_Event114()
+        elif not System.EventFlags['cPlayer:GetLicenseRiver']:
+            run CheckCliffNotice()
+        elif System.EventFlags['cPlayer:NoticeAboutLicenseCliff']:
+entrypoint Event41:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:222', false)
+            System.EventFlags['cPlayer:NoticeAboutLicenseRiver'] = true
+            run Sub_grp_Event114()
+        elif System.EventFlags['cPlayer:GetLicenseCliff']:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:224', false)
+            System.EventFlags['cPlayer:NoticeAboutLicenseCliff'] = true
+            System.EventFlags['cPlayer:NoticeAboutLicenseRiver'] = true
+            run Sub_grp_Event114()
+        else:
+            run OnlyRiverNotice()
+
+flow CheckWhere():
+    if EventFlowSystemActor.SystemCheckNowStage('cField'):
+        SubflowResults[1] = 0
+    elif (not EventFlowSystemActor.SystemCheckNowStage('cPhotoStudioIsland')) and (not EventFlowSystemActor.SystemCheckNowStage('cKappeiIsland')) and (not EventFlowSystemActor.SystemCheckNowStage('cMysteryTourIsland')) and (not EventFlowSystemActor.SystemCheckNowStage('cCheckStageSymbol00')):
+        SubflowResults[1] = 1
+    else:
+        SubflowResults[1] = 2
+
+flow CleanService():
+    if SubflowResults@3[1] == 0:
+        if not System.EventFlags['cPlayer:1stBootIslandCreaterCleanService']:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:261', false)
+            System.EventFlags['cPlayer:1stBootIslandCreaterCleanService'] = true
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:262', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:263', true)
+            EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 1.2000000476837158, 1.2000000476837158, true)
+            EventFlowSystemActor.ItemRemove()
+            EventFlowSystemActor.WaitFrame(20)
+            if EventFlowSystemActor.ItemRemove():
+                EventFlowSystemActor.SoundTriggerEmit('CleanFinish', -1)
+            EventFlowSystemActor.FadeIn(true)
+            if EventFlowSystemActor.ItemRemove():
+                MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:264', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:265', false)
+            Player.SmartPhone(1)
+        else:
+            run Restart()
+    else:
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:266', false)
+        run Restart()
+
+flow Construction_Manual():
+    run CheckManualList()
+    switch SubflowResults@4[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:251', false)
+            switch EventFlowSystemActor.GeneralTalkChoice4():
+                case 0:
+                    run Manual_Basic()
+                case 1:
+                    run Manual_Ground()
+                case 2:
+                    run Manual_CleanService()
+                case 3:
+                    run Restart()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:251_01', false)
+            switch EventFlowSystemActor.GeneralTalkChoice5():
+                case 0:
+                    run Manual_Basic()
+                case 1:
+                    run Manual_Ground()
+                case 2:
+                    run Manual_River()
+                case 3:
+                    run Manual_CleanService()
+                case 4:
+                    run Restart()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:251_02', false)
+            switch EventFlowSystemActor.GeneralTalkChoice5():
+                case 0:
+                    run Manual_Basic()
+                case 1:
+                    run Manual_Ground()
+                case 2:
+                    run Manual_Cliff()
+                case 3:
+                    run Manual_CleanService()
+                case 4:
+                    run Restart()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:251_03', false)
+            switch EventFlowSystemActor.GeneralTalkChoice6():
+                case 0:
+                    run Manual_Basic()
+                case 1:
+                    run Manual_Ground()
+                case 2:
+                    run Manual_River()
+                case 3:
+                    run Manual_Cliff()
+                case 4:
+                    run Manual_CleanService()
+                case 5:
+                    run Restart()
+
+flow End_Construction():
+    MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:210', false)
+    MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:211', true)
+    Player.PlayerChangeDemoState('cEndSmartPhoneMenuDucking')
+    Player.SmartPhone(1)
+    System.EventFlags['cPlayer:EquipLicenseHelmet'] = false
+    Player.PlayerOutfitFieldMakeToolKit('cOff')
+
+flow EquipLicense():
+    if System.EventFlags['cPlayer:LastUseLicense'] == 3:
+        Player.PlayerOutfitFieldMakeToolKit('cCliff')
+    elif System.EventFlags['cPlayer:LastUseLicense'] != 2:
+        System.EventFlags['cPlayer:LastUseLicense'] = 1
+        Player.PlayerOutfitFieldMakeToolKit('cGround')
+    else:
+        Player.PlayerOutfitFieldMakeToolKit('cRiver')
+
+flow Manual_Basic():
+    MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:241', false)
+    if EventFlowSystemActor.IsSoloPlayController():
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:241_01_00', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:241_01_01', false)
+    MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:241_02', false)
+    run Construction_Manual()
+
+flow Manual_CleanService():
+    MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:245', false)
+    run Construction_Manual()
+
+flow Manual_Cliff():
+    if EventFlowSystemActor.IsSoloPlayController():
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:244', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:244_01', false)
+    run Construction_Manual()
+
+flow Manual_Ground():
+    if EventFlowSystemActor.IsSoloPlayController():
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:242', false)
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:242_01_00', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:242_00_01', false)
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:242_01_01', false)
+    run Construction_Manual()
+
+flow Manual_River():
+    if EventFlowSystemActor.IsSoloPlayController():
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:243', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:243_01', false)
+    run Construction_Manual()
+
+flow NotServiceArea():
+    MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:209', false)
+
+flow OnlyRiverNotice():
+    run Event41()
+
+flow Restart():
+    if System.EventFlags['cPlayer:EquipLicenseHelmet']:
+        run SaveEquipLicense()
+        Player.OpenMessageWindow('TalkSys/SYS_PhoneApp:205', false)
+        switch EventFlowSystemActor.GeneralTalkChoice4():
+            case 0:
+                run End_Construction()
+            case 1:
+                run CleanService()
+            case 2:
+                run Construction_Manual()
+            default:
+                return
+    else:
+        Player.OpenMessageWindow('TalkSys/SYS_PhoneApp:201', false)
+        switch EventFlowSystemActor.GeneralTalkChoice4():
+            case 0:
+                run Start_Construction()
+            case 1:
+                run CleanService()
+            case 2:
+                run Construction_Manual()
+            default:
+                return
+
+flow Root():
+    if EventFlowSystemActor.IsMyVillage():
+        run CheckWhere()
+        switch SubflowResults@3[1]:
+            case 0:
+                run Sub_grp_Event3()
+            case 1:
+                if System.EventFlags['cPlayer:EquipLicenseHelmet']:
+                    run Sub_grp_Event3()
+                else:
+                    run NotServiceArea()
+            case 2:
+                run NotServiceArea()
+    else:
+        run NotServiceArea()
+
+flow SaveEquipLicense():
+    switch Player.PlayerOutfitFieldMakeToolKit():
+        case 0:
+            System.EventFlags['cPlayer:LastUseLicense'] = 0
+        case 1:
+            System.EventFlags['cPlayer:LastUseLicense'] = 3
+        case 2:
+            System.EventFlags['cPlayer:LastUseLicense'] = 2
+        case 3:
+            System.EventFlags['cPlayer:LastUseLicense'] = 1
+
+flow Start_Construction():
+    if EventFlowSystemActor.SystemCheckNowStage('cField'):
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:202', false)
+        if System.EventFlags['cPlayer:ConstructionWorkToday']:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:202_01', true)
+        else:
+            MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:221', false)
+            if EventFlowSystemActor.IsSoloPlayController():
+                MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:221_01', true)
+            else:
+                MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:221_02', false)
+            if System.EventFlags['cPlayer:GetLicenseRiver']:
+                System.EventFlags['cPlayer:NoticeAboutLicenseRiver'] = true
+            if System.EventFlags['cPlayer:GetLicenseCliff']:
+                System.EventFlags['cPlayer:NoticeAboutLicenseCliff'] = true
+            System.EventFlags['cPlayer:ConstructionWorkToday'] = true
+        Player.PlayerChangeDemoState('cEndSmartPhoneMenuDucking')
+        Player.SmartPhone(1)
+        System.EventFlags['cPlayer:EquipLicenseHelmet'] = true
+        run EquipLicense()
+    else:
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:206', false)
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:209', false)
+
+local flow Sub_grp_Event114():
+    if EventFlowSystemActor.IsSoloPlayController():
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:225', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:225_01', false)
+
+local flow Sub_grp_Event3():
+    if EventFlowSystemActor.NetHasVisitor():
+        Player.OpenMessageWindow('TalkSys/SYS_PhoneApp:213', false)
+    elif EventFlowSystemActor.NetIsConnected():
+        if EventFlowSystemActor.IsVillageGateOpened():
+            Player.OpenMessageWindow('TalkSys/SYS_PhoneApp:212', false)
+        else:
+            Player.OpenMessageWindow('TalkSys/SYS_PhoneApp:214', false)
+    elif Player.PlayerCheckWaitType('cStand'):
+        if SubflowResults@3[1] == 0:
+            run CheckNotice()
+            run Restart()
+        else:
+            run Restart()
+    elif Player.PlayerCheckWaitType('cSwim'):
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:206', false)
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:207_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSys/SYS_PhoneApp:206', false)
+        Player.OpenMessageWindow('TalkSys/SYS_PhoneApp:207', false)
+

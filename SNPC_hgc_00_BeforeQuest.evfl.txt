@@ -1,0 +1,75 @@
+flow Hgc_Get_Sample():
+    MainNpc.SetDeliveryItem(1, true)
+    if not MainNpc.NpcIsEquipedHandTool(0):
+        MainNpc.NpcChangeHandTool(65534, 'cNone', false)
+    MainNpc.NpcDelivery(1, '"Default"')
+    System.EventFlags['cPlayer:KotonoGotSampleFlag'] = true
+    MainNpc.SetItemName(1, 0, 0)
+    switch SubflowResults@3[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:010', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:012', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:013', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:015', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:016', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:018', true)
+    if not MainNpc.NpcIsEquipedHandTool(0):
+        MainNpc.NpcChangeHandTool(7285, 'cNone', false)
+
+flow Hgc_Quest_Accept():
+    switch SubflowResults@3[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:005', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:007', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:008', false)
+    MainNpc.HgcThemeMessage()
+    MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:009', false)
+    MainNpc.DecideEventReward('cKotonoHint')
+    MainNpc.SetItemName(1, 0, 0)
+    if EventFlowSystemActor.ShoppingCapacity('cReward', 65534):
+        run Hgc_Get_Sample()
+    else:
+        switch SubflowResults@3[0]:
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:011', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:012', true)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:014', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:015', true)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:017', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:018', true)
+    System.EventFlags['cPlayer:KotonoQuestStartFlag'] = true
+    EventFlowSystemActor.SetMemoryEventPlayer('cBlancoEventPlayer:PE_Hgc_CheckStart')
+    MainNpc.HgcSetOutfit()
+
+flow Root():
+    if not System.EventFlags['cPlayer:KotonoTalkBeforeFlag']:
+        System.EventFlags['cPlayer:KotonoTalkBeforeFlag'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:001', false)
+        run Sub_Event16()
+    elif SubflowResults@3[0] == 0:
+        if System.EventFlags['cPlayer:KotonoQuestRefuseFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:004', false)
+            run Sub_grp_Event6()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:002', false)
+            run Sub_Event16()
+    else:
+        run Hgc_Quest_Accept()
+
+local flow Sub_Event16():
+    MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:003', false)
+    run Sub_grp_Event6()
+
+local flow Sub_grp_Event6():
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run Hgc_Quest_Accept()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgc/SP_hgc:006', false)
+        System.EventFlags['cPlayer:KotonoQuestRefuseFlag'] = true
+

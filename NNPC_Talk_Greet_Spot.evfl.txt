@@ -1,0 +1,81 @@
+flow Greet_Museum_Art():
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Greet/BO_Greet_Spot:001', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Greet/BO_Greet_Spot:005', false)
+
+flow Greet_Museum_Fish():
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Greet/BO_Greet_Spot:001', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Greet/BO_Greet_Spot:003', false)
+
+flow Greet_Museum_Fossil():
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Greet/BO_Greet_Spot:001', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Greet/BO_Greet_Spot:004', false)
+
+flow Greet_Museum_Insect():
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Greet/BO_Greet_Spot:001', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Greet/BO_Greet_Spot:002', false)
+
+flow Greet_Store():
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Greet/BO_Greet_Spot:001', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Greet/BO_Greet_Spot:006', false)
+
+flow Greet_Tailor():
+    if EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Greet/BO_Greet_Spot:001', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Greet/BO_Greet_Spot:007', false)
+
+flow Root():
+    MainNpc.NpcSetTalkManualChoice()
+    if EventFlowSystemActor.SystemCheckNowStage('cMuseumInsect'):
+        if MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] < 1:
+            run Greet_Museum_Insect()
+            MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] += 1
+        else:
+            run NNPC_Talk_Greet::Greet_Again1()
+            MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] += 1
+    elif EventFlowSystemActor.SystemCheckNowStage('cMuseumFish'):
+        if MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] < 1:
+            run Greet_Museum_Fish()
+            MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] += 1
+        else:
+            run NNPC_Talk_Greet::Greet_Again1()
+            MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] += 1
+    elif EventFlowSystemActor.SystemCheckNowStage('cMuseumFossil'):
+        if MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] < 1:
+            run Greet_Museum_Fossil()
+            MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] += 1
+        else:
+            run NNPC_Talk_Greet::Greet_Again1()
+            MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] += 1
+    elif EventFlowSystemActor.SystemCheckNowStage('cMametubu'):
+        if MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] < 1:
+            run Greet_Store()
+            MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] += 1
+        else:
+            run NNPC_Talk_Greet::Greet_Again1()
+            MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] += 1
+    elif EventFlowSystemActor.SystemCheckNowStage('cTailor'):
+        if MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] < 1:
+            run Greet_Tailor()
+            MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] += 1
+        else:
+            run NNPC_Talk_Greet::Greet_Again1()
+            MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] += 1
+    elif EventFlowSystemActor.SystemCheckNowStage('cMuseumArt'):
+        if MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] < 1:
+            run Greet_Museum_Art()
+            MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] += 1
+        else:
+            run NNPC_Talk_Greet::Greet_Again1()
+            MainNpc.EventFlags['cNpcMemory:TalkCountInFacilityToday'] += 1
+

@@ -1,0 +1,15 @@
+flow Reaction_GEvent_Christmas():
+    if (EventFlowSystemActor.TermEventNow('XmasAfter', false)) and (not MainNpc.EventFlags['cNpcMemory:ChristmasAfterMesFlag']):
+        if MainNpc.EventFlags['cNpcMemory:ChristmasSantaPresentsFlag']:
+            if MainNpc.EventFlags['cNpcMemory:ChristmasGiftExchangeFlag']:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_GEvent_Christmas:003', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_GEvent_Christmas:001', false)
+        else:
+            if MainNpc.EventFlags['cNpcMemory:ChristmasGiftExchangeFlag']:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_GEvent_Christmas:002', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_GEvent_Christmas:004', false)
+        MainNpc.EventFlags['cNpcMemory:ChristmasAfterMesFlag'] = true
+        EventFlowSystemActor.ExitFlowchart()
+

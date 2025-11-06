@@ -1,0 +1,271 @@
+flow AreaSel_ChoiseNorth():
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            EventFlowSystemActor.EnvWeatherArea('cWeatherArea_North')
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:201', false)
+        case 1:
+            EventFlowSystemActor.EnvWeatherArea('cWeatherArea_South')
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:202', false)
+        case 2:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:301', false)
+            run AreaSel_ExplanationNorth()
+
+flow AreaSel_ChoiseNorth1st():
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            EventFlowSystemActor.EnvWeatherArea('cWeatherArea_North')
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:201', false)
+        case 1:
+            EventFlowSystemActor.EnvWeatherArea('cWeatherArea_South')
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:204', false)
+        case 2:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:301', false)
+            run AreaSel_ExplanationNorth()
+
+flow AreaSel_ChoiseSouth1st():
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            EventFlowSystemActor.EnvWeatherArea('cWeatherArea_South')
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:202', false)
+        case 1:
+            EventFlowSystemActor.EnvWeatherArea('cWeatherArea_North')
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:203', false)
+        case 2:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:301', false)
+            run AreaSel_ExplanationSouth()
+
+flow AreaSel_ExpN_Winter():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:304_04', false)
+    SubNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:305', false)
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:314', false)
+    run AreaSel_ChoiseNorth()
+
+flow AreaSel_ExpS_Winter():
+    run Event68()
+
+flow AreaSel_ExplanationNorth():
+    SubNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:302', false)
+    switch EventFlowSystemActor.EnvMonth():
+        case `January`, `February`:
+            run AreaSel_ExpN_Winter()
+        case `March`, `April`, `May`:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:304_01', false)
+            SubNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:305', false)
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:311', false)
+            run AreaSel_ChoiseNorth()
+        case `June`, `July`, `August`:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:304_02', false)
+            SubNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:305', false)
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:312', false)
+            run AreaSel_ChoiseNorth()
+        case `September`, `October`, `November`:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:304_03', false)
+            SubNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:305', false)
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:313', false)
+            run AreaSel_ChoiseNorth()
+        case `December`:
+            run AreaSel_ExpN_Winter()
+
+flow AreaSel_ExplanationSouth():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:303', false)
+    switch EventFlowSystemActor.EnvMonth():
+        case `January`, `February`:
+entrypoint Event68:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:304_06', false)
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:316', false)
+            run Sub_grp_Event103()
+        case `March`, `April`, `May`:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:304_07', false)
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:317', false)
+            run Sub_grp_Event103()
+        case `June`, `July`, `August`:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:304_08', false)
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:318', false)
+            run Sub_grp_Event103()
+        case `September`, `October`, `November`:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:304_05', false)
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:315', false)
+            run Sub_grp_Event103()
+        case `December`:
+            run AreaSel_ExpS_Winter()
+
+flow Area_EUen():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:021', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run Prologue1_AreaEurope()
+    else:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:022', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                run Prologue1_AreaAsia()
+            case 1:
+                run Prologue1_AreaNorthAmerica()
+            case 2:
+                run Prologue1_SelSouth1()
+
+flow Area_Japan():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:001', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:101_01', false)
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:111', false)
+        run AreaSel_ChoiseNorth1st()
+    else:
+        run Areasel_Oceania_Oversea()
+
+flow Area_NorthAmerica():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:011', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run Prologue1_AreaNorthAmerica()
+    else:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:012', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                run Prologue1_AreaAsia()
+            case 1:
+                run Prologue1_AreaEurope()
+            case 2:
+                run Prologue1_SelSouth0()
+
+flow Area_Oceania():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:031', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        run Prologue1_AreaOceania()
+    else:
+        run Areasel_Oceania_Oversea()
+
+flow Areasel_Oceania_Oversea():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:002', false)
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            run Prologue1_AreaAsia()
+        case 1:
+            run Prologue1_AreaNorthAmerica()
+        case 2:
+            run Prologue1_AreaEurope()
+        case 3:
+entrypoint Event4:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:003', false)
+            switch EventFlowSystemActor.GeneralTalkChoice4():
+                case 0:
+                    run Prologue1_AreaSouthAmerica()
+                case 1:
+                    run Prologue1_AreaOceania()
+                case 2:
+                    run Prologue1_AreaAfrica()
+                case 3:
+                    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:004', false)
+                    switch EventFlowSystemActor.GeneralTalkChoice4():
+                        case 0:
+entrypoint Event59:
+                            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:101_02', false)
+                            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:112', false)
+                            run AreaSel_ChoiseNorth1st()
+                        case 1:
+entrypoint Event15:
+                            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:101_03', false)
+                            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:113', false)
+                            run AreaSel_ChoiseNorth1st()
+                        case 2:
+entrypoint Event18:
+                            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:101_04', false)
+                            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:114', false)
+                            run AreaSel_ChoiseNorth1st()
+                        case 3:
+                            run Prologue1_SelSouth()
+
+flow Prologue1_AreaAfrica():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:101_07', false)
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:117', false)
+    run AreaSel_ChoiseNorth()
+
+flow Prologue1_AreaAsia():
+    run Event59()
+
+flow Prologue1_AreaEurope():
+    run Event18()
+
+flow Prologue1_AreaNorthAmerica():
+    run Event15()
+
+flow Prologue1_AreaOceania():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:101_06', false)
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:116', false)
+    run AreaSel_ChoiseSouth1st()
+
+flow Prologue1_AreaSouthAmerica():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:101_05', false)
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:115', false)
+    run AreaSel_ChoiseSouth1st()
+
+flow Prologue1_SelSouth():
+    run Event4()
+
+flow Prologue1_SelSouth0():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:013', false)
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            run Prologue1_AreaSouthAmerica()
+        case 1:
+            run Prologue1_AreaOceania()
+        case 2:
+            run Prologue1_AreaAfrica()
+        case 3:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:014', false)
+            switch EventFlowSystemActor.GeneralTalkChoice4():
+                case 0:
+                    run Prologue1_AreaNorthAmerica()
+                case 1:
+                    run Prologue1_AreaAsia()
+                case 2:
+                    run Prologue1_AreaEurope()
+                case 3:
+                    run Prologue1_SelSouth()
+
+flow Prologue1_SelSouth1():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:023', false)
+    switch EventFlowSystemActor.GeneralTalkChoice4():
+        case 0:
+            run Prologue1_AreaSouthAmerica()
+        case 1:
+            run Prologue1_AreaOceania()
+        case 2:
+            run Prologue1_AreaAfrica()
+        case 3:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:024', false)
+            switch EventFlowSystemActor.GeneralTalkChoice4():
+                case 0:
+                    run Prologue1_AreaEurope()
+                case 1:
+                    run Prologue1_AreaAsia()
+                case 2:
+                    run Prologue1_AreaNorthAmerica()
+                case 3:
+                    run Prologue1_SelSouth1()
+
+flow Root():
+    MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_Airport:007', false)
+    if EventFlowSystemActor.NxRegionCode() in (0, 1, 2, 4, 5):
+        switch EventFlowSystemActor.CurrentRegionLanguage('cCurrentMachine'):
+            case 0:
+                run Area_Japan()
+            case 1, 5, 7:
+                run Area_NorthAmerica()
+            case 2, 3, 4, 6, 8, 9, 10:
+                run Area_EUen()
+            case 11, 12, 13:
+                run Area_Japan()
+    else:
+        run Area_Oceania()
+
+local flow Sub_grp_Event103():
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            EventFlowSystemActor.EnvWeatherArea('cWeatherArea_South')
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:202', false)
+        case 1:
+            EventFlowSystemActor.EnvWeatherArea('cWeatherArea_North')
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:201', false)
+        case 2:
+            MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue1_AreaSelect:301', false)
+            run AreaSel_ExplanationSouth()
+

@@ -1,0 +1,86 @@
+flow Root_Lesson01():
+    System.EventFlags['cWherearenPlayer:SeqMncEventLesson01'] = false
+    if System.EventFlags['cWherearenPlayer:BridgeFromGrowUp']:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:100_02', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:100_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:001', true)
+    System.EventFlags['cPlayerTemp:WHEREAREN_LessonEventStart'] = true
+    System.EventFlags['cLandTemp:ReserveFaderKeep'] = true
+    run SNPC_mnc_01_Wherearen::bridgeTalkClose()
+    EventFlowSystemActor.ReserveSystemFlowDemo('Demo_SchoolEvent', 'LessonStart', false, false, false)
+    EventFlowSystemActor.CameraReserveFirstStateCommand('Demo:EventLessonStart', 'Place:EditArea', false)
+    EventFlowSystemActor.RequestLessonDemoForSound()
+    run `00_System_StageChange`::ChangeStage(FadeColorString='cBlack', TargetStage='cWherearenSchool', FadeOutKindString='cCircle', FadeInKindString='cCircle', FadeOutSpeed=0.0, FadeInSpeed='cNormal')
+
+flow Root_Lesson02():
+    System.EventFlags['cWherearenPlayer:SeqMncEventLesson02'] = false
+    if System.EventFlags['cWherearenPlayer:BridgeFromGrowUp']:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:100_02', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:100_01', false)
+    switch EventFlowSystemActor.FlagSystemIntValue7(7, 'cWherearenPlayer:MncBoxProgress'):
+        case 0:
+            EventFlowSystemActor.PlayerSetCraftRecipe('WherearenMncBoxPlain', 65534)
+            System.EventFlags['cWherearenPlayer:Unlock_PillarCatalog_Plain'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:101', true)
+            run Demo_Common_PhoneCall::SendingDataWithP_Mnc()
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:102', true)
+            run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:103', true)
+            run Sub_Event15()
+        case 1:
+            EventFlowSystemActor.PlayerSetCraftRecipe('WherearenMncBoxConcrete', 65534)
+            System.EventFlags['cWherearenPlayer:Unlock_PillarCatalog_Concrete'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:111_01', true)
+            run Demo_Common_PhoneCall::SendingDataWithP_Mnc()
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:112_01', true)
+            run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:113_01', true)
+            run Sub_Event15()
+        case 2:
+            EventFlowSystemActor.PlayerSetCraftRecipe('WherearenMncBoxBrick', 65534)
+            System.EventFlags['cWherearenPlayer:Unlock_PillarCatalog_Brick'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:111_02', true)
+            run Demo_Common_PhoneCall::SendingDataWithP_Mnc()
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:112_02', true)
+            run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:113_02', true)
+            run Sub_Event15()
+        case 3:
+            EventFlowSystemActor.PlayerSetCraftRecipe('WherearenMncBoxSteel', 65534)
+            System.EventFlags['cWherearenPlayer:Unlock_PillarCatalog_Steel'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:111_03', true)
+            run Demo_Common_PhoneCall::SendingDataWithP_Mnc()
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:112_03', true)
+            run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:113_03', true)
+            run Sub_Event15()
+        case 4:
+            EventFlowSystemActor.PlayerSetCraftRecipe('WherearenMncBoxMarble', 65534)
+            System.EventFlags['cWherearenPlayer:Unlock_PillarCatalog_Marble'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:111_04', true)
+            run Demo_Common_PhoneCall::SendingDataWithP_Mnc()
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:112_04', true)
+            run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:113_04', true)
+            run Sub_Event15()
+        case 5:
+            EventFlowSystemActor.PlayerSetCraftRecipe('WherearenMncBoxComplete', 65534)
+            System.EventFlags['cWherearenPlayer:Unlock_PillarCatalog_02'] = true
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:121', true)
+            run Demo_Common_PhoneCall::SendingDataWithP_Mnc()
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:122', true)
+            run Demo_Common_PhoneCall::PuttingMobileAwayWithP()
+            MainNpc.OpenMessageWindow('TalkSNpc/mnc/SP_mnc_08_WherearenEvent_Lesson:123', true)
+            System.EventFlags['cWherearenPlayer:MncBoxProgress'] += 1
+            System.EventFlags['cWherearenPlayer:MncBoxRemovePresent'] = true
+        default:
+            return
+
+local flow Sub_Event15():
+    System.EventFlags['cWherearenPlayer:MncBoxProgress'] += 1
+    EventFlowSystemActor.SetMncBoxMateriel()
+    System.EventFlags['cWherearenPlayer:MncBoxReadMemo'] = false
+    System.EventFlags['cWherearenPlayer:MncBoxRemovePresent'] = true
+

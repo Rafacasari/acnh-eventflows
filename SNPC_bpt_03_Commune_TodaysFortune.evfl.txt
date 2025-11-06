@@ -1,0 +1,75 @@
+flow Bpt_FortuneResult():
+    switch MainNpc.FortuneBranchPre():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:111', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:112', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:121', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:122', false)
+            SubflowResults[1] = 1
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:131', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:132', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:141', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:142', false)
+            SubflowResults[1] = 1
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:151', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:152', false)
+        case 5:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:161', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:162', false)
+            SubflowResults[1] = 1
+        case 6:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:171', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:172', false)
+        case 7:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:181', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:182', false)
+            SubflowResults[1] = 1
+
+flow Root():
+    run SNPC_bpt_02_Commune_2_CmnProcess::Bpt_PayFortuneFee()
+    EventFlowSystemActor.PrepareCommuneDecoFortuneDisplayContent('cPassportPhoto')
+    System.EventFlags['cPlayer:Bpt_FinishFortune_Today'] = true
+    System.EventFlags['cPlayer:Bpt_1stTalk'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:101', false)
+    MainNpc.FortuneSelect()
+    run SNPC_bpt_02_Commune_2_CmnProcess::Bpt_Start_FortuneTelling()
+    run Bpt_FortuneResult()
+    run SNPC_bpt_02_Commune_2_CmnProcess::Bpt_Finish_FortuneTelling()
+    EventFlowSystemActor.SetMemoryValuePlayer('cBlancoValuePlayer:PV_BptFortune', 1)
+    if SubflowResults@2[1] == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:102_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:102_02', false)
+        MainNpc.FortuneSet()
+        EventFlowSystemActor.SetPlayReporterBptTelling('cFortune', false, false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:103', true)
+        EventFlowSystemActor.WaitFrame(10)
+        if EventFlowSystemActor.HasBellCount(10000):
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:104_02', true)
+            EventFlowSystemActor.WaitFrame(10)
+            EventFlowSystemActor.UIMoneyAppear()
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:105', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run SNPC_bpt_02_Commune_2_CmnProcess::Bpt_PayExtraFee()
+                EventFlowSystemActor.PrepareCommuneDecoFortuneDisplayContent('cPassportPhoto')
+                MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:107', false)
+                SubflowResults[3] = 2
+                run SNPC_bpt_02_Commune_2_CmnProcess::Bpt_Start_FortuneTelling()
+                run SNPC_bpt_02_Commune_2_CmnProcess::Bpt_Finish_FortuneTelling()
+                MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:108', false)
+                MainNpc.BptDecideReward(0)
+                EventFlowSystemActor.SystemMailSend('cBpt', 'MAIL_SNpc_bpt', 1, 'cNone', 'cFastTomorrow', 'cReward', false, false)
+                EventFlowSystemActor.SetPlayReporterBptTelling('cFortune', true, false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:106', false)
+                MainNpc.FortuneSet()
+                EventFlowSystemActor.SetPlayReporterBptTelling('cFortune', false, false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/bpt/SP_bpt_02_Commune:104_01', false)
+            MainNpc.FortuneSet()
+            EventFlowSystemActor.SetPlayReporterBptTelling('cFortune', false, false)
+

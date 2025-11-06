@@ -1,0 +1,275 @@
+flow Free_VisitN():
+    MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] += 1
+    if (EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) != 0) and (not MainNpc.EventFlags['cNpcTemp:IsPlayedQuestMiniGame']):
+        run Game_VisitN()
+    elif EventFlowSystemActor.PercentChoice(30):
+        run NNPC_FreeC::RoomN_Chk()
+    else:
+        run NNPC_FreeC::FunitureN_Chk()
+
+flow Game_VisitN():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:200', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+entrypoint Event88:
+                run NNPC_Game_2ChoiceQuiz::Root()
+                MainNpc.NpcAddFriendship(1)
+            else:
+entrypoint Event90:
+                switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:203', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:204', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:205', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:201', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Yes()
+            else:
+                run RefuseGame()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:202', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Yes()
+            else:
+                run RefuseGame()
+    MainNpc.EventFlags['cNpcTemp:IsPlayedQuestMiniGame'] = true
+    MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] += 1
+
+flow Home_Buy(ItemPrice: int = 0):
+    MainNpc.NpcSetTradeFtrInfo(ItemPrice)
+    if MainNpc.NpcIsTradableFtr():
+        run Present_Chk()
+        EventFlowSystemActor.UIMoneyAppear()
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:100', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run Sub_grp_Event129(ItemPrice=ItemPrice)
+                else:
+                    run NotBuy()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:101', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run Sub_grp_Event129(ItemPrice=ItemPrice)
+                else:
+                    run NotBuy()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:102', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run Sub_grp_Event129(ItemPrice=ItemPrice)
+                else:
+                    run NotBuy()
+    else:
+        run Present_Chk()
+        MainNpc.NpcOpenTradeBanReasonMessage()
+        MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] += 1
+
+flow Home_In():
+    MainNpc.EventFlags['cNpcMemory:FinishVisitNToday'] = true
+    MainNpc.EventFlags['cNpcTemp:NotAddIndoorTalkCount'] = true
+    MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] = 0
+    MainNpc.EventFlags['cNpcTemp:VisitQuestFurnitureTrade'] = false
+    MainNpc.SystemSetVisitQuestPlayerEnterFlag()
+    EventFlowSystemActor.SetSharePlayChangeCondition(true)
+    if MainNpc.SystemVisitQuestKind('cNpc'):
+        switch EventFlowSystemActor.EnvTimeZone():
+            case `05:00-07:59`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:004', true)
+            case `08:00-11:59`, `12:00-15:59`, `16:00-18:59`, `19:00-23:59`:
+                if EventFlowSystemActor.EnvHourCompare(23, -1, true, true) == 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:005', true)
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:006', true)
+            case `00:00-04:59`:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:007', true)
+        if System.EventFlags['cPlayer:PlayerStungByBee']:
+            MainNpc.EventFlags['cNpcMemory:TalkBeefaceToday'] = true
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:001', true)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:002', true)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:003', true)
+
+flow Home_Talk():
+    MainNpc.EventFlags['cNpcTemp:TalkEndWait'] = true
+    if MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] < 1:
+        if MainNpc.SystemVisitQuestKind('cNpc'):
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:103', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:104', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:105', false)
+        else:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:100', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:101', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Home:102', false)
+        MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] += 1
+    else:
+        if MainNpc.EventFlags['cNpcTemp:VisitQuestFurnitureTrade']:
+            run PreTrade()
+        elif MainNpc.EventFlags['cNpcTemp:FurnitureTradeFinish']:
+            run Free_VisitN()
+        elif MainNpc.IsInteriorReformed():
+            run Free_VisitN()
+        elif (MainNpc.NpcIsExistTradableFtr()) and (EventFlowSystemActor.HasBellCount(8000)) and (EventFlowSystemActor.NowRoomFtrNum(4)) and (EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') >= 1) and (EventFlowSystemActor.PercentChoice(30)):
+            run StartTrade()
+        else:
+            run Free_VisitN()
+
+flow NotBuy():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:103', false)
+    MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] += 1
+
+flow PreTrade():
+    if System.EventFlags['cPlayerTemp:TradeTalkCount'] < 2:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:001', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:002', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:003', false)
+        System.EventFlags['cPlayerTemp:TradeTalkCount'] += 1
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:013', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:014', false)
+            MainNpc.EventFlags['cNpcTemp:VisitQuestFurnitureTrade'] = false
+            MainNpc.EventFlags['cNpcTemp:FurnitureTradeFinish'] = true
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:015', false)
+    MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] += 1
+
+flow Present_Chk():
+    if MainNpc.IsTouchedFtrFromPlayer(0):
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:107', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:108', false)
+            MainNpc.EventFlags['cNpcTemp:VisitNFtrReturnToPlayer'] = true
+            if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                if MainNpc.TradeFtrCanAttachLetter():
+                    MainNpc.NpcDeleteBuyFtr()
+                    MainNpc.NpcMailSend('MAIL_XX_Quest_VisitN', 4, 'cNone', 'cFastTomorrow', 'cReward', false)
+                    EventFlowSystemActor.WaitFrame(30)
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:206', false)
+                    run Sub_Event141()
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:208', false)
+                    MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] += 1
+            else:
+                MainNpc.NpcDeleteBuyFtr()
+                MainNpc.NpcSetQuestRewardToPlayerBaggage('cFree')
+                EventFlowSystemActor.WaitFrame(30)
+                MainNpc.AddMemoryEventPlayerForNpc('Present_FromNNPC')
+                run Sub_Event141()
+            EventFlowSystemActor.ExitFlowchart()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:109', false)
+            EventFlowSystemActor.ExitFlowchart()
+    elif MainNpc.IsTouchedFtrFromPlayer(1):
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:106', false)
+        MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] += 1
+        EventFlowSystemActor.ExitFlowchart()
+
+flow RefuseGame():
+    run Event90()
+
+flow StartTrade():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:004', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Trade_Yes()
+            else:
+                run Trade_No()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:005', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Trade_Yes()
+            else:
+                run Trade_No()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:006', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Trade_Yes()
+            else:
+                run Trade_No()
+
+local flow Sub_Event141():
+    MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] += 1
+    MainNpc.RegistToReleaseItemList(4)
+
+local flow Sub_grp_Event129(ItemPrice: int):
+    if EventFlowSystemActor.HasBellCount(ItemPrice):
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:200', true)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:201', true)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:202', true)
+        MainNpc.NpcDeleteBuyFtr()
+        EventFlowSystemActor.BellCountDown(ItemPrice, true)
+        if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+            MainNpc.NpcMailSend('MAIL_XX_Quest_VisitN', 4, 'cNone', 'cFastTomorrow', 'cReward', false)
+            EventFlowSystemActor.WaitFrame(30)
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:206', false)
+        else:
+            MainNpc.NpcSetQuestRewardToPlayerBaggage('cFree')
+            EventFlowSystemActor.WaitFrame(30)
+            if MainNpc.TouchedFtrIsFood():
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:207', false)
+            else:
+                switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:203', false)
+                    case 1:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:204', false)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:205', false)
+        EventFlowSystemActor.UIMoneyDisappear()
+        MainNpc.EventFlags['cNpcTemp:VisitQuestFurnitureTrade'] = false
+        MainNpc.EventFlags['cNpcTemp:FurnitureTradeFinish'] = true
+        MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] += 1
+        MainNpc.RegistToReleaseItemList(6)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:104', false)
+        MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] += 1
+
+flow Trade_No():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:010', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:011', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:012', false)
+    MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] += 1
+
+flow Trade_Yes():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:007', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:008', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Quest/BO_Quest_VisitN_Trade:009', false)
+    MainNpc.EventFlags['cNpcTemp:VisitQuestFurnitureTrade'] = true
+    MainNpc.EventFlags['cNpcMemory:TalkCountInHouseToday'] += 1
+
+flow Yes():
+    run Event88()
+

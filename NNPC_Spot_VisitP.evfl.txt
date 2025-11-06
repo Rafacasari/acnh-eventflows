@@ -1,0 +1,223 @@
+flow Begin():
+    MainNpc.NpcSetAIBlackBoard('SpeakTypeBed', 0)
+    MainNpc.NpcSetAIBlackBoard('SpeakTypeChair', 0)
+    System.EventFlags['cLandTemp:VisitPGoHomeCheckCondition'] = false
+    System.EventFlags['cLandTemp:VisitPStayExtendTime'] = 0
+    MainNpc.EventFlags['cNpcTemp:ExtendStayTimeVisitP'] = false
+    System.EventFlags['cLandTemp:CockroachMovingChk'] = false
+    MainNpc.EventFlags['cNpcTemp:NotAddTalkCount'] = true
+    if MainNpc.EventFlags['cNpcTemp:VisitQuestCallCount'] < 1:
+        EventFlowSystemActor.EmitDoorSound('cKnock')
+        MainNpc.NpcAISetting(9, true)
+        if EventFlowSystemActor.SystemCheckNowStage('cTalkingPlayerEntranceRoom'):
+            MainNpc.NpcAISetting(5, true)
+        run VisitFirst()
+        run VisitSecond()
+    else:
+        run VisitSecond()
+
+flow End():
+    if not MainNpc.EventFlags['cNpcTemp:VisitPNPCGoHomeMyself']:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:403', true)
+                run Sub_Event81()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:404', true)
+                run Sub_Event81()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:405', true)
+                run Sub_Event81()
+    elif MainNpc.EventFlags['cNpcTemp:ExtendStayTimeVisitP']:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:400', true)
+                run Sub_Event81()
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:401', true)
+                run Sub_Event81()
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:402', true)
+                run Sub_Event81()
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:500', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:503', false)
+            System.EventFlags['cLandTemp:VisitPStayExtendTime'] = 5
+            MainNpc.EventFlags['cNpcTemp:ExtendStayTimeVisitP'] = true
+            MainNpc.SetVisitPGoHomeCheckCondition()
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:504', true)
+            run Sub_Event81()
+
+flow Free_VisitP():
+    if (EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) != 0) and (not MainNpc.EventFlags['cNpcTemp:IsPlayedQuestMiniGame']) and (MainNpc.NpcNowPosture() == 0):
+        run Game_VisitP()
+    elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+        run NNPC_FreeC::FunitureP_Chk()
+    else:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious5(5, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:206', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:207', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:208', false)
+            case 3:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:209', false)
+            case 4:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:210', false)
+
+flow Game_VisitP():
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:211', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+entrypoint Event41:
+                run NNPC_Game_2ChoiceQuiz::Root()
+                MainNpc.NpcAddFriendship(1)
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:214', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:212', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Yes()
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:215', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:213', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                run Yes()
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:216', false)
+    MainNpc.EventFlags['cNpcTemp:IsPlayedQuestMiniGame'] = true
+
+flow Present_VisitP():
+    if EventFlowSystemActor.PercentChoice(20):
+        run NNPC_Quest_AllReward::Good()
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:200', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:201', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:202', false)
+    else:
+        run NNPC_Quest_AllReward::Gift()
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:203', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:204', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:205', false)
+    MainNpc.NpcDelivery(1, '"Default"')
+    MainNpc.EventFlags['cNpcTemp:SurpriseVisitPresentGave'] = true
+    MainNpc.AddMemoryEventPlayerForNpc('Present_FromNNPC')
+
+local flow Sub_Event81():
+    EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 1.0, 1.0, true)
+    MainNpc.NpcVisitQuestGoHome()
+    EventFlowSystemActor.SetSharePlayChangeCondition(false)
+    System.EventFlags['cLandTemp:NpcVisitPlayerHouse'] = false
+    Player.PlayerWarp(8)
+    EventFlowSystemActor.CameraResetRoomAngle(0.0, true)
+    EventFlowSystemActor.StoreNormalCamera(true, '')
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.FadeIn(true)
+    Player.CharacterEmoticonAction('AddWaveHands', false, '', 0, false)
+    EventFlowSystemActor.WaitFrame(30)
+    MainNpc.EventFlags['cNpcTemp:VisitQuestCallCount'] = 0
+    MainNpc.EventFlags['cNpcTemp:SurpriseVisitEntered'] = false
+    MainNpc.EventFlags['cNpcTemp:AtHomeAI'] = false
+    MainNpc.EventFlags['cNpcMemory:FinishVisitPToday'] = true
+
+flow Talk():
+    MainNpc.EventFlags['cNpcTemp:TalkEndWait'] = true
+    if MainNpc.EventFlags['cNpcTemp:IndoorTalkCount'] < 1:
+        switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+            case 0:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:100', false)
+            case 1:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:101', false)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:102', false)
+    elif MainNpc.EventFlags['cNpcTemp:SurpriseVisitPresentGave']:
+        run Free_VisitP()
+    else:
+        if (EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') >= 1) and (MainNpc.NpcNowPosture() == 0):
+            run Present_VisitP()
+        else:
+            run Free_VisitP()
+        MainNpc.EventFlags['cNpcTemp:AtHomeAI'] = true
+
+flow VisitFirst():
+    EventFlowSystemActor.WaitFrame(10)
+    switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+        case 0:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:001', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:002', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:003', true)
+    EventFlowSystemActor.WaitFrame(10)
+
+flow VisitSecond():
+    if EventFlowSystemActor.SystemCheckNowStage('cTalkingPlayerEntranceRoom'):
+        Player.PlayerSetupForNpcQuestPVisit()
+        MainNpc.SetNpcFeel('cNormal', 120, false)
+        MainNpc.ChangeNpcPlace('cTalkPlayerHouse')
+        MainNpc.ChangeClothForVisitQuest(false, false)
+        EventFlowSystemActor.EmitDoorSound('cDoorEnter')
+        EventFlowSystemActor.WaitFrame(30)
+        MainNpc.NpcEnter('Entrance', -2, 0.0)
+        if System.EventFlags['cLandTemp:CockroachMovingChk']:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:010', true)
+            EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 1.0, 1.0, true)
+            MainNpc.NpcSetSurpriseVisitDate()
+            MainNpc.NpcVisitQuestGoHome()
+            EventFlowSystemActor.SetSharePlayChangeCondition(false)
+            System.EventFlags['cLandTemp:NpcVisitPlayerHouse'] = false
+            EventFlowSystemActor.WaitFrame(30)
+            EventFlowSystemActor.FadeIn(true)
+            MainNpc.EventFlags['cNpcTemp:VisitQuestCallCount'] = 0
+            MainNpc.EventFlags['cNpcTemp:SurpriseVisitEntered'] = false
+            MainNpc.EventFlags['cNpcTemp:AtHomeAI'] = false
+            MainNpc.EventFlags['cNpcMemory:FinishVisitPToday'] = true
+            MainNpc.EventFlags['cNpcMemory:PastCountFromLastVisitPlayerHouse'] = 1
+        else:
+            switch EventFlowSystemActor.RandomChoiceExcludePrevious3(3, true):
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:006', true)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:007', true)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:008', true)
+            MainNpc.EventFlags['cNpcTemp:SurpriseVisitEntered'] = true
+            MainNpc.NpcSetAIBlackBoard('SurpriseHide', 0)
+            MainNpc.NpcSetAIBlackBoard('SurpriseVisit', 1)
+            MainNpc.SystemSetInviteQuestEnterTime()
+            MainNpc.EventFlags['cNpcMemory:VisitCount'] += 1
+            MainNpc.EventFlags['cNpcMemory:PastCountFromLastVisitPlayerHouse'] = 1
+            MainNpc.NpcSetSurpriseVisitDate()
+            EventFlowSystemActor.SetSharePlayChangeCondition(true)
+            System.EventFlags['cLandTemp:NpcVisitPlayerHouse'] = true
+            run NNPC_FreeH_Progress::Conceal_MyHouseBuilt()
+            if System.EventFlags['cPlayer:PlayerStungByBee']:
+                MainNpc.EventFlags['cNpcMemory:TalkBeefaceToday'] = true
+    else:
+        EventFlowSystemActor.EmitDoorSound('cKnock')
+        EventFlowSystemActor.WaitFrame(10)
+        if MainNpc.EventFlags['cNpcTemp:VisitQuestCallCount'] < 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:004', false)
+            MainNpc.EventFlags['cNpcTemp:VisitQuestCallCount'] += 1
+            System.EventFlags['cLandTemp:NpcVisitPlayerHouse'] = true
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Spot/BO_Spot_VisitP:005', true)
+            MainNpc.NpcVisitQuestGoHome()
+            MainNpc.EventFlags['cNpcTemp:VisitQuestCallCount'] = 0
+            System.EventFlags['cLandTemp:NpcVisitPlayerHouse'] = false
+
+flow Yes():
+    run Event41()
+

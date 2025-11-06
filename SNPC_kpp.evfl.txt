@@ -1,0 +1,89 @@
+flow Root():
+    if not EventFlowSystemActor.IsMyVillage():
+        if not System.EventFlags['cPlayerVisit:KppTalkFlag']:
+            MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:014', false)
+            System.EventFlags['cPlayerVisit:KppTalkFlag'] = true
+        elif EventFlowSystemActor.RandomChoiceExcludePrevious2(2, true) == 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:016', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:015', false)
+    elif not System.EventFlags['cPlayer:KppFirstTalk']:
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:010', false)
+        if System.EventFlags['cPlayer:MakePlayerAfterStartingKppTour']:
+            MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:010_01_02', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:010_01_01', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:010_02', false)
+        System.EventFlags['cPlayer:KppFirstTalk'] = true
+        if not System.EventFlags['cLand:KppTourStart']:
+            System.EventFlags['cLand:KppTourStartToday'] = true
+            System.EventFlags['cLand:KppTourStart'] = true
+        if not System.EventFlags['cPlayer:DocMysterytourExplain1st']:
+            MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:012', false)
+            MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:013', false)
+    elif System.EventFlags['cPlayer:KppTakeTourTodayFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:009', false)
+    elif System.EventFlags['cPlayer:DocMysterytourExplain1st']:
+        EventFlowSystemActor.UISonkatsuPointAppear()
+        EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 0, 1000, '')
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:001', false)
+        if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:005', false)
+        elif EventFlowSystemActor.IsSharePlay(0):
+            MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:008', false)
+        elif EventFlowSystemActor.NetHasVisitor():
+            MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:007', false)
+        elif EventFlowSystemActor.NetIsConnected():
+            if EventFlowSystemActor.IsVillageGateOpened():
+                MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:006', false)
+            else:
+                EventFlowSystemActor.NetEndSessionVillage('cEndVillageSession', false)
+                run Sub_grp_Event9()
+        else:
+            run Sub_grp_Event9()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:013', false)
+
+local flow Sub_grp_Event9():
+    if EventFlowSystemActor.HasLifeSupportPoint(1000, 'Now'):
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:002', true)
+        run kpp_PayMile()
+        run kpp_PreProcess()
+        MainNpc.SetKappeiIslandReturnPos()
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:003', true)
+        EventFlowSystemActor.SelectMysteryTour(2)
+        MainNpc.NpcStartAS('NpcStandUpGround', true, true)
+        fork:
+            branch:
+                run `00_System_StageChange`::ChangeStage(FadeColorString='cBlack', TargetStage='cKppSeaDeparture', FadeOutKindString='cCircle', FadeInKindString='cCircle', FadeOutSpeed=0.0, FadeInSpeed='cNormal')
+            branch:
+                MainNpc.NpcStartAS('KppStandby', true, true)
+            branch:
+                Player.PlayerMoveToKppBoat()
+                Player.TurnBody(12, 180.0)
+            branch:
+                EventFlowSystemActor@BgmActor.SoundTriggerEmit('Boat_Start', -1)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:004', false)
+
+flow kpp_PayMile():
+    EventFlowSystemActor.WaitFrame(5)
+    Player.SmartPhone(0)
+    Player.SmartPhone(4)
+    EventFlowSystemActor.WaitFrame(5)
+    Player.SmartPhoneSE(2, 'Phone_Control')
+    EventFlowSystemActor.WaitFrame(30)
+    Player.SmartPhoneSE(2, 'Phone_Sending')
+    EventFlowSystemActor.WaitFrame(30)
+    EventFlowSystemActor.LifeSupportPointCountDown(-1000, false)
+    Player.SmartPhone(5)
+    Player.SmartPhone(1)
+    EventFlowSystemActor.WaitFrame(5)
+
+flow kpp_PreProcess():
+    EventFlowSystemActor.MiniGameSilentCancel()
+    if System.EventFlags['cPlayer:EquipLicenseHelmet']:
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp:011', true)
+        System.EventFlags['cPlayer:EquipLicenseHelmet'] = false
+        Player.PlayerOutfitFieldMakeToolKit('cOff')
+

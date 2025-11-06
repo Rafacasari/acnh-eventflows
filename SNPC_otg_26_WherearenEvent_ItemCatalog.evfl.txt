@@ -1,0 +1,123 @@
+flow ContinueEventTalk():
+    EventFlowSystemActor.WaitFrame(20)
+    run `00_Demo_Fade`::FadeIn_Cmn(IsWait=true)
+    run rco_Visit04()
+
+flow ContinueEventTalk_Init():
+    return
+
+flow Root():
+    run rco_Visit01()
+    run rco_Visit02()
+    run rco_Visit03()
+    EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Wherearen', 'ItemCatalog_rco', 'cNowDemoEnd', false)
+    EventFlowSystemActor.SetNpcAIBlackBoardByLabel('otg', 'WaitMutter', 1, 0)
+    MainNpc.NpcAISetting(4, false)
+
+flow Root_Init():
+    MainNpc.NpcAITalkSubCastEntry('rco', 1)
+
+flow rco_Visit01():
+    MainNpc.TurnBody(10, 0.0)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:601', false)
+        branch:
+            Player.TurnBody(0, 0.0)
+            EventFlowSystemActor.WaitFrame(15)
+            SubNpc.TurnBody(10, 0.0)
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:602', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(1, false)
+    MainNpc.TurnNeck(1, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:603', false)
+        branch:
+            Player.TurnNeck(0, false)
+            EventFlowSystemActor.WaitFrame(30)
+            SubNpc.TurnNeck(0, false)
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:604', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(1, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:605', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(0, false)
+
+flow rco_Visit02():
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:606', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(1, false)
+    SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:607', false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:608', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(0, false)
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:609', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(1, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:610', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(0, false)
+
+flow rco_Visit03():
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:611', false)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(1, false)
+    MainNpc.TurnNeck(1, false)
+    fork:
+        branch:
+            MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:612', false)
+        branch:
+            SubNpc.TurnNeck(0, false)
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(0, false)
+    fork:
+        branch:
+            SubNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:613', true)
+        branch:
+            EventFlowSystemActor.WaitFrame(15)
+            Player.TurnNeck(1, false)
+
+flow rco_Visit04():
+    MainNpc.TurnNeck(10, false)
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:615', true)
+    run SNPC_otg_01_WherearenOffice::HouseCompleteActing()
+    run SNPC_otg_01_WherearenOffice::SetSalaryForEvent()
+    MainNpc.OpenMessageWindow('TalkSNpc/otg/SP_otg_04_WherearenEvent:616', true)
+    run SNPC_otg_01_WherearenOffice::GetSalaryForEvent()
+    System.EventFlags['cWherearenPlayer:Unlock_MargeCatalog_General'] = true
+    SubflowResults[3] = 2
+    run SNPC_otg_01_WherearenOffice::OrderClose_Complete()
+    run SNPC_otg_01_WherearenOffice::Otg_ReturnHomePos()
+
+flow rco_disappear():
+    run `00_Demo_Fade`::FadeOut_Cmn(FadeType='cCircle', FadeColor='cBlack', FadeSpeed='cNormal', SoundDucking='cWorldDucking')
+    EventFlowSystemActor.SetupActorPosition(17)
+    System.EventFlags['cWherearenPlayer:RcoGenerateInOfficeTemp'] = false
+    EventFlowSystemActor.SetNpcAIBlackBoardByLabel('rco', 'RequestExecuteAIFlow', 0, 1)
+    EventFlowSystemActor.SetNpcAIBlackBoardByLabel('otg', 'ItemCatalogGetDemoEnd', 1, 1)
+

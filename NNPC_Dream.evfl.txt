@@ -1,0 +1,23 @@
+flow NNPC_Dream():
+    if not EventFlowSystemActor.SystemCheckNowStage('cField'):
+        if MainNpc.EventFlags['cNpcMemory:TalkInDream']:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Dream/BO_Dream_Room:002', false)
+        else:
+            MainNpc.EventFlags['cNpcMemory:TalkInDream'] = true
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Dream/BO_Dream_Room:001', false)
+    elif not MainNpc.EventFlags['cNpcMemory:TalkInDream']:
+        MainNpc.EventFlags['cNpcMemory:TalkInDream'] = true
+        if MainNpc.IsLivingMyLandNpcForDream():
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Dream/BO_Dream_Field:003', false)
+        elif MainNpc.EventFlags['cNpcMemory:HasAcquaintanceship']:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Dream/BO_Dream_Field:002', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Dream/BO_Dream_Field:001', false)
+    elif MainNpc.IsLivingMyLandNpcForDream():
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Dream/BO_Dream_Field:005', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/Dream/BO_Dream_Field:004', false)
+
+flow PlayerGhost_Dream():
+    return
+

@@ -1,0 +1,97 @@
+flow ChkAdviceVine():
+    if ((EventFlowSystemActor.KappeiTourType('cOneRoom')) or (EventFlowSystemActor.KappeiTourType('cStarPiece'))) and (not System.EventFlags['cPlayer:KppTalkAboutVine']):
+        EventFlowSystemActor.MessageSuspend()
+        fork:
+            branch:
+                MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:031_01', false)
+            branch:
+                EventFlowSystemActor.WaitFrame(45)
+                Player.TurnBody(12, 180.0)
+                Player.PlayerWaitTurn()
+        Player.TurnBody(0, 0.0)
+        Player.PlayerWaitTurn()
+        EventFlowSystemActor.WaitFrame(10)
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:031_02', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:031_03', false)
+        System.EventFlags['cPlayer:KppTalkAboutVine'] = true
+
+flow CloseUI():
+    fork:
+        branch:
+            EventFlowSystemActor.UISonkatsuPointDisappear()
+        branch:
+            EventFlowSystemActor@UI.UIShopBuyDisappear()
+
+flow ExchangeCancel():
+    run CloseUI()
+    MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:013', false)
+
+flow FaintEntry():
+    MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:021', false)
+    System.EventFlags['cPlayerTemp:KppTalkSceneFlag'] = true
+
+flow KppCmnCancel():
+    MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:005', false)
+
+flow Root():
+    if System.EventFlags['cPlayerTemp:KppTalkSceneFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:002', false)
+        switch EventFlowSystemActor.GeneralTalkChoice3():
+            case 0:
+                MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:003', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:004', false)
+                    EventFlowSystemActor.MessageSuspend()
+                    if MainNpc.NpcNowPosture() != 0:
+                        MainNpc.NpcStartAS('NpcStandUpGround', true, true)
+                    fork:
+                        branch:
+                            EventFlowSystemActor.SystemRequestChangeStage('cKppSeaReturn', 'cCircle', 'cCircle', 'cBlack', 1.0, 1.0)
+                        branch:
+                            MainNpc.NpcStartAS('KppStandby', true, true)
+                        branch:
+                            Player.PlayerMoveToKppBoat()
+                            Player.TurnBody(12, 0.0)
+                        branch:
+                            EventFlowSystemActor@BgmActor.SoundTriggerEmit('Boat_Start', -1)
+                else:
+                    run KppCmnCancel()
+            case 1:
+                if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:012', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:011', false)
+                    fork:
+                        branch:
+                            EventFlowSystemActor.UISonkatsuPointAppear()
+                        branch:
+                            EventFlowSystemActor@UI.UIShopBuyAppear('cRodly')
+                    if EventFlowSystemActor.UIResultMenuDecide():
+                        EventFlowSystemActor.SetTagFromUIResult('cItemName', 0)
+                        EventFlowSystemActor.SetTagFromSystem('cFlow', 'cDegit', 0, 100, '')
+                        if EventFlowSystemActor.HasLifeSupportPoint(100, 'Now'):
+                            MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:015', false)
+                            if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                                EventFlowSystemActor.LifeSupportPointCountDown(-100, false)
+                                run CloseUI()
+                                MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:016', false)
+                                MainNpc.ShopBuyDone(false, false, false, false)
+                            else:
+                                run ExchangeCancel()
+                        else:
+                            MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:014', false)
+                            run CloseUI()
+                    else:
+                        run ExchangeCancel()
+            case 2:
+                run KppCmnCancel()
+    else:
+        System.EventFlags['cPlayerTemp:KppTalkSceneFlag'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:001_01', false)
+        if System.EventFlags['cPlayer:KppTourExplain1st']:
+            run ChkAdviceVine()
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:001_02_01', false)
+            System.EventFlags['cPlayer:KppTourExplain1st'] = true
+        MainNpc.OpenMessageWindow('TalkSNpc/kpp/SP_kpp_02_TourIsland:001_04', false)
+

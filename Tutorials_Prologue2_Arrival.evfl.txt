@@ -1,0 +1,22 @@
+flow Root():
+    EventFlowSystemActor.CameraSetDemoParam('cBirdView', '', 'Keep', false, false, false, 0)
+    System.EventFlags['cPlayerTemp:PrologueArrivalTalked'] = true
+    System.EventFlags['cPlayer:FirstPlayAfterPlayerMake'] = true
+    if System.EventFlags['cLand:ValidateVillageSave']:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue2_Arrival:003', false)
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue2_Arrival:004', true)
+        EventFlowSystemActor.WaitFrame(20)
+        EventFlowSystemActor.FadeOut('cCircle', 'cCircle', 'cBlack', 0.800000011920929, 0.800000011920929, true)
+        EventFlowSystemActor.SetupActorPosition(3)
+        EventFlowSystemActor.CameraSetDemoParam('EventPlazaPrologue', '', 'Npc:rco', false, false, false, 0)
+        EventFlowSystemActor.SetNpcAIBlackBoardByLabel('rco', 'isSpeak', 1, 1)
+    else:
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue2_Arrival:001', false)
+        MainNpc.OpenMessageWindow('Tutorials/Tutorials_Prologue2_Arrival:002', true)
+        if System.EventFlags['cPlayer:PlayerProducedByPlayerMoving']:
+            if EventFlowSystemActor.SystemHasBaggageItem(1):
+                EventFlowSystemActor.PlayerBaggageOperationForEvent('cReserve')
+                EventFlowSystemActor.PlayerBaggageOperationForEvent('cRemove')
+            else:
+                System.EventFlags['cPlayer:PlayerMovingwithNoBelongings'] = true
+

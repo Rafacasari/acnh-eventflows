@@ -1,0 +1,13 @@
+flow Root():
+    if not System.EventFlags['cWherearenPlayer:SeqParty2Done']:
+        MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_04_WherearenEvent_Party:001', true)
+    elif not System.EventFlags['cWherearenPlayer:SeqParty3Done']:
+        MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_04_WherearenEvent_Party:002', true)
+    elif System.EventFlags['cWherearenPlayer:IsFParty']:
+        MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_04_WherearenEvent_Party:201', true)
+    elif System.EventFlags['cWherearenPlayer:SeqPartyPatternedDone']:
+        run SNPC_otg_25_WherearenEvent_PartyAtRestaurant::PatternedSet()
+        MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_04_WherearenEvent_Party:101', true)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/man/SP_man_04_WherearenEvent_Party:003', true)
+

@@ -1,0 +1,83 @@
+flow Cmi_Commune_Again_NoMoney():
+    MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:015', false)
+entrypoint Event20:
+    EventFlowSystemActor.UIShopBuyReselectionAppear()
+    run Event14()
+
+flow Cml_Commune_Again_Buy():
+    MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:013', false)
+    run Event20()
+
+flow Cml_Commune_Again_Look():
+    MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:014', false)
+    run Cmi_Commune_Again_NoMoney()
+
+flow Root():
+    EventFlowSystemActor.CommuneTrailerSetCulling('bpt', 'cON')
+    run cml_Main()
+    EventFlowSystemActor.CommuneTrailerSetCulling('bpt', 'cOFF')
+    EventFlowSystemActor.StoreNormalCamera(false, '')
+
+local flow Sub_Event8():
+    System.EventFlags['cPlayer:CmlCommuneTalkBefore'] = true
+    if System.EventFlags['cPlayer:TalkCmlCommuneOpenEvent']:
+        MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:003', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:002', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:004', false)
+
+flow cml_Main():
+    if EventFlowSystemActor.EnvHourCompare(0, -1, true, true) == 0:
+        if System.EventFlags['cPlayer:RollanTalkBeforeFlag']:
+            if not System.EventFlags['cPlayer:CmlCommuneTalkBefore']:
+                run Sub_Event8()
+            elif System.EventFlags['cPlayer:CmlCommuneBuyToday']:
+                MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:005', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:006', false)
+        else:
+            System.EventFlags['cPlayer:RollanTalkBeforeFlag'] = true
+            run Sub_Event8()
+        fork:
+            branch:
+                EventFlowSystemActor.UIMoneyAppear()
+            branch:
+                EventFlowSystemActor@UI.UIShopBuyAppear('cCommuneIslandInterior')
+entrypoint Event14:
+        if EventFlowSystemActor.UIResultMenuDecide():
+            EventFlowSystemActor.SetTagFromUIResult('cItemName', 0)
+            EventFlowSystemActor.SetTagFromUIResult('cCommuneCmlItemPrice', 0)
+            MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:009', false)
+            if EventFlowSystemActor.GeneralTalkChoice2() != 0:
+                run Cml_Commune_Again_Look()
+            elif not EventFlowSystemActor.ShoppingCapacity('cShopping', 65534):
+                MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:010', false)
+                fork:
+                    branch:
+                        EventFlowSystemActor.UIMoneyDisappear()
+                    branch:
+                        EventFlowSystemActor@msg.MessageSuspend()
+                    branch:
+                        EventFlowSystemActor@UI.UIShopBuyDisappear()
+            elif MainNpc.ShopHasBellCount(1.2000000476837158):
+                MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:012', true)
+                run Demo_Common::Demo_Cmn_Shopping()
+                MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:016', true)
+                System.EventFlags['cPlayer:CmlCommuneBuyToday'] = true
+                run Cml_Commune_Again_Buy()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:011', false)
+                run Cmi_Commune_Again_NoMoney()
+        else:
+            fork:
+                branch:
+                    EventFlowSystemActor.UIMoneyDisappear()
+                branch:
+                    EventFlowSystemActor@UI.UIShopBuyDisappear()
+            if System.EventFlags['cPlayer:CmlCommuneBuyToday']:
+                MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:008', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:007', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/cml/SP_cml_02_Commune:001', false)
+

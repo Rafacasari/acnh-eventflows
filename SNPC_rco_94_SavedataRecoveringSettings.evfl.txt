@@ -1,0 +1,94 @@
+flow AskStart():
+    if EventFlowSystemActor.SaveIsEnabledBackupSetting():
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:002', false)
+        run Event2()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:002_01', false)
+        run Event2()
+
+flow Enable_Backup():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:003_01', false)
+    EventFlowSystemActor.MessageLockNext(1)
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:011', false)
+    EventFlowSystemActor.SaveVerifyBackupLicense()
+    if EventFlowSystemActor.SaveBackupLicenseEnabled():
+        EventFlowSystemActor.MessageUnlockNext()
+        EventFlowSystemActor.MessageSuspend()
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:008', false)
+        run SNPC_rco_92_OtherSettings::Seq_Close()
+    else:
+        run SaveRecoveringSetting()
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:003_02', false)
+        run Seq_Close_AfterEnable()
+
+flow Return_RestoringExplain():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:002_09', false)
+    run Event3()
+
+flow Root():
+    if EventFlowSystemActor.SaveIsEnabledBackupSetting():
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:001', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:001_01', false)
+entrypoint Event2:
+    switch EventFlowSystemActor.GeneralTalkChoice3():
+        case 0:
+            if (not EventFlowSystemActor.BackupAgentExist()) or (EventFlowSystemActor.SaveIsEnabledBackupSetting()):
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:003', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    run Enable_Backup()
+                else:
+                    run SNPC_rco_92_OtherSettings::Delete_Cancel()
+            elif EventFlowSystemActor.BackupAgentIsMainPlayer():
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:004', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    EventFlowSystemActor.SaveDisableBackupSetting()
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:005_01', false)
+                    run Seq_Close_AfterEnable()
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:006', false)
+                    run AskStart()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:007', false)
+                run AskStart()
+        case 1:
+            run SavedataRestoringExplain()
+        case 2:
+            run SNPC_rco_92_OtherSettings::Sel_EndMenu()
+
+flow SaveRecoveringSetting():
+    EventFlowSystemActor.MessageLockNext(1)
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Save:001', false)
+    fork:
+        branch:
+            EventFlowSystemActor.SaveRegisterBackupAgent()
+            EventFlowSystemActor.SaveSimpleSave('cAll')
+            EventFlowSystemActor.SaveEnableBackupSetting()
+        branch:
+            EventFlowSystemActor@Sub.WaitFrame(60)
+    EventFlowSystemActor.MessageUnlockNext()
+    EventFlowSystemActor.MessageSuspend()
+
+flow SavedataRestoringExplain():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:002_04', false)
+entrypoint Event3:
+    switch EventFlowSystemActor.GeneralTalkChoice5():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:002_05', false)
+            run Return_RestoringExplain()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:002_06', false)
+            run Return_RestoringExplain()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:002_07', false)
+            run Return_RestoringExplain()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_94_SavedataRestoring:002_08', false)
+            run Return_RestoringExplain()
+        case 4:
+            run AskStart()
+
+flow Seq_Close_AfterEnable():
+    MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_92_OtherSettings:054', false)
+    run SNPC_rco_92_OtherSettings::Seq_Close()
+

@@ -1,0 +1,505 @@
+flow AfterFirstTalk_Normal():
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:2003', false)
+
+flow Delively_Cmn():
+    run SNPC_tuk_02_SystemProcess::Set_RequestFood_CookingDish_Name()
+    switch EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayer:HarvestProgress'):
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:051', false)
+            run Sub_Event161()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:051_01', false)
+            run Sub_Event161()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:051_02', false)
+            run Sub_Event161()
+        default:
+            return
+
+flow Delively_First(ItemPrice: int = 0):
+    run SNPC_tuk_02_SystemProcess::Set_RequestFood_CookingDish_Name()
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:011', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:012', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:013', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:014', false)
+        EventFlowSystemActor.UIItemSelectWindowHandling('cItemFilter', 65534, '', 'HarvestFoodStuff3', '', false)
+        if EventFlowSystemActor.UIResultMenuDecide():
+            MainNpc.SetDeliveryItem(4, false)
+            MainNpc.NpcChangeHandTool(65534, 'cStoreTmpTool', false)
+            EventFlowSystemActor.MessageSuspend()
+            MainNpc.NpcDelivery(0, 'Keep')
+            run SNPC_tuk_02_SystemProcess::Chk_ResultShowFood()
+            switch SubflowResults@3[3]:
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:015', false)
+                    EventFlowSystemActor.MessageSuspend()
+                    MainNpc.NpcDelivery(3, 'Default')
+                    EventFlowSystemActor.SystemDeletePlayerItem('cItemWindowSub', 1)
+                    run SNPC_tuk_02_SystemProcess::Chk_PlayerTuk_Move()
+                    System.EventFlags['cPlayer:HarvestProgress'] += 1
+                    if EventFlowSystemActor.EventFlagSystemComqare('cPlayer:HarvestProgress', 'cLand:HarvestProgress') == 0:
+                        System.EventFlags['cLand:HarvestProgress'] += 1
+                        run DemoTest()
+                    else:
+                        run DemoTest()
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:043', false)
+                    EventFlowSystemActor.MessageSuspend()
+                    MainNpc.NpcDelivery(10, 'Default')
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:043_01', false)
+                    System.EventFlags['cPlayer:TukCancel1stRequest'] = true
+                default:
+                    return
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:042', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:041', false)
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:041_01', false)
+        System.EventFlags['cPlayer:TukCancel1stRequest'] = true
+
+flow Delivery_Secret(ItemPrice: int = 0):
+    run SNPC_tuk_02_SystemProcess::Set_SecretFood_Dish_Name()
+    if SubflowResults@3[4] in (0, 2):
+        switch SubflowResults@5[2]:
+            case 1, 3, 4:
+                MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:101', false)
+                switch SubflowResults@3[4]:
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:102', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:103', false)
+                        run Sub_Event94(ItemPrice=ItemPrice)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:114', false)
+                        run Sub_Event94(ItemPrice=ItemPrice)
+                    default:
+                        return
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:111', false)
+                switch SubflowResults@3[4]:
+                    case 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:112', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:103', false)
+                        run Sub_Event170(ItemPrice=ItemPrice)
+                    case 2:
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:114_01', false)
+                        run Sub_Event170(ItemPrice=ItemPrice)
+                    default:
+                        return
+            default:
+                return
+    else:
+        switch SubflowResults@5[2]:
+            case 1, 3, 4:
+                MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:115', false)
+                run Sub_grp_Event121(ItemPrice=ItemPrice)
+            case 2:
+                MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:115_01', false)
+                run Sub_grp_Event121(ItemPrice=ItemPrice)
+            default:
+                return
+
+flow DemoTest():
+    run SNPC_tuk_01_DemoCooking::Root_Normal()
+    run SNPC_tuk_02_SystemProcess::Set_RequestFood_CookingDish_Name()
+    System.EventFlags['cLandTemp:HarvestDemoNpcStep'] = 0
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:021', false)
+    run GetReward_First()
+
+flow GetRewardAfterEvent():
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:088', false)
+    System.EventFlags['cPlayer:TukTalkAfterEvent'] = true
+
+flow GetReward_Cmn():
+    run SNPC_tuk_02_SystemProcess::Set_NormalReward()
+    switch EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayer:HarvestProgress'):
+        case 2, 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:081_01', false)
+            run Event201()
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:081_02', false)
+            run PassReward_Cmn()
+            run GetReward_Cooking_Recipe()
+            run Event47()
+        default:
+            return
+
+flow GetReward_Cooking_Recipe():
+    if (not EventFlowSystemActor.PlayerHasCookingRecipe('DishHarvestRecipeBook', 65534)) and (System.EventFlags['cPlayer:MainmenuRecipe_v2']):
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:081_03', true)
+        MainNpc.NpcSetRewardRecipe(12823, false)
+        MainNpc.SetDeliveryItem(1, false)
+        MainNpc.NpcChangeHandTool(65534, 'cStoreTmpTool', false)
+        EventFlowSystemActor.MessageSuspend()
+        MainNpc.NpcDelivery(1, 'Keep')
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:081_04', false)
+        MainNpc.NpcDelivery(2, 'Default')
+        EventFlowSystemActor.PlayerSetCookingRecipe('DishHarvestRecipeBook', 65534)
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:081_05', false)
+
+flow GetReward_First():
+    run SNPC_tuk_02_SystemProcess::Set_NormalReward()
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:022', false)
+    run Event201()
+
+flow GetReward_Retry():
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:087', false)
+    else:
+        run SNPC_tuk_02_SystemProcess::Set_RetryReward()
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:086', false)
+        switch EventFlowSystemActor.FlagSystemIntValue9(9, 'cPlayer:HarvestKeepReward'):
+            case 1, 2, 3, 4:
+entrypoint Event201:
+                run PassReward_Cmn()
+entrypoint Event47:
+                run SNPC_tuk_02_SystemProcess::Set_RequestFood_CookingDish_Name()
+                switch EventFlowSystemActor.EventCheck('HarvestFestival'):
+                    case 1:
+                        switch EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayer:HarvestProgress'):
+                            case 1:
+                                MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:026', false)
+                                switch EventFlowSystemActor.GeneralTalkChoice2():
+                                    case 0, 1:
+                                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:027', false)
+                                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:028', false)
+                                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:029', false)
+                                        System.EventFlags['cPlayer:HarvestTalkAboutNextDishProgress'] += 1
+                            case 2:
+                                MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:092', false)
+                                System.EventFlags['cPlayer:HarvestTalkAboutNextDishProgress'] += 1
+                            case 3:
+                                MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:093', false)
+                                MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:093_01', false)
+                                System.EventFlags['cPlayer:HarvestTalkAboutNextDishProgress'] += 1
+                            case 4:
+                                MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:082', false)
+                                switch SubflowResults@3[1]:
+                                    case 0:
+                                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:083_01', false)
+                                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:084', false)
+                                    case 1:
+                                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:083', false)
+                                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:084', false)
+                                    default:
+                                        return
+                            default:
+                                return
+                    case 2:
+                        run GetRewardAfterEvent()
+                    default:
+                        return
+            case 5, 6, 7, 8:
+entrypoint Event298:
+                run PassReward_Cmn()
+                run SNPC_tuk_02_SystemProcess::Chk_SecretFood_Process()
+                switch EventFlowSystemActor.EventCheck('HarvestFestival'):
+                    case 1:
+                        switch EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayer:HarvestProgress'):
+                            case 1, 2, 3:
+                                MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:122', false)
+                            case 4:
+                                switch SubflowResults@3[1]:
+                                    case 1:
+                                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:123', false)
+                                    case 2:
+entrypoint Event311:
+                                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:128', false)
+                                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:129', false)
+                                    default:
+                                        return
+                            default:
+                                return
+                    case 2:
+                        run GetRewardAfterEvent()
+                    default:
+                        return
+            default:
+                return
+
+flow GetReward_Secret_Cmn():
+    run SNPC_tuk_02_SystemProcess::Set_SecretReward()
+    if EventFlowSystemActor.FlagSystemIntValue9(9, 'cPlayer:HarvestKeepReward') in (0, 1, 2, 3, 4, 5, 6, 7):
+        run UnlockedAllRecipe()
+    else:
+        EventFlowSystemActor.SetMemoryEventPlayer('cBlancoEventPlayer:PE_ThanksGiving_CookingComplete')
+        if System.EventFlags['cPlayer:MainmenuRecipe']:
+            if EventFlowSystemActor.PlayerHasCraftRecipe('HarvestFtr', 65534):
+                run UnlockedAllRecipe()
+            else:
+                run GetReward_Secret_Recipe()
+        else:
+            run UnlockedAllRecipe()
+
+flow GetReward_Secret_Recipe():
+    System.EventFlags['cPlayer:HarvestKeepReward'] = 0
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:124', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:125', false)
+    MainNpc.SetDeliveryItemAtRandom(5794, false, 'cVillageRemakePattern', 0)
+    MainNpc.NpcChangeHandTool(65534, 'cStoreTmpTool', false)
+    EventFlowSystemActor.MessageSuspend()
+    MainNpc.NpcDelivery(1, 'Keep')
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:126', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:127', false)
+    EventFlowSystemActor.MessageSuspend()
+    MainNpc.NpcDelivery(2, 'Default')
+    EventFlowSystemActor.PlayerSetCraftRecipe('HarvestFtr', 65534)
+    run Event311()
+
+flow Host_Root():
+    if EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayer:HarvestProgress') == 0:
+        if EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayer:HarvestTalkAboutNextDishProgress') == 0:
+            run Request_First()
+        else:
+            run Delively_First()
+    elif EventFlowSystemActor.FlagSystemIntValue9(9, 'cPlayer:HarvestKeepReward') == 0:
+        run SNPC_tuk_02_SystemProcess::Chk_HaveSecretFood()
+        if SubflowResults@5[2] == 0:
+            switch EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayer:HarvestProgress'):
+                case 1, 2, 3:
+                    run Delively_Cmn()
+                case 4:
+                    if SubflowResults@3[1] not in (0, 1):
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:151', false)
+                    elif EventFlowSystemActor.RandomChoice2(2) == 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:150', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:150_01', false)
+                default:
+                    return
+        else:
+            run Delivery_Secret()
+    else:
+        run GetReward_Retry()
+
+flow PassReward_Cmn():
+    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:089', false)
+        MainNpc.MessageSuspend()
+        MainNpc.NpcChangeHandTool(65534, 'cSetTmpTool', false)
+        Player.PlayerForceOffSharePlaySubIcon('cOn')
+        System.EventFlags['cLandTemp:HarvestDemoNpcStep'] = 0
+        System.EventFlags['cLandTemp:HarvestDemoCooking'] = 0
+        System.EventFlags['cLandTemp:HarvestDemoPlayerProgress'] = 0
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        MainNpc.NpcChangeHandTool(65534, 'cStoreTmpTool', false)
+        EventFlowSystemActor.MessageSuspend()
+        MainNpc.NpcDelivery(1, 'Default')
+        System.EventFlags['cPlayer:HarvestKeepReward'] = 0
+        System.EventFlags['cPlayer:TukSecretRewardType'] = 0
+
+flow Request_First():
+    if System.EventFlags['cPlayer:TukTalkBeforeEvent']:
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:001_01', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:001', false)
+        if EventFlowSystemActor.EnvWeatherArea() == `cWeatherArea_North`:
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:002', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:002_01', false)
+    if EventFlowSystemActor.FlagSystemIntValue5(5, 'cLand:HarvestProgress') == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:003', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:003_01', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:004', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:005', false)
+    System.EventFlags['cPlayer:HarvestTalkAboutNextDishProgress'] = 1
+
+flow Root():
+    System.EventFlags['cPlayer:TukTalkFirst'] = true
+    if EventFlowSystemActor.IsMyVillage():
+        run SNPC_tuk_02_SystemProcess::Chk_SecretFood_Process()
+        switch EventFlowSystemActor.EventCheck('HarvestFestival'):
+            case 0:
+                if System.EventFlags['cPlayer:TukTalkBeforeEvent']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:1021', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:1001', false)
+                    if EventFlowSystemActor.EnvWeatherArea() == `cWeatherArea_North`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:1002', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:1002_01', false)
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:1003', false)
+                    System.EventFlags['cPlayer:TukTalkBeforeEvent'] = true
+            case 1:
+                run Host_Root()
+                MainNpc.MessageSuspend()
+                MainNpc.NpcChangeHandTool(65534, 'cSetTmpTool', false)
+                Player.PlayerForceOffSharePlaySubIcon('cOn')
+                System.EventFlags['cLandTemp:HarvestDemoNpcStep'] = 0
+                System.EventFlags['cLandTemp:HarvestDemoCooking'] = 0
+                System.EventFlags['cLandTemp:HarvestDemoPlayerProgress'] = 0
+            case 2:
+                if EventFlowSystemActor.FlagSystemIntValue9(9, 'cPlayer:HarvestKeepReward') != 0:
+                    run GetReward_Retry()
+                    MainNpc.MessageSuspend()
+                    MainNpc.NpcChangeHandTool(65534, 'cSetTmpTool', false)
+                elif not System.EventFlags['cPlayer:TukTalkAfterEvent']:
+                    System.EventFlags['cPlayer:TukTalkAfterEvent'] = true
+                    if System.EventFlags['cPlayer:TukTalkBeforeEvent']:
+                        run AfterFirstTalk_Normal()
+                    elif EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayer:HarvestTalkAboutNextDishProgress') == 0:
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:2001', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:2002', false)
+                    else:
+                        run AfterFirstTalk_Normal()
+                elif EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayer:HarvestProgress') in (0, 1, 2, 3):
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:2011', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:2012', false)
+            default:
+                return
+    else:
+        switch EventFlowSystemActor.EventCheck('HarvestFestival'):
+            case 0:
+                if System.EventFlags['cPlayerVisit:DC_TukTalkBeforeEvent']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:1021', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:1011', false)
+                    System.EventFlags['cPlayerVisit:DC_TukTalkBeforeEvent'] = true
+            case 1:
+                if System.EventFlags['cPlayerVisit:DC_TukTalkRunningEvent']:
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:511', false)
+                else:
+                    if System.EventFlags['cPlayerVisit:DC_TukTalkBeforeEvent']:
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:502', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:501', false)
+                    System.EventFlags['cPlayerVisit:DC_TukTalkRunningEvent'] = true
+            case 2:
+                if System.EventFlags['cPlayerVisit:DC_TukTalkAfterEvent']:
+                    if EventFlowSystemActor.FlagSystemIntValue5(5, 'cLand:HarvestProgress') in (0, 1, 2, 3):
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:2111', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:2112', false)
+                else:
+                    if (not System.EventFlags['cPlayerVisit:DC_TukTalkRunningEvent']) and (not System.EventFlags['cPlayerVisit:DC_TukTalkBeforeEvent']):
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:2101', false)
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:2102', false)
+                    else:
+                        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:2103', false)
+                    System.EventFlags['cPlayerVisit:DC_TukTalkAfterEvent'] = true
+            default:
+                return
+
+local flow Sub_Event125(ItemPrice: int):
+    run SNPC_tuk_01_DemoCooking::Root_Secret()
+    System.EventFlags['cLandTemp:HarvestDemoNpcStep'] = 0
+    switch SubflowResults@5[2]:
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:072', false)
+            run GetReward_Secret_Cmn()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:073', false)
+            run GetReward_Secret_Cmn()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:074', false)
+            run GetReward_Secret_Cmn()
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:075', false)
+            run GetReward_Secret_Cmn()
+        default:
+            return
+
+local flow Sub_Event161():
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:052', false)
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:053', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:054', false)
+        EventFlowSystemActor.UIItemSelectWindowHandling('cItemFilter', 65534, '', 'HarvestFoodStuff2', '', false)
+        if EventFlowSystemActor.UIResultMenuDecide():
+            MainNpc.SetDeliveryItem(4, false)
+            MainNpc.NpcChangeHandTool(65534, 'cStoreTmpTool', false)
+            EventFlowSystemActor.MessageSuspend()
+            MainNpc.NpcDelivery(0, 'Keep')
+            run SNPC_tuk_02_SystemProcess::Chk_ResultShowFood()
+            switch SubflowResults@3[3]:
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:055', false)
+                    EventFlowSystemActor.MessageSuspend()
+                    MainNpc.NpcDelivery(3, 'Default')
+                    EventFlowSystemActor.SystemDeletePlayerItem('cItemWindowSub', 1)
+                    run SNPC_tuk_02_SystemProcess::Chk_PlayerTuk_Move()
+                    System.EventFlags['cPlayer:HarvestProgress'] += 1
+                    if EventFlowSystemActor.EventFlagSystemComqare('cPlayer:HarvestProgress', 'cLand:HarvestProgress') == 0:
+                        System.EventFlags['cLand:HarvestProgress'] += 1
+                    run SNPC_tuk_01_DemoCooking::Root_Normal()
+                    run SNPC_tuk_02_SystemProcess::Set_RequestFood_CookingDish_Name()
+                    System.EventFlags['cLandTemp:HarvestDemoNpcStep'] = 0
+                    switch EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayer:HarvestProgress'):
+                        case 2:
+                            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:071_01', false)
+                            run GetReward_Cmn()
+                        case 3:
+                            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:071_02', false)
+                            run GetReward_Cmn()
+                        case 4:
+                            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:071_03', false)
+                            run GetReward_Cmn()
+                        default:
+                            return
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:058', false)
+                    EventFlowSystemActor.MessageSuspend()
+                    MainNpc.NpcDelivery(10, 'Default')
+                    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:058_01', false)
+                default:
+                    return
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:057', false)
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:056', false)
+
+local flow Sub_Event169(ItemPrice: int):
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:105', false)
+    run Sub_grp_Event121(ItemPrice=ItemPrice)
+
+local flow Sub_Event170(ItemPrice: int):
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:113', false)
+    run Sub_Event169(ItemPrice=ItemPrice)
+
+local flow Sub_Event94(ItemPrice: int):
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:104', false)
+    run Sub_Event169(ItemPrice=ItemPrice)
+
+local flow Sub_grp_Event121(ItemPrice: int):
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        MainNpc.NpcChangeHandTool(65534, 'cStoreTmpTool', false)
+        EventFlowSystemActor.MessageSuspend()
+        MainNpc.NpcDelivery(0, 'Keep')
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:106', false)
+        EventFlowSystemActor.MessageSuspend()
+        MainNpc.NpcDelivery(3, 'Default')
+        run SNPC_tuk_02_SystemProcess::Chk_PlayerTuk_Move()
+        run SNPC_tuk_02_SystemProcess::Delete_SecretFood_InPocket()
+        switch SubflowResults@5[2]:
+            case 1:
+                System.EventFlags['cPlayer:HarvestHQDish1P'] = true
+                System.EventFlags['cLand:HarvestHQDish1Island'] = true
+                run Sub_Event125(ItemPrice=ItemPrice)
+            case 2:
+                System.EventFlags['cPlayer:HarvestHQDish2P'] = true
+                System.EventFlags['cLand:HarvestHQDish2Island'] = true
+                run Sub_Event125(ItemPrice=ItemPrice)
+            case 3:
+                System.EventFlags['cPlayer:HarvestHQDish3P'] = true
+                System.EventFlags['cLand:HarvestHQDish3Island'] = true
+                run Sub_Event125(ItemPrice=ItemPrice)
+            case 4:
+                System.EventFlags['cPlayer:HarvestHQDish4P'] = true
+                System.EventFlags['cLand:HarvestHQDish4Island'] = true
+                run Sub_Event125(ItemPrice=ItemPrice)
+            default:
+                return
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:107', false)
+        run SNPC_tuk_02_SystemProcess::Set_RefuseGiveSecretFoodFlag()
+        if EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayer:HarvestProgress') in (1, 2, 3):
+            MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:108', false)
+            run Delively_Cmn()
+
+flow UnlockedAllRecipe():
+    MainNpc.OpenMessageWindow('TalkSNpc/tuk/SP_tuk:121', false)
+    run Event298()
+

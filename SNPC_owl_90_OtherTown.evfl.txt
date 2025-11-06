@@ -1,0 +1,20 @@
+flow Root():
+    switch EventFlowSystemActor.MuseumLevel():
+        case `BlathersTent`:
+            if System.EventFlags['cPlayerVisit:VisitorTalkedOwl']:
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:202', false)
+            else:
+                System.EventFlags['cPlayerVisit:VisitorTalkedOwl'] = true
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_01_MuseumTent:201', false)
+        case `BlathersMuseumNoArt`, `BlathersMuseumArt`, `BlathersCafe`:
+            if not System.EventFlags['cPlayerVisit:VisitorTalkedOwl']:
+                System.EventFlags['cPlayerVisit:VisitorTalkedOwl'] = true
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:009', false)
+            if EventFlowSystemActor.MuseumComplete():
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:501', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_00_Common:502', false)
+            run SNPC_owl_24_Museum_StampRally::From2ndTime()
+        default:
+            return
+

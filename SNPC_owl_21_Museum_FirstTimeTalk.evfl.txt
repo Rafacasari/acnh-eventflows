@@ -1,0 +1,50 @@
+flow Root():
+    if EventFlowSystemActor.MuseumComplete():
+        System.EventFlags['cPlayer:FutaExplanationDonationComp'] = true
+    System.EventFlags['cPlayer:Owl1stTalkMuseum1'] = true
+    System.EventFlags['cPlayer:OwlFinished1stTalk'] = true
+    System.EventFlags['cPlayer:FutaTalkedInMuseumToday'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:111', false)
+    if System.EventFlags['cPlayer:MakeVillagePlayerFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:112_01', false)
+    else:
+        if System.EventFlags['cPlayer:2P_CreatedAfterOwlMoving']:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:112_02', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:112_03', false)
+    if EventFlowSystemActor.MuseumLevel() in (`BlathersNotMovedIn`, `BlathersTent`, `BlathersMuseumNoArt`):
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:113', false)
+    else:
+        if System.EventFlags['cLand:Museum2BuiltSkippedMuseum1']:
+            System.EventFlags['cLand:OwlFoundDiveFish'] = true
+        if System.EventFlags['cLand:OwlFoundDiveFish']:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1503', false)
+            System.EventFlags['cPlayer:OwlPaintingDiveFish'] = true
+            System.EventFlags['cPlayer:OwlShowDiveFishReport'] = true
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:116', false)
+        System.EventFlags['cPlayer:Owl1stTalkMuseum2'] = true
+    MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:114', false)
+    if System.EventFlags['cLand:OwlFoundFossil']:
+        System.EventFlags['cPlayer:OwlMultiDonateExplain'] = true
+        switch EventFlowSystemActor.MuseumLevel():
+            case `BlathersMuseumNoArt`:
+                MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:115_01', false)
+                System.EventFlags['cPlayer:OwlShowFossilMyself'] = true
+            case `BlathersMuseumArt`, `BlathersCafe`:
+                SubflowResults[4] = 0
+                run SNPC_owl_25_Museum_Poster::Owl_GetPoster()
+                switch EventFlowSystemActor.MuseumLevel():
+                    case `BlathersMuseumNoArt`, `BlathersMuseumArt`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:115_01', false)
+                        System.EventFlags['cPlayer:OwlShowFossilMyself'] = true
+                    case `BlathersCafe`:
+                        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:1101', false)
+                        System.EventFlags['cPlayer:OwlShowFossilMyself'] = true
+                    default:
+                        return
+            default:
+                return
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/owl/SP_owl_11_Museum1stTalk:115_02', false)
+

@@ -1,0 +1,605 @@
+flow CantGive():
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:091', false)
+
+flow Choice_Give1Material():
+    switch SubflowResults@4[11]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:081_01', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:081_02', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:081_03', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:081_04', false)
+    run SNPC_rcm_24_MaterialGiveProcess::Root()
+    run GotReward()
+
+flow Choice_Give2Materials():
+    SubflowResults[6] = 1
+    switch SubflowResults@6[12]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:082_01', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:082_02', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:082_03', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:082_04', false)
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:082_05', false)
+        case 5:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:082_06', false)
+    run SNPC_rcm_24_MaterialGiveProcess::Root()
+    run SNPC_rcm_22_MaterialProgressChk::Root()
+    run GotReward()
+
+flow DonateMaterials_Remain1():
+    switch SubflowResults@4[1]:
+        case 0:
+            if EventFlowSystemActor.HasTargetItem(2768, 30):
+                run SNPC_rcm_23_MaterialBelongingChk::SetWood()
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:052_01', false)
+                run Sub_Event127()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:053_01', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:053_05', false)
+        case 1:
+            if EventFlowSystemActor.HasTargetItem(2769, 30):
+                run SNPC_rcm_23_MaterialBelongingChk::SetHardWood()
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:052_02', false)
+                run Sub_Event127()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:053_02', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:053_05', false)
+        case 2:
+            if EventFlowSystemActor.HasTargetItem(2767, 30):
+                run SNPC_rcm_23_MaterialBelongingChk::SetSoftWood()
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:052_03', false)
+                run Sub_Event127()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:053_03', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:053_05', false)
+        case 3:
+            if EventFlowSystemActor.HasTargetItem(2511, 30):
+                run SNPC_rcm_23_MaterialBelongingChk::SetIron()
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:052_04', false)
+                run Sub_Event127()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:053_04', false)
+                MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:053_05', false)
+
+flow DonateMaterials_Remain2():
+    switch SubflowResults@6[2]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:072_01', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:072_02', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:072_03', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:072_04', false)
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:072_05', false)
+        case 5:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:072_06', false)
+    switch SubflowResults@5[10]:
+        case 0:
+            run CantGive()
+        case 1:
+            switch SubflowResults@6[2]:
+                case 0:
+                    if SubflowResults@4[11] in (0, 1):
+                        run Choice_Give1Material()
+                    else:
+                        run CantGive()
+                case 1:
+                    if SubflowResults@4[11] in (0, 2):
+                        run Choice_Give1Material()
+                    else:
+                        run CantGive()
+                case 2:
+                    if SubflowResults@4[11] in (0, 3):
+                        run Choice_Give1Material()
+                    else:
+                        run CantGive()
+                case 3:
+                    if SubflowResults@4[11] in (0, 3):
+                        run CantGive()
+                    else:
+                        run Choice_Give1Material()
+                case 4:
+                    if SubflowResults@4[11] in (0, 2):
+                        run CantGive()
+                    else:
+                        run Choice_Give1Material()
+                case 5:
+                    if SubflowResults@4[11] in (0, 1):
+                        run CantGive()
+                    else:
+                        run Choice_Give1Material()
+        case 2:
+            switch SubflowResults@6[2]:
+                case 0:
+                    switch SubflowResults@6[12]:
+                        case 0:
+                            run Remain2Give2()
+                        case 1, 2:
+                            SubflowResults[11] = 0
+                            run Choice_Give1Material()
+                        case 3, 4:
+                            SubflowResults[11] = 1
+                            run Choice_Give1Material()
+                        case 5:
+                            run CantGive()
+                case 1:
+                    switch SubflowResults@6[12]:
+                        case 0, 2:
+                            SubflowResults[11] = 0
+                            run Choice_Give1Material()
+                        case 1:
+                            run Remain2Give2()
+                        case 3, 5:
+                            SubflowResults[11] = 2
+                            run Choice_Give1Material()
+                        case 4:
+                            run CantGive()
+                case 2:
+                    switch SubflowResults@6[12]:
+                        case 0, 1:
+                            SubflowResults[11] = 0
+                            run Choice_Give1Material()
+                        case 2:
+                            run Remain2Give2()
+                        case 3:
+                            run CantGive()
+                        case 4, 5:
+                            SubflowResults[11] = 3
+                            run Choice_Give1Material()
+                case 3:
+                    switch SubflowResults@6[12]:
+                        case 0, 4:
+                            SubflowResults[11] = 1
+                            run Choice_Give1Material()
+                        case 1, 5:
+                            SubflowResults[11] = 2
+                            run Choice_Give1Material()
+                        case 2:
+                            run CantGive()
+                        case 3:
+                            run Remain2Give2()
+                case 4:
+                    switch SubflowResults@6[12]:
+                        case 0, 3:
+                            SubflowResults[11] = 1
+                            run Choice_Give1Material()
+                        case 1:
+                            run CantGive()
+                        case 2, 5:
+                            SubflowResults[11] = 3
+                            run Choice_Give1Material()
+                        case 4:
+                            run Remain2Give2()
+                case 5:
+                    switch SubflowResults@6[12]:
+                        case 0:
+                            run CantGive()
+                        case 1, 3:
+                            SubflowResults[11] = 2
+                            run Choice_Give1Material()
+                        case 2, 4:
+                            SubflowResults[11] = 3
+                            run Choice_Give1Material()
+                        case 5:
+                            run Remain2Give2()
+        case 3:
+            switch SubflowResults@6[2]:
+                case 0:
+                    switch SubflowResults@4[13]:
+                        case 0:
+                            SubflowResults[11] = 1
+                            run Choice_Give1Material()
+                        case 1:
+                            SubflowResults[11] = 0
+                            run Choice_Give1Material()
+                        case 2, 3:
+                            SubflowResults[12] = 0
+                            run Remain2Give2()
+                case 1:
+                    switch SubflowResults@4[13]:
+                        case 0:
+                            SubflowResults[11] = 2
+                            run Choice_Give1Material()
+                        case 1, 3:
+                            SubflowResults[12] = 1
+                            run Remain2Give2()
+                        case 2:
+                            SubflowResults[11] = 0
+                            run Choice_Give1Material()
+                case 2:
+                    switch SubflowResults@4[13]:
+                        case 0:
+                            SubflowResults[11] = 3
+                            run Choice_Give1Material()
+                        case 1, 2:
+                            SubflowResults[12] = 2
+                            run Remain2Give2()
+                        case 3:
+                            SubflowResults[11] = 0
+                            run Choice_Give1Material()
+                case 3:
+                    switch SubflowResults@4[13]:
+                        case 0, 3:
+                            SubflowResults[12] = 3
+                            run Remain2Give2()
+                        case 1:
+                            SubflowResults[11] = 2
+                            run Choice_Give1Material()
+                        case 2:
+                            SubflowResults[11] = 1
+                            run Choice_Give1Material()
+                case 4:
+                    switch SubflowResults@4[13]:
+                        case 0, 2:
+                            SubflowResults[12] = 4
+                            run Remain2Give2()
+                        case 1:
+                            SubflowResults[11] = 3
+                            run Choice_Give1Material()
+                        case 3:
+                            SubflowResults[11] = 1
+                            run Choice_Give1Material()
+                case 5:
+                    switch SubflowResults@4[13]:
+                        case 0, 1:
+                            SubflowResults[12] = 5
+                            run Remain2Give2()
+                        case 2:
+                            SubflowResults[11] = 3
+                            run Choice_Give1Material()
+                        case 3:
+                            SubflowResults[11] = 2
+                            run Choice_Give1Material()
+        case 4:
+            switch SubflowResults@6[2]:
+                case 0:
+                    SubflowResults[12] = 0
+                case 1:
+                    SubflowResults[12] = 1
+                case 2:
+                    SubflowResults[12] = 2
+                case 3:
+                    SubflowResults[12] = 3
+                case 4:
+                    SubflowResults[12] = 4
+                case 5:
+                    SubflowResults[12] = 5
+            run Remain2Give2()
+
+flow DonateMaterials_Remain3():
+    switch SubflowResults@4[3]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:071_01', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:071_02', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:071_03', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:071_04', false)
+    switch SubflowResults@5[10]:
+        case 0:
+            run CantGive()
+        case 1:
+            switch SubflowResults@4[3]:
+                case 0:
+                    if EventFlowSystemActor.HasTargetItem(2768, 30):
+                        run CantGive()
+                    else:
+                        run Choice_Give1Material()
+                case 1:
+                    if EventFlowSystemActor.HasTargetItem(2769, 30):
+                        run CantGive()
+                    else:
+                        run Choice_Give1Material()
+                case 2:
+                    if EventFlowSystemActor.HasTargetItem(2767, 30):
+                        run CantGive()
+                    else:
+                        run Choice_Give1Material()
+                case 3:
+                    if EventFlowSystemActor.HasTargetItem(2511, 30):
+                        run CantGive()
+                    else:
+                        run Choice_Give1Material()
+        case 2:
+            switch SubflowResults@4[3]:
+                case 0:
+                    switch SubflowResults@6[12]:
+                        case 0:
+                            SubflowResults[11] = 1
+                            run Choice_Give1Material()
+                        case 1:
+                            SubflowResults[11] = 2
+                            run Choice_Give1Material()
+                        case 2:
+                            SubflowResults[11] = 3
+                            run Choice_Give1Material()
+                        case 3, 4, 5:
+                            run Choice_Give2Materials()
+                case 1:
+                    switch SubflowResults@6[12]:
+                        case 0:
+                            SubflowResults[11] = 0
+                            run Choice_Give1Material()
+                        case 1, 2, 5:
+                            run Choice_Give2Materials()
+                        case 3:
+                            SubflowResults[11] = 2
+                            run Choice_Give1Material()
+                        case 4:
+                            SubflowResults[11] = 3
+                            run Choice_Give1Material()
+                case 2:
+                    switch SubflowResults@6[12]:
+                        case 0, 2, 4:
+                            run Choice_Give2Materials()
+                        case 1:
+                            SubflowResults[11] = 0
+                            run Choice_Give1Material()
+                        case 3:
+                            SubflowResults[11] = 1
+                            run Choice_Give1Material()
+                        case 5:
+                            SubflowResults[11] = 3
+                            run Choice_Give1Material()
+                case 3:
+                    switch SubflowResults@6[12]:
+                        case 0, 1, 3:
+                            run Choice_Give2Materials()
+                        case 2:
+                            SubflowResults[11] = 0
+                            run Choice_Give1Material()
+                        case 4:
+                            SubflowResults[11] = 1
+                            run Choice_Give1Material()
+                        case 5:
+                            SubflowResults[11] = 2
+                            run Choice_Give1Material()
+        case 3:
+            switch SubflowResults@4[3]:
+                case 0:
+                    switch SubflowResults@4[13]:
+                        case 0:
+                            run Remain3Give3()
+                        case 1:
+                            SubflowResults[12] = 5
+                            run Choice_Give2Materials()
+                        case 2:
+                            SubflowResults[12] = 4
+                            run Choice_Give2Materials()
+                        case 3:
+                            SubflowResults[12] = 3
+                            run Choice_Give2Materials()
+                case 1:
+                    switch SubflowResults@4[13]:
+                        case 0:
+                            SubflowResults[12] = 5
+                            run Choice_Give2Materials()
+                        case 1:
+                            run Remain3Give3()
+                        case 2:
+                            SubflowResults[12] = 2
+                            run Choice_Give2Materials()
+                        case 3:
+                            SubflowResults[12] = 1
+                            run Choice_Give2Materials()
+                case 2:
+                    switch SubflowResults@4[13]:
+                        case 0:
+                            SubflowResults[12] = 4
+                            run Choice_Give2Materials()
+                        case 1:
+                            SubflowResults[12] = 2
+                            run Choice_Give2Materials()
+                        case 2:
+                            run Remain3Give3()
+                        case 3:
+                            SubflowResults[12] = 0
+                            run Choice_Give2Materials()
+                case 3:
+                    switch SubflowResults@4[13]:
+                        case 0:
+                            SubflowResults[12] = 3
+                            run Choice_Give2Materials()
+                        case 1:
+                            SubflowResults[12] = 1
+                            run Choice_Give2Materials()
+                        case 2:
+                            SubflowResults[12] = 0
+                            run Choice_Give2Materials()
+                        case 3:
+                            run Remain3Give3()
+        case 4:
+            run Remain3Give3HaveAll()
+
+flow DonateMaterials_Remain4():
+    switch SubflowResults@5[10]:
+        case 0:
+            run CantGive()
+        case 1:
+            run Choice_Give1Material()
+        case 2:
+            run Choice_Give2Materials()
+        case 3:
+            SubflowResults[6] = 2
+            switch SubflowResults@4[13]:
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:083_01', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:083_02', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:083_03', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:083_04', false)
+            run SNPC_rcm_24_MaterialGiveProcess::Root()
+            run SNPC_rcm_22_MaterialProgressChk::Root()
+            run GotReward()
+        case 4:
+            SubflowResults[6] = 3
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:061', false)
+            run SNPC_rcm_24_MaterialGiveProcess::Root()
+            run SNPC_rcm_22_MaterialProgressChk::Root()
+            run GotReward()
+
+flow GotReward():
+    run SNPC_rcm_22_MaterialProgressChk::Root()
+    switch SubflowResults@5[0]:
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:092_01', false)
+            run Sub_grp_Event112()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:092_02', false)
+            run Sub_grp_Event112()
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:092_03', false)
+            run Sub_grp_Event112()
+        case 4:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:055', false)
+            switch SubflowResults@4[6]:
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:056_04', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:056_03', true)
+                    run Sub_Event301()
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:056_02', true)
+                    run Sub_Event301()
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:056_01', true)
+                    run Sub_Event301()
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:058_01', true)
+            MainNpc.SetDeliveryItemAtRandom(2756, true, 'cVillageRemakePattern', 0)
+            MainNpc.NpcDelivery(1, 'Keep')
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:058_02', true)
+            MainNpc.NpcDelivery(2, 'Default')
+            System.EventFlags['cPlayer:Prologue4RcmGetTent'] = true
+            System.EventFlags['cLand:RcmShopMaterialComplete'] = true
+            System.EventFlags['cLand:OpeningSeqBGMChangeCounter'] = 10
+        default:
+            return
+
+flow Remain2Give2():
+    SubflowResults[6] = 1
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:062', false)
+    run SNPC_rcm_24_MaterialGiveProcess::Root()
+    run SNPC_rcm_22_MaterialProgressChk::Root()
+    run GotReward()
+
+flow Remain3Give3():
+    SubflowResults[6] = 2
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:062', false)
+    run SNPC_rcm_24_MaterialGiveProcess::Root()
+    run GotReward()
+
+flow Remain3Give3HaveAll():
+    SubflowResults[6] = 2
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:062', false)
+    switch SubflowResults@4[3]:
+        case 0:
+            SubflowResults[13] = 0
+        case 1:
+            SubflowResults[13] = 1
+        case 2:
+            SubflowResults[13] = 2
+        case 3:
+            SubflowResults[13] = 3
+    run SNPC_rcm_24_MaterialGiveProcess::Root()
+    run GotReward()
+
+flow Root():
+    EventFlowSystemActor.UIMoneyDisappear()
+    run SNPC_rcm_22_MaterialProgressChk::Root()
+    run SNPC_rcm_23_MaterialBelongingChk::Root()
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:015', false)
+    if EventFlowSystemActor.GeneralTalkChoice3() == 0:
+        MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:051', false)
+        switch SubflowResults@4[0]:
+            case 0:
+                run DonateMaterials_Remain4()
+            case 1:
+                run DonateMaterials_Remain3()
+            case 2:
+                run DonateMaterials_Remain2()
+            case 3:
+                run DonateMaterials_Remain1()
+    else:
+        run TalkCollectingProgress()
+
+local flow Sub_Event127():
+    run SNPC_rcm_24_MaterialGiveProcess::Root()
+    run GotReward()
+
+local flow Sub_Event301():
+    MainNpc.NpcDelivery(1, 'Default')
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:057', false)
+
+local flow Sub_grp_Event112():
+    switch SubflowResults@3[6]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:093_01', true)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:093_02', true)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:093_03', true)
+    MainNpc.NpcDelivery(1, 'Default')
+    run SNPC_rcm_22_MaterialProgressChk::Root()
+    switch SubflowResults@4[0]:
+        case 1, 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:094_01', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:094_02', false)
+        default:
+            return
+
+flow TalkCollectingProgress():
+    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:101', false)
+    switch SubflowResults@4[0]:
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:102', false)
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_01', false)
+            switch SubflowResults@4[3]:
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_02_01', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_02_02', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_02_03', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_02_04', false)
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_01', false)
+            switch SubflowResults@6[2]:
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_03_01', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_03_02', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_03_03', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_03_04', false)
+                case 4:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_03_05', false)
+                case 5:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_03_06', false)
+        case 3:
+            MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_01', false)
+            switch SubflowResults@4[1]:
+                case 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_04_01', false)
+                case 1:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_04_02', false)
+                case 2:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_04_03', false)
+                case 3:
+                    MainNpc.OpenMessageWindow('TalkSNpc/rcm/SP_rcm_02_TentRequest:103_04_04', false)
+

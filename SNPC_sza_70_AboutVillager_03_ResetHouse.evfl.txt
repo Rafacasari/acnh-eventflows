@@ -1,0 +1,24 @@
+flow Root():
+    switch MainNpc.SelectedNpcMoveType():
+        case 0:
+            if EventFlowSystemActor.IsOnReformReserveFlag():
+                if (not EventFlowSystemActor.IsOnNpcInteriorReserveFlag()) and (not EventFlowSystemActor.IsOnNpcExteriorReserveFlag()):
+                    MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_0_common_v2:036', false)
+                else:
+                    MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_0_common_v2:035', false)
+                run SNPC_sza_00_Common::Sza_CmnSel_Again()
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_0_common_v2:031', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_0_common_v2:032', false)
+                    MainNpc.SzaUgcReset('cHouse')
+                    run SNPC_sza_00_Common::Sza_CmnSel_Again()
+                else:
+                    run SNPC_sza_70_AboutVillager::AboutVillager_CmnCancel2()
+        case 1:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_0_common_v2:033', false)
+            run SNPC_sza_00_Common::Sza_CmnSel_Again()
+        case 2:
+            MainNpc.OpenMessageWindow('TalkSNpc/sza/v2_0_0/SP_sza_0_common_v2:034', false)
+            run SNPC_sza_00_Common::Sza_CmnSel_Again()
+

@@ -1,0 +1,10 @@
+flow NoSave():
+    EventFlowSystemActor.OpenMessageWindow('Dialog/DIALOG_Msg:1308', false)
+    EventFlowSystemActor.WaitFrame(-1)
+
+flow Root():
+    EventFlowSystemActor.UISaveIconAppear()
+    EventFlowSystemActor.SaveSimpleSave('cAll')
+    EventFlowSystemActor.UISaveIconDisappear()
+    run NoSave()
+

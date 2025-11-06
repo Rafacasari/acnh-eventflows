@@ -1,0 +1,37 @@
+flow BeyDailyQ_GetFish():
+    if (EventFlowSystemActor.IsMyVillage()) and (EventFlowSystemActor.SystemCheckNowStage('cField')):
+        run SNPC_bey_daily::Tag_daily_Num()
+        if System.EventFlags['cPlayer:BeyDaily_QuestStart']:
+            if System.EventFlags['cLand:BeyRequireFishSize'] >= 3:
+                if System.EventFlags['cPlayer:BeyDaily_QuestCount'] >= 5:
+                    if not System.EventFlags['cPlayer:BeyDaily_GetDemo_Clear']:
+                        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Get_Fish_BeyDailyQ:003', false)
+                        System.EventFlags['cPlayer:BeyDaily_GetDemo_Clear'] = true
+                elif System.EventFlags['cPlayer:BeyDaily_QuestCount'] >= 2:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Get_Fish_BeyDailyQ:002', false)
+                elif System.EventFlags['cPlayer:BeyDaily_QuestCount'] < 1:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Get_Fish_BeyDailyQ:004', false)
+                else:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Get_Fish_BeyDailyQ:001', false)
+            elif System.EventFlags['cPlayer:BeyDaily_QuestCount'] >= 3:
+                if not System.EventFlags['cPlayer:BeyDaily_GetDemo_Clear']:
+                    if System.EventFlags['cLand:BeyRequireFishSize'] != 0:
+                        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Get_Fish_BeyDailyQ:021', false)
+                    else:
+                        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Get_Fish_BeyDailyQ:011', false)
+                    System.EventFlags['cPlayer:BeyDaily_GetDemo_Clear'] = true
+            elif System.EventFlags['cPlayer:BeyDaily_QuestCount'] >= 2:
+                if System.EventFlags['cLand:BeyRequireFishSize'] != 0:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Get_Fish_BeyDailyQ:020', false)
+                else:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Get_Fish_BeyDailyQ:010', false)
+            elif System.EventFlags['cPlayer:BeyDaily_QuestCount'] >= 1:
+                if System.EventFlags['cLand:BeyRequireFishSize'] != 0:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Get_Fish_BeyDailyQ:022', false)
+                else:
+                    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Get_Fish_BeyDailyQ:012', false)
+            elif System.EventFlags['cLand:BeyRequireFishSize'] != 0:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Get_Fish_BeyDailyQ:023', false)
+            else:
+                EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_Get_Fish_BeyDailyQ:013', false)
+

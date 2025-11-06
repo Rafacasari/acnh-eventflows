@@ -1,0 +1,76 @@
+flow Hgh_BuyFitting():
+    MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:010', false)
+
+flow Hgh_BuyFittingRoom():
+    MainNpc.MessageSuspend()
+    MainNpc.TurnBody(11, 0.0)
+    if System.EventFlags['cPlayer:EquipLicenseHelmet']:
+        System.EventFlags['cPlayer:EquipLicenseHelmet'] = false
+        Player.PlayerOutfitFieldMakeToolKit('cOff')
+    if MainNpc.HghFreeQuery2('cHghQueryType_IsOnFittingRoom'):
+        MainNpc.NpcMoveDirection(0.0, 10.0, 0, false, false)
+        MainNpc.TurnBody(10, 0.0)
+    Player.PlayerChangeDemoState('cGoInFittingRoom')
+    EventFlowSystemActor.UIShopBuyHandling('cTailor')
+    Player.PlayerChangeDemoState('cGoOutFittingRoom')
+    Player.TurnBody(0, 0.0)
+    MainNpc.TurnBody(10, 0.0)
+    switch EventFlowSystemActor.UIShopBuyTailorResult():
+        case 0:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh:012', false)
+            EventFlowSystemActor.ExitFlowchart()
+        case 1:
+            if EventFlowSystemActor.UIShopBuyTailorIsWear():
+                run Hgh_BuyFitting()
+                MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:011', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:015', false)
+        case 2:
+            if EventFlowSystemActor.UIShopBuyTailorIsWear():
+                run Hgh_BuyFitting()
+                MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:012', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:016', false)
+        case 3:
+            if EventFlowSystemActor.UIShopBuyTailorIsWear():
+                run Hgh_BuyFitting()
+                MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:013', false)
+            else:
+                MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:017', true)
+        case 4:
+            run Hgh_BuyFitting()
+
+flow Hgh_ExplainFittingRoom():
+    if not System.EventFlags['cPlayer:KinuyoExplainFittingRoomFlag']:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:003', false)
+        System.EventFlags['cPlayer:KinuyoExplainFittingRoomFlag'] = true
+        if Player.PlayerIsUseCoordinate():
+            MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:020', false)
+            EventFlowSystemActor.ExitFlowchart()
+        elif Player.PlayerOutfitMarinesuit():
+            MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:022', false)
+            EventFlowSystemActor.ExitFlowchart()
+    elif Player.PlayerIsUseCoordinate():
+        MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:019', false)
+        EventFlowSystemActor.ExitFlowchart()
+    elif Player.PlayerOutfitMarinesuit():
+        MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:021', false)
+        EventFlowSystemActor.ExitFlowchart()
+    else:
+        MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:001', false)
+
+flow Hgh_TicketNotice():
+    if (EventFlowSystemActor.HasTargetItem(5932, 1)) and (not System.EventFlags['cPlayerTemp:HghNoticeTicket']):
+        EventFlowSystemActor.SetTagFromSystem('cFlow', 'cMoney', 1, 3000, '')
+        if EventFlowSystemActor.HasTargetItem(5932, 2):
+            MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:002_pl', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkSNpc/hgh/SP_hgh_20_FittingRoom:002', false)
+        System.EventFlags['cPlayerTemp:HghNoticeTicket'] = true
+
+flow Root():
+    EventFlowSystemActor.UIShopBuyTailorCreate()
+    run Hgh_ExplainFittingRoom()
+    run Hgh_TicketNotice()
+    run Hgh_BuyFittingRoom()
+

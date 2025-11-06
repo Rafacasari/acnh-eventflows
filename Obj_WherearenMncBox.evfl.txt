@@ -1,0 +1,192 @@
+flow Choice0():
+    run Event19()
+
+flow Choice1():
+    run Event55()
+
+flow Choice2():
+    run Event67()
+
+flow Choice3():
+    run Event79()
+
+flow Choice4():
+    run Event91()
+
+flow Choice5():
+    run Event97()
+
+flow Memo0():
+    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:100', true)
+    run Event19()
+
+flow Memo1():
+    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:101', true)
+    run Event55()
+
+flow Memo2():
+    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:102', true)
+    run Event67()
+
+flow Memo3():
+    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:103', true)
+    run Event79()
+
+flow Memo4():
+    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:104', true)
+    run Event91()
+
+flow Memo5():
+    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:105', true)
+    run Event97()
+
+flow PutItem():
+    EventFlowSystemActor.UIItemSelectWindowHandling('cNicoDIYBox', 65534, '', '', 'cItemSelect', false)
+    EventFlowSystemActor.StoreNormalCamera(false, '')
+    if EventFlowSystemActor.UIResultMenuDecide():
+        EventFlowSystemActor.MncBoxSetMaterialCount()
+        GeneralObject.StartAnimation('Close', 'cHold')
+        if EventFlowSystemActor.IsMncBoxLesson():
+            EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Wherearen', 'MncBox', 'cNowDemoEnd', false)
+    else:
+        GeneralObject.StartAnimation('Close', 'cTrigger')
+
+flow Root():
+    if not System.EventFlags['cWherearenPlayer:Unlock_MncBox']:
+        Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:002', false)
+    elif EventFlowSystemActor.IsMncBoxLesson():
+        Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:010', false)
+    elif EventFlowSystemActor.FlagSystemIntValue7(7, 'cWherearenPlayer:MncBoxProgress') in (0, 1, 2, 3, 4, 5):
+        GeneralObject.StartAnimation('Open', 'cTrigger')
+        switch EventFlowSystemActor.FlagSystemIntValue7(7, 'cWherearenPlayer:MncBoxProgress'):
+            case 0:
+                if System.EventFlags['cWherearenPlayer:MncBoxReadMemo']:
+                    Player.PlayerPurchaseBoxThinking()
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:001', true)
+                else:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:99', true)
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:100', true)
+                    System.EventFlags['cWherearenPlayer:MncBoxReadMemo'] = true
+                    Player.PlayerPurchaseBoxThinking()
+entrypoint Event19:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:003', true)
+                switch EventFlowSystemActor.GeneralTalkChoice4():
+                    case 0:
+                        run PutItem()
+                    case 1:
+                        EventFlowSystemActor.MncBoxSetTagItem()
+                        run Choice0()
+                    case 2:
+                        run Memo0()
+                    case 3:
+                        GeneralObject.StartAnimation('Close', 'cTrigger')
+            case 1:
+                if System.EventFlags['cWherearenPlayer:MncBoxReadMemo']:
+                    Player.PlayerPurchaseBoxThinking()
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:001', true)
+                else:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:99', true)
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:101', true)
+                    System.EventFlags['cWherearenPlayer:MncBoxReadMemo'] = true
+                    Player.PlayerPurchaseBoxThinking()
+entrypoint Event55:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:003', true)
+                switch EventFlowSystemActor.GeneralTalkChoice4():
+                    case 0:
+                        run PutItem()
+                    case 1:
+                        EventFlowSystemActor.MncBoxSetTagItem()
+                        run Choice1()
+                    case 2:
+                        run Memo1()
+                    case 3:
+                        GeneralObject.StartAnimation('Close', 'cTrigger')
+            case 2:
+                if System.EventFlags['cWherearenPlayer:MncBoxReadMemo']:
+                    Player.PlayerPurchaseBoxThinking()
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:001', true)
+                else:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:99', true)
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:102', true)
+                    System.EventFlags['cWherearenPlayer:MncBoxReadMemo'] = true
+                    Player.PlayerPurchaseBoxThinking()
+entrypoint Event67:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:003', true)
+                switch EventFlowSystemActor.GeneralTalkChoice4():
+                    case 0:
+                        run PutItem()
+                    case 1:
+                        EventFlowSystemActor.MncBoxSetTagItem()
+                        run Choice2()
+                    case 2:
+                        run Memo2()
+                    case 3:
+                        GeneralObject.StartAnimation('Close', 'cTrigger')
+            case 3:
+                if System.EventFlags['cWherearenPlayer:MncBoxReadMemo']:
+                    Player.PlayerPurchaseBoxThinking()
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:001', true)
+                else:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:99', true)
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:103', true)
+                    System.EventFlags['cWherearenPlayer:MncBoxReadMemo'] = true
+                    Player.PlayerPurchaseBoxThinking()
+entrypoint Event79:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:003', true)
+                switch EventFlowSystemActor.GeneralTalkChoice4():
+                    case 0:
+                        run PutItem()
+                    case 1:
+                        EventFlowSystemActor.MncBoxSetTagItem()
+                        run Choice3()
+                    case 2:
+                        run Memo3()
+                    case 3:
+                        GeneralObject.StartAnimation('Close', 'cTrigger')
+            case 4:
+                if System.EventFlags['cWherearenPlayer:MncBoxReadMemo']:
+                    Player.PlayerPurchaseBoxThinking()
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:001', true)
+                else:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:99', true)
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:104', true)
+                    System.EventFlags['cWherearenPlayer:MncBoxReadMemo'] = true
+                    Player.PlayerPurchaseBoxThinking()
+entrypoint Event91:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:003', true)
+                switch EventFlowSystemActor.GeneralTalkChoice4():
+                    case 0:
+                        run PutItem()
+                    case 1:
+                        EventFlowSystemActor.MncBoxSetTagItem()
+                        run Choice4()
+                    case 2:
+                        run Memo4()
+                    case 3:
+                        GeneralObject.StartAnimation('Close', 'cTrigger')
+            case 5:
+                if System.EventFlags['cWherearenPlayer:MncBoxReadMemo']:
+                    Player.PlayerPurchaseBoxThinking()
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:001', true)
+                else:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:99', true)
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:105', true)
+                    System.EventFlags['cWherearenPlayer:MncBoxReadMemo'] = true
+                    Player.PlayerPurchaseBoxThinking()
+entrypoint Event97:
+                    Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:003', true)
+                switch EventFlowSystemActor.GeneralTalkChoice4():
+                    case 0:
+                        run PutItem()
+                    case 1:
+                        EventFlowSystemActor.MncBoxSetTagItem()
+                        run Choice5()
+                    case 2:
+                        run Memo5()
+                    case 3:
+                        GeneralObject.StartAnimation('Close', 'cTrigger')
+            default:
+                return
+    else:
+        Player.OpenMessageWindow('TalkObj/OBJ_WherearenMncBox:011', false)
+

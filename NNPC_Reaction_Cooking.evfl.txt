@@ -1,0 +1,91 @@
+flow CHK_RecipeAndBag():
+    if not System.EventFlags['cPlayer:MainmenuRecipe_v2']:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:003', false)
+        run Sub_Event33()
+    elif not EventFlowSystemActor.ShoppingCapacity('cNpcTrade', 65534):
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:004', false)
+        run Sub_Event33()
+
+flow Cook_AfterItemGet():
+    MainNpc.EventFlags['cNpcMemory:GotRecipeorMaterial'] = true
+    System.EventFlags['cPlayerTemp:GotRecipeorMaterial'] = true
+    MainNpc.EventFlags['cNpcMemory:TalkDIY'] = true
+    MainNpc.AddMemoryEventPlayerForNpc('Present_FromNNPC')
+    EventFlowSystemActor.ExitFlowchart()
+
+flow Cook_GetItem():
+    if MainNpc.EventFlags['cNpcMemory:HalloweenDIYGetItem'] != 0:
+        if MainNpc.EventFlags['cNpcMemory:HalloweenDIYGetItem'] != 1:
+            EventFlowSystemActor.SelectRewardItemDirect(13197, 1, 'cVillageRemakePattern', 0)
+        else:
+            EventFlowSystemActor.SelectRewardItemDirect(4525, 5, 'cVillageRemakePattern', 0)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:031', false)
+        run Event49()
+
+flow Cook_PumpkinFtr():
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:032', false)
+    if EventFlowSystemActor.PercentChoice(70):
+        MainNpc.EventFlags['cNpcMemory:HalloweenDIYGetItem'] = 1
+        EventFlowSystemActor.SelectRewardItemDirect(4525, 5, 'cVillageRemakePattern', 0)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:033', false)
+    else:
+        MainNpc.EventFlags['cNpcMemory:HalloweenDIYGetItem'] = 2
+        EventFlowSystemActor.SelectRewardItemDirect(13197, 1, 'cVillageRemakePattern', 0)
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:035', false)
+entrypoint Event49:
+    MainNpc.SetDeliveryItem(1, true)
+    if EventFlowSystemActor.ShoppingCapacity('cNpcTrade', 65534):
+        MainNpc.MessageSuspend()
+        MainNpc.NpcDelivery(1, 'Default')
+        if MainNpc.EventFlags['cNpcMemory:HalloweenDIYGetItem'] != 1:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:036', false)
+        else:
+            MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:034', false)
+        run Cook_AfterItemGet()
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:030', false)
+        MainNpc.EventFlags['cNpcMemory:GotMaterialItemFull'] = true
+        EventFlowSystemActor.ExitFlowchart()
+
+flow Root():
+    if MainNpc.IsCooking():
+        run NNPC_FreeH_Progress::Conceal_NpcHouseBuilt()
+        MainNpc.SetItemName(16, 0, 0)
+        MainNpc.NpcSetRewardRecipe(65534, true)
+        MainNpc.SetDeliveryItem(1, true)
+        if not MainNpc.EventFlags['cNpcMemory:GotRecipeorMaterial']:
+            if MainNpc.EventFlags['cNpcMemory:GotMaterialItemFull']:
+                run Cook_GetItem()
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:008', false)
+                run Sub_Event37()
+            else:
+                MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:001', false)
+                if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:002', false)
+                    if not MainNpc.IsNpcDIYRecipeCollected():
+                        MainNpc.EventFlags['cNpcMemory:HalloweenDIYGetItem'] = 0
+                        run Sub_Event37()
+                    elif MainNpc.IsDIYHalloweenItem():
+                        run Cook_PumpkinFtr()
+                        run Sub_Event37()
+                    else:
+                        run Sub_Event37()
+                else:
+                    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:007', false)
+                    EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_Event33():
+    MainNpc.EventFlags['cNpcMemory:GotMaterialItemFull'] = true
+    EventFlowSystemActor.ExitFlowchart()
+
+local flow Sub_Event37():
+    run CHK_RecipeAndBag()
+    MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:005', true)
+    MainNpc.NpcDelivery(1, 'Default')
+    if MainNpc.IsNpcDIYRecipeCollected():
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:006_02', false)
+        run Cook_AfterItemGet()
+    else:
+        MainNpc.OpenMessageWindow('TalkNNpc/B1_Bo/React/BO_React_Cooking:006_01', false)
+        run Cook_AfterItemGet()
+
