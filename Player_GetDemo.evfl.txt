@@ -142,6 +142,7 @@ flow Get_Scoop():
             Player.OpenMessageWindow('TalkSys/SYS_Get_ShellFish:201', false)
         else:
             System.EventFlags['cLifeSupportAchievement:DigShell'] += 1
+            System.EventFlags['cLifeSupportDaily:CatchClam'] += 1
             Player.PlayerOpenShellFishGetMessage()
         if not Player.PlayerCheckAI('cGetDemo_ScoopFullItem'):
             SubflowResults[1] = 1

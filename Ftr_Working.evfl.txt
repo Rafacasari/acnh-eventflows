@@ -128,7 +128,7 @@ flow RcoRemakeTrialOngoing(ItemPrice: int = 0):
                 System.EventFlags['cPlayer:RemakeWs_TalkWhenItemFull'] = true
                 EventFlowSystemActor.SoundDuckingOff(18)
             else:
-                run Sub_grp_Event158(ItemPrice=ItemPrice)
+                run Sub_grp_Event120(ItemPrice=ItemPrice)
         elif EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
             run RcoWorkingTableRemakeWorkshop()
         else:
@@ -137,7 +137,7 @@ flow RcoRemakeTrialOngoing(ItemPrice: int = 0):
             else:
                 DynamicCast_rco.OpenMessageWindow('TalkSNpc/rco/SP_rco_09_RemakeWorkShop:305_01', false)
             DynamicCast_rco.OpenMessageWindow('TalkSNpc/rco/SP_rco_09_RemakeWorkShop:302', false)
-            run Sub_grp_Event158(ItemPrice=ItemPrice)
+            run Sub_grp_Event120(ItemPrice=ItemPrice)
 
 flow RcoWorkingTableNormal():
     Player.PlayerWorkbenchThinking()
@@ -176,7 +176,7 @@ flow RcoWorkingTableRemakeWorkshop():
 
 flow RecipeUIDisable():
     Player.OpenMessageWindow('TalkFtr/FTR_WorkingTable:002', false)
-    run Sub_Event201()
+    run Sub_Event168()
 
 flow Remake():
     EventFlowSystemActor.UIItemSelectWindowHandling('cWorkBenchRemake', 65534, '', '', 'cItemSelectRemake', false)
@@ -184,25 +184,25 @@ flow Remake():
         EventFlowSystemActor.SoundDuckingOff(18)
     elif EventFlowSystemActor.UIPocketMenuItemSelected(14820, 1, true):
         Player.OpenMessageWindow('TalkFtr/FTR_WorkingTable:024', true)
-        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
-            run Sub_Event299()
-        else:
+        if EventFlowSystemActor.GeneralTalkChoice2() == 1:
             run Remake()
+        else:
+            run Sub_Event183()
     elif EventFlowSystemActor.UIPocketMenuItemSelected(13439, 1, true):
         Player.OpenMessageWindow('TalkFtr/FTR_WorkingTable:023', true)
-        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
-            run Sub_Event299()
-        else:
+        if EventFlowSystemActor.GeneralTalkChoice2() == 1:
             run Remake()
+        else:
+            run Sub_Event183()
     else:
         EventFlowSystemActor.UIWorkingHandling('cRemakeSelect')
         if EventFlowSystemActor.UIResultMenuDecide():
-            run Sub_Event299()
+            run Sub_Event183()
         else:
             run Remake()
 
 flow RemakeWS_SharePlay():
-    run Event159()
+    run Event119()
 
 flow Root():
     EventFlowSystemActor.SoundDuckingOn(18)
@@ -237,7 +237,7 @@ flow Root():
     elif EventFlowSystemActor.NetHasVisitor():
         run RecipeUIDisable()
     else:
-        if MainNpc.NpcIsSitting() not in (0, 1, 2, 3, 5):
+        if MainNpc.NpcIsSitting() == 4:
             MainNpc.TalkCamera(true, 'cTalk', 0)
         MainNpc.OpenMessageWindow('TalkSNpc/rco/SP_rco_03_PcHouseTent:901', false)
         if MainNpc.NpcIsSitting() in (0, 1, 2, 3, 5):
@@ -252,7 +252,7 @@ flow Root_Tutorial():
 flow Root_Tutorial_Init():
     MainNpc.NpcAISetting(4, false)
 
-local flow Sub_Event176(ItemPrice: int):
+local flow Sub_Event110(ItemPrice: int):
     EventFlowSystemActor.SetItemToPocket(2513, 50)
     Player.TurnBody(11, 0.0)
     Player.TurnNeck(11, false)
@@ -275,10 +275,10 @@ local flow Sub_Event176(ItemPrice: int):
     System.EventFlags['cPlayer:EnableDiyRemake'] = true
     EventFlowSystemActor.SoundDuckingOff(18)
 
-local flow Sub_Event201():
+local flow Sub_Event168():
     EventFlowSystemActor.SoundDuckingOff(18)
 
-local flow Sub_Event299():
+local flow Sub_Event183():
     run Chk_RemakeWithRcoWorkBench()
     SubflowResults[0] = 1
     SubflowResults[1] = 0
@@ -294,11 +294,11 @@ local flow Sub_Event299():
     else:
         run Workbench_Cmn_DIYfinish()
 
-local flow Sub_grp_Event158(ItemPrice: int):
+local flow Sub_grp_Event120(ItemPrice: int):
     if EventFlowSystemActor.OfficeLevel() not in (`ResServiceTent0`, `ResServiceTent1`):
-entrypoint Event159:
+entrypoint Event119:
         DynamicCast_rco.OpenMessageWindow('TalkSNpc/rco/SP_rco_09_RemakeWorkShop:304_01', true)
-        run Sub_Event176(ItemPrice=ItemPrice)
+        run Sub_Event110(ItemPrice=ItemPrice)
     elif EventFlowSystemActor.IsSharePlay(0):
         run RemakeWS_SharePlay()
     else:
@@ -309,19 +309,19 @@ entrypoint Event159:
         DynamicCast_rco.SetDeliveryItemAtRandom(2513, false, 'cVillageRemakePattern', 0)
         DynamicCast_rco.NpcDelivery(1, 'Default')
         DynamicCast_rco.OpenMessageWindow('TalkSNpc/rco/SP_rco_09_RemakeWorkShop:304_02', true)
-        run Sub_Event176(ItemPrice=ItemPrice)
+        run Sub_Event110(ItemPrice=ItemPrice)
 
 flow UnlockAddRecipeFor2P():
     if EventFlowSystemActor.ShopLevel() in (`NooksCrannyInitial`, `NooksCrannyUpgraded`):
         EventFlowSystemActor.PlayerSetCraftRecipe('None', 3068)
-        if (System.EventFlags['cLand:MuseumConstructionToday']) or (EventFlowSystemActor.MuseumLevel() not in (`BlathersNotMovedIn`, `BlathersTent`)):
+        if (System.EventFlags['cLand:MuseumConstructionToday']) or (EventFlowSystemActor.MuseumLevel() in (`BlathersMuseumNoArt`, `BlathersMuseumArt`, `BlathersCafe`)):
             EventFlowSystemActor.PlayerSetCraftRecipe('None', 4703)
         if EventFlowSystemActor.OfficeLevel() == `ResServiceBuilding`:
             EventFlowSystemActor.PlayerSetCraftRecipe('None', 2615)
 
 flow VisitorOnMyIsland():
     Player.OpenMessageWindow('TalkFtr/FTR_WorkingTable:051', false)
-    run Sub_Event201()
+    run Sub_Event168()
 
 flow Workbench_Cmn_DIYdemo():
     EventFlowSystemActor.SetTagFromUIResult('cItemName', 0)
@@ -337,7 +337,7 @@ flow Workbench_Cmn_DIYdemo():
             fork:
                 branch:
                     Player.PlayerWorkbenchGetDemo(true, true, false)
-                    Player.OpenMessageWindow('TalkFtr/FTR_WorkingTable:031_01', true)
+                    Player.OpenMessageWindow('TalkFtr/FTR_WorkingTable:031', true)
                 branch:
                     DynamicCast_rco.NpcReaction('cAccomplish')
     else:
@@ -398,21 +398,81 @@ flow WorkingTable_Borrow():
         else:
             run Cancel()
 
+flow WorkingTable_FBaitAll():
+    if EventFlowSystemActor.HasTargetItem(2567, 1):
+        EventFlowSystemActor.DeleteTargetItem(2567, 1, false)
+        EventFlowSystemActor.SetItemToPocket(4549, 1)
+        run WorkingTable_FBaitAll()
+    else:
+        EventFlowSystemActor.BGMPropertyControl(19)
+        Player.PlayerWorkbenchMaking(false)
+        Player.PlayerWorkbenchPutaway(false)
+        switch EventFlowSystemActor.RandomChoice6(6):
+            case 0:
+                Player.CharacterEmoticonAction('BigSmile', true, '', 0, false)
+            case 1:
+                Player.CharacterEmoticonAction('HappyDance', true, '', 0, false)
+            case 2:
+                Player.CharacterEmoticonAction('HappyFlower', true, '', 0, false)
+            case 3:
+                Player.CharacterEmoticonAction('SmugFace', true, '', 0, false)
+            case 4:
+                Player.CharacterEmoticonAction('Shaki', true, '', 0, false)
+            case 5:
+                Player.CharacterEmoticonAction('Dance', true, '', 0, false)
+        EventFlowSystemActor.BGMPropertyControl(20)
+        Player.OpenMessageWindow('TalkFtr/FTR_WorkingTable:033', true)
+        System.EventFlags['cLifeSupportAchievement:BulkCraftOnce'] = true
+        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+            EventFlowSystemActor.BGMPropertyControl(21)
+            Player.PlayerDemoTurnToStarter()
+            EventFlowSystemActor.WaitFrame(10)
+            Player.PlayerWorkbenchThinking()
+            EventFlowSystemActor.BGMPropertyControl(22)
+            run DIY()
+
 flow WorkingTable_Normal():
     Player.PlayerWorkbenchThinking()
     if System.EventFlags['cPlayer:EnableDiyRemake']:
         Player.OpenMessageWindow('TalkFtr/FTR_WorkingTable:001', true)
         switch EventFlowSystemActor.GeneralTalkChoice3():
             case 0:
-                run DIY()
+                if not System.EventFlags['cPlayer:BulkBait']:
+                    run DIY()
+                elif EventFlowSystemActor.HasTargetItem(2567, 2):
+                    Player.OpenMessageWindow('TalkFtr/FTR_WorkingTable:090', true)
+                    switch EventFlowSystemActor.GeneralTalkChoice3():
+                        case 0:
+                            run DIY()
+                        case 1:
+                            if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                                Player.OpenMessageWindow('TalkFtr/FTR_WorkingTable:040', true)
+                            else:
+                                run WorkingTable_FBaitAll()
+                        case 2:
+                            run Cancel()
+                else:
+                    run DIY()
             case 1:
                 run Remake()
             case 2:
                 run Cancel()
     else:
         Player.OpenMessageWindow('TalkFtr/FTR_WorkingTable:001_01', true)
-        if EventFlowSystemActor.GeneralTalkChoice2() == 0:
-            run DIY()
-        else:
+        if EventFlowSystemActor.GeneralTalkChoice2() == 1:
             run Cancel()
+        elif not System.EventFlags['cPlayer:BulkBait']:
+            run DIY()
+        elif EventFlowSystemActor.HasTargetItem(2567, 2):
+            Player.OpenMessageWindow('TalkSys/SYS_Player:909_04', true)
+            switch EventFlowSystemActor.GeneralTalkChoice3():
+                case 0:
+                    run DIY()
+                case 1:
+                    if EventFlowSystemActor.SystemHasBaggageSpace('cPocketBag') < 1:
+                        Player.OpenMessageWindow('TalkFtr/FTR_CrsSocksWall:002', true)
+                case 2:
+                    run Cancel()
+        else:
+            run DIY()
 

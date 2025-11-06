@@ -2,12 +2,10 @@ flow Chair_Standup():
     MainNpc.NpcAISetting(5, false)
     MainNpc.NpcAISetting(9, false)
     EventFlowSystemActor.MessageSuspend()
-    if (not EventFlowSystemActor.NetHasVisitor()) and (not EventFlowSystemActor.IsSharePlay(0)):
-        EventFlowSystemActor.StoreNormalCamera(false, '')
-        if Player.PlayerChairCanStandup(1):
-            Player.PlayerChairStandup(1)
-        else:
-            Player.PlayerChairStandup(3)
+    if (not System.EventFlags['cPlayer:CafeAskedforGyroid']) and (System.EventFlags['cPlayer:PgeCoffeeTodayFlag']) and (System.EventFlags['cLifeSupportAchievement:DrinkCoffee'] >= 5):
+        EventFlowSystemActor.WaitFrame(10)
+        MainNpc.OpenMessageWindow('TalkSNpc/pge/SP_pge_04_Out:007', true)
+        System.EventFlags['cPlayer:CafeAskedforGyroid'] = true
 
 flow Multi_Auto():
     EventFlowSystemActor.MessageAutoPass(0, true)

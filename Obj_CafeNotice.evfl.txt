@@ -1,0 +1,268 @@
+flow Chk_Continue():
+    if EventFlowSystemActor.GeneralTalkChoice2() == 1:
+        run FinishReading()
+
+flow Chk_Count():
+    if not System.EventFlags['cPlayer:CafeCountedGyroidBefore']:
+        System.EventFlags['cPlayer:CafeCountedGyroidBefore'] = true
+        run UpdateNotice()
+
+flow Chk_Update():
+    if System.EventFlags['cPlayer:CafeNoticeUpdated']:
+        run WalkIn_Update()
+
+flow FinishReading():
+    EventFlowSystemActor.SetTagFromSystem('cEventFlag', 'cDegit', 0, 0, 'cPlayer:CafeNoticeRemaining')
+    EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:500', false)
+    EventFlowSystemActor.ExitFlowchart()
+
+flow GyroidList():
+    if not System.EventFlags['cPlayer:NoticeGyroid1']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:001', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid2']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:002', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid3']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:003', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid4']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:004', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid5']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:005', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid6']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:006', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid7']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:007', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid8']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:008', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid9']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:009', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid10']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:010', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid11']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:011', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid12']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:012', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid13']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:013', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid14']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:014', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid15']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:015', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid16']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:016', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid17']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:017', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid18']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:018', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid19']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:019', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid20']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:020', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid21']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:021', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid22']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:022', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid23']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:023', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid24']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:024', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid25']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:025', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid26']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:026', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid27']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:027', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid29']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:029', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid30']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:030', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid31']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:031', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid32']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:032', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid33']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:033', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid34']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:034', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid35']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:035', false)
+        run Chk_Continue()
+    if not System.EventFlags['cPlayer:NoticeGyroid36']:
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:036', false)
+        run Chk_Continue()
+    run FinishReading()
+
+flow Root():
+    run Chk_Update()
+    if System.EventFlags['cPlayer:CafeNoticeReadBefore']:
+        if System.EventFlags['cPlayer:CafeNoticeChangesCount'] < 1:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:100', false)
+        elif System.EventFlags['cPlayer:CafeNoticeChangesCount'] < 2:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:200', false)
+        else:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:300', false)
+    else:
+        System.EventFlags['cPlayer:CafeNoticeReadBefore'] = true
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:000', false)
+    if EventFlowSystemActor.GeneralTalkChoice2() == 0:
+        System.EventFlags['cPlayer:CafeNoticeUpdated'] = false
+        System.EventFlags['cPlayer:CafeNoticeChangesCount'] = 0
+        run Chk_Count()
+        EventFlowSystemActor.SetTagFromSystem('cEventFlag', 'cDegit', 0, 0, 'cPlayer:CafeNoticeRemaining')
+        EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:400', false)
+        run GyroidList()
+    else:
+        EventFlowSystemActor.ExitFlowchart()
+
+flow UpdateNotice():
+    System.EventFlags['cPlayer:CafeNoticeRemaining'] = 35
+    if System.EventFlags['cPlayer:Gyroid1']:
+        System.EventFlags['cPlayer:NoticeGyroid1'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid2']:
+        System.EventFlags['cPlayer:NoticeGyroid2'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid3']:
+        System.EventFlags['cPlayer:NoticeGyroid3'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid4']:
+        System.EventFlags['cPlayer:NoticeGyroid4'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid5']:
+        System.EventFlags['cPlayer:NoticeGyroid5'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid6']:
+        System.EventFlags['cPlayer:NoticeGyroid6'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid7']:
+        System.EventFlags['cPlayer:NoticeGyroid7'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid8']:
+        System.EventFlags['cPlayer:NoticeGyroid8'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid9']:
+        System.EventFlags['cPlayer:NoticeGyroid9'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid10']:
+        System.EventFlags['cPlayer:NoticeGyroid10'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid11']:
+        System.EventFlags['cPlayer:NoticeGyroid11'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid12']:
+        System.EventFlags['cPlayer:NoticeGyroid12'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid13']:
+        System.EventFlags['cPlayer:NoticeGyroid13'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid14']:
+        System.EventFlags['cPlayer:NoticeGyroid14'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid15']:
+        System.EventFlags['cPlayer:NoticeGyroid15'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid16']:
+        System.EventFlags['cPlayer:NoticeGyroid16'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid17']:
+        System.EventFlags['cPlayer:NoticeGyroid17'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid18']:
+        System.EventFlags['cPlayer:NoticeGyroid18'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid19']:
+        System.EventFlags['cPlayer:NoticeGyroid19'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid20']:
+        System.EventFlags['cPlayer:NoticeGyroid20'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid21']:
+        System.EventFlags['cPlayer:NoticeGyroid21'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid22']:
+        System.EventFlags['cPlayer:NoticeGyroid22'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid23']:
+        System.EventFlags['cPlayer:NoticeGyroid23'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid24']:
+        System.EventFlags['cPlayer:NoticeGyroid24'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid25']:
+        System.EventFlags['cPlayer:NoticeGyroid25'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid26']:
+        System.EventFlags['cPlayer:NoticeGyroid26'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid27']:
+        System.EventFlags['cPlayer:NoticeGyroid27'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid29']:
+        System.EventFlags['cPlayer:NoticeGyroid29'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid30']:
+        System.EventFlags['cPlayer:NoticeGyroid30'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid31']:
+        System.EventFlags['cPlayer:NoticeGyroid31'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid32']:
+        System.EventFlags['cPlayer:NoticeGyroid32'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid33']:
+        System.EventFlags['cPlayer:NoticeGyroid33'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid34']:
+        System.EventFlags['cPlayer:NoticeGyroid34'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid35']:
+        System.EventFlags['cPlayer:NoticeGyroid35'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+    if System.EventFlags['cPlayer:Gyroid36']:
+        System.EventFlags['cPlayer:NoticeGyroid36'] = true
+        System.EventFlags['cPlayer:CafeNoticeRemaining'] += -1
+        if System.EventFlags['cPlayer:CafeNoticeRemaining'] != 0:
+            EventFlowSystemActor.OpenMessageWindow('TalkSys/SYS_ObjCafeBulletin:310', false)
+            EventFlowSystemActor.ExitFlowchart()
+
+flow WalkIn_Update():
+    if System.EventFlags['cPlayer:CafeChangesCount'] == 1:
+        System.EventFlags['cPlayer:CafeNoticeChangesCount'] += 1
+    else:
+        if System.EventFlags['cPlayer:CafeChangesCount'] > 1:
+            System.EventFlags['cPlayer:CafeNoticeChangesCount'] += 2
+    System.EventFlags['cPlayer:CafeChangesCount'] = 0
+    run UpdateNotice()
+

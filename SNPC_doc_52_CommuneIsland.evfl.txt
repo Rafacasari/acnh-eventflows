@@ -1,5 +1,6 @@
 flow AfterJuneBrideFirstEv():
-    run Event95()
+    MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_52_CommuneIsland:1003', false)
+    EventFlowSystemActor.ExitFlowchart()
 
 flow ChkUnlockDirectRoute():
     if not System.EventFlags['cPlayer:DocUnlockSpnOtgDirectRoute']:
@@ -28,9 +29,7 @@ flow Chk_CommuneExpandEvent_Arrive():
 flow Chk_CommuneExpandEvent_Wait():
     if System.EventFlags['cPlayer:ReserveCommuneExpansion']:
         if not System.EventFlags['cPlayer:SpnExpandEventAfterJuneBride']:
-entrypoint Event95:
-            MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_52_CommuneIsland:1003', false)
-            EventFlowSystemActor.ExitFlowchart()
+            run AfterJuneBrideFirstEv()
         elif System.EventFlags['cPlayerTemp:DocSpnExpandEventAfterJuneBride']:
             run AfterJuneBrideFirstEv()
         else:
@@ -66,11 +65,11 @@ flow Doc_Delivery():
 flow Doc_DeliveryPurchaseExplain():
     if not System.EventFlags['cPlayer:DocDeliveryPurchaseExplain']:
         if (EventFlowSystemActor.TermEventNow('JuneBride', false)) and (System.EventFlags['cPlayer:SpnJuneBrideTalkEventFrag']):
-            run Sub_Event53()
+            run Sub_Event50()
         else:
             run SNPC_spn_02_Commune::ChkEnableDonation()
             if SubflowResults@3[2] in (1, 2):
-                run Sub_Event53()
+                run Sub_Event50()
 
 flow Doc_FirstJuneBride():
     EventFlowSystemActor.StoreNormalCamera(false, '')
@@ -204,6 +203,8 @@ flow Root():
         System.EventFlags['cPlayerTemp:DocCommuneIslandFirstTalkDone'] = true
         if (EventFlowSystemActor.TermEventNow('JuneBride', false)) and (System.EventFlags['cPlayer:CommuneIslandAvailable']) and (not System.EventFlags['cPlayer:SpnJuneBrideTalkEventFrag']):
             run Doc_FirstJuneBride()
+        elif System.EventFlags['cLand:MolConv']:
+            EventFlowSystemActor.ExitFlowchart()
         else:
             run Chk_CommuneExpandEvent_Arrive()
             MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_52_CommuneIsland:001', true)
@@ -216,7 +217,7 @@ flow Root():
     else:
         MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_52_CommuneIsland:200', false)
 
-local flow Sub_Event53():
+local flow Sub_Event50():
     MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_52_CommuneIsland:105', false)
     MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_52_CommuneIsland:106', false)
     MainNpc.OpenMessageWindow('TalkSNpc/doc/SP_doc_52_CommuneIsland:107', false)

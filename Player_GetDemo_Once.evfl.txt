@@ -27,6 +27,9 @@ flow Get_FinishLoan():
             MainNpc.OpenMessageWindow('TalkSys/SYS_Player:204_03', false)
             run Sub_Event33()
 
+flow Get_FslTechnique():
+    MainNpc.OpenMessageWindow('TalkSys/SYS_Player:962', true)
+
 flow Get_MainGame():
     if System.EventFlags['cPlayer:PlayerProducedByPlayerMoving']:
         Player.OpenMessageWindow('TalkSys/SYS_Player:200_01', true)

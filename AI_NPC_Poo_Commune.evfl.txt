@@ -6,7 +6,7 @@ flow Init():
 flow Poo_Pos():
     switch EventFlowSystemActor.FlagSystemIntValue5(5, 'cPlayerTemp:PooCheckPlace'):
         case 0:
-            EventFlowSystemActor.NpcSetPos(625.0, 815.0, 90.0, 'poo')
+            EventFlowSystemActor.NpcSetPos(635.0, 810.0, 0.0, 'poo')
         case 1:
             EventFlowSystemActor.NpcSetPos(750.0, 600.0, 0.0, 'poo')
         case 2:

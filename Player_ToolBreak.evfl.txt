@@ -1,25 +1,57 @@
+local flow Sub_grp_Event22():
+    if (not EventFlowSystemActor.PlayerHasCraftRecipe('', 2030)) and (System.EventFlags['cPlayer:GoldenAxeLearningCount'] >= 3) and (System.EventFlags['cPlayer:MainmenuRecipe']):
+        EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Recipe_DIY', 'GetRecipe_SturdyAxe', 'cNextDemoEnd_Simple', false)
+
 flow ToolBreak_Axe():
     EventFlowSystemActor.SetTagFromSystem('cPlayerGetItemName', 'cDegit', 0, 0, '')
     Player.OpenMessageWindow('TalkSys/SYS_Player:290', false)
-    if not ((EventFlowSystemActor.NetIsDreaming()) or (EventFlowSystemActor.PlayerHasCraftRecipe('', 9617))):
-        if System.EventFlags['cPlayer:GoldenAxeLearningCount'] < 99:
-            System.EventFlags['cPlayer:GoldenAxeLearningCount'] += 1
-        elif System.EventFlags['cPlayer:MainmenuRecipe']:
-            EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Recipe_DIY', 'GetRecipe_GoldenAxe', 'cNextDemoEnd_Simple', false)
+    if not EventFlowSystemActor.NetIsDreaming():
+        if EventFlowSystemActor.PlayerHasCraftRecipe('', 9617):
+            run Sub_grp_Event22()
+        else:
+            if System.EventFlags['cPlayer:GoldenAxeLearningCount'] < 99:
+                System.EventFlags['cPlayer:GoldenAxeLearningCount'] += 1
+                run Sub_grp_Event22()
+            elif System.EventFlags['cPlayer:MainmenuRecipe']:
+                EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Recipe_DIY', 'GetRecipe_GoldenAxe', 'cNextDemoEnd_Simple', false)
 
 flow ToolBreak_FishingRod():
-    run ToolBreak_Scoop()
+    EventFlowSystemActor.SetTagFromSystem('cPlayerGetItemName', 'cDegit', 0, 0, '')
+    Player.OpenMessageWindow('TalkSys/SYS_Player:290', false)
+    if not ((EventFlowSystemActor.NetIsDreaming()) or (EventFlowSystemActor.PlayerHasCraftRecipe('', 2026))):
+        if System.EventFlags['cPlayer:SturdyAnglingLearningCount'] < 2:
+            System.EventFlags['cPlayer:SturdyAnglingLearningCount'] += 1
+        elif System.EventFlags['cPlayer:MainmenuRecipe']:
+            EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Recipe_DIY', 'GetRecipe_SturdyAngling', 'cNextDemoEnd_Simple', false)
 
 flow ToolBreak_Net():
-    run ToolBreak_Scoop()
+    EventFlowSystemActor.SetTagFromSystem('cPlayerGetItemName', 'cDegit', 0, 0, '')
+    Player.OpenMessageWindow('TalkSys/SYS_Player:290', false)
+    if not ((EventFlowSystemActor.NetIsDreaming()) or (EventFlowSystemActor.PlayerHasCraftRecipe('', 2027))):
+        if System.EventFlags['cPlayer:SturdyNetLearningCount'] < 2:
+            System.EventFlags['cPlayer:SturdyNetLearningCount'] += 1
+        elif System.EventFlags['cPlayer:MainmenuRecipe']:
+            EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Recipe_DIY', 'GetRecipe_SturdyNet', 'cNextDemoEnd_Simple', false)
 
 flow ToolBreak_Scoop():
     EventFlowSystemActor.SetTagFromSystem('cPlayerGetItemName', 'cDegit', 0, 0, '')
     Player.OpenMessageWindow('TalkSys/SYS_Player:290', false)
+    if not ((EventFlowSystemActor.NetIsDreaming()) or (EventFlowSystemActor.PlayerHasCraftRecipe('', 2028))):
+        if System.EventFlags['cPlayer:SturdyScoopLearningCount'] < 2:
+            System.EventFlags['cPlayer:SturdyScoopLearningCount'] += 1
+        elif System.EventFlags['cPlayer:MainmenuRecipe']:
+            EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Recipe_DIY', 'GetRecipe_SturdyScoop', 'cNextDemoEnd_Simple', false)
 
 flow ToolBreak_Slingshot():
-    run ToolBreak_Scoop()
+    EventFlowSystemActor.SetTagFromSystem('cPlayerGetItemName', 'cDegit', 0, 0, '')
+    Player.OpenMessageWindow('TalkSys/SYS_Player:290', false)
 
 flow ToolBreak_Watering():
-    run ToolBreak_Scoop()
+    EventFlowSystemActor.SetTagFromSystem('cPlayerGetItemName', 'cDegit', 0, 0, '')
+    Player.OpenMessageWindow('TalkSys/SYS_Player:290', false)
+    if not ((EventFlowSystemActor.NetIsDreaming()) or (EventFlowSystemActor.PlayerHasCraftRecipe('', 2029))):
+        if System.EventFlags['cPlayer:SturdyWateringLearningCount'] < 2:
+            System.EventFlags['cPlayer:SturdyWateringLearningCount'] += 1
+        elif System.EventFlags['cPlayer:MainmenuRecipe']:
+            EventFlowSystemActor.ReservePlayerMutterDemo('Player_GetDemo_Recipe_DIY', 'GetRecipe_SturdyWatering', 'cNextDemoEnd_Simple', false)
 

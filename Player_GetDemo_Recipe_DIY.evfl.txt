@@ -46,6 +46,36 @@ flow GetRecipe_PitFallSeed():
     Player.OpenMessageWindow('TalkSys/SYS_Player:511', false)
     EventFlowSystemActor.PlayerSetCraftRecipe('None', 2578)
 
+flow GetRecipe_SturdyAngling():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:507_0_0', false)
+    EventFlowSystemActor.WaitFrame(30)
+    Player.OpenMessageWindow('TalkSys/SYS_Player:507_0_1', false)
+    EventFlowSystemActor.PlayerSetCraftRecipe('None', 2026)
+
+flow GetRecipe_SturdyAxe():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:507_4_0', false)
+    EventFlowSystemActor.WaitFrame(30)
+    Player.OpenMessageWindow('TalkSys/SYS_Player:507_4_1', false)
+    EventFlowSystemActor.PlayerSetCraftRecipe('None', 2030)
+
+flow GetRecipe_SturdyNet():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:507_1_0', false)
+    EventFlowSystemActor.WaitFrame(30)
+    Player.OpenMessageWindow('TalkSys/SYS_Player:507_1_1', false)
+    EventFlowSystemActor.PlayerSetCraftRecipe('None', 2027)
+
+flow GetRecipe_SturdyScoop():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:507_2_0', false)
+    EventFlowSystemActor.WaitFrame(30)
+    Player.OpenMessageWindow('TalkSys/SYS_Player:507_2_1', false)
+    EventFlowSystemActor.PlayerSetCraftRecipe('None', 2028)
+
+flow GetRecipe_SturdyWatering():
+    Player.OpenMessageWindow('TalkSys/SYS_Player:507_3_0', false)
+    EventFlowSystemActor.WaitFrame(30)
+    Player.OpenMessageWindow('TalkSys/SYS_Player:507_3_1', false)
+    EventFlowSystemActor.PlayerSetCraftRecipe('None', 2029)
+
 flow PitFallDIY_Chk():
     if Player.PlayerCheckAI('cGetDemo_ScoopFullItem'):
         run Player_GetDemo::GetRecipe_PitFallSeed_FullItem()

@@ -70,3 +70,9 @@ flow TtlOpen_SpnPos():
 flow TtlOpen_TtlPos():
     MainNpc.NpcAISetPos(630.0, 515.0, 0.0, false, false)
 
+flow fsl():
+    MainNpc.NpcAISetPos(700.0, 620.0, 0.0, false, false)
+
+flow fslAfterPlayerPos():
+    Player.PlayerWarpPosCommune(690.0, 635.0, 0.0)
+
